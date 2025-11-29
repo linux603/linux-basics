@@ -1,0 +1,359 @@
+
+
+### 1. ls
+
+Purpose: List files and directories.
+
+Common Options:
+
+ ls -l → long listing (permissions, owner, size, date)
+ ls -a → include hidden files (dotfiles)
+ ls -lh → human-readable sizes (KB, MB, GB)
+ ls -R → recursive listing of subdirectories
+
+Example:
+
+
+ls -lha /home/rohit
+
+
+Use Case: Quickly check the contents of a directory, including hidden files and file permissions.
+
+---
+
+### 2. cd
+
+Purpose: Change current working directory.
+
+Examples:
+
+ cd /var/log → move to /var/log
+ cd .. → go up one level
+ cd ~ → go to home directory
+ cd - → switch to previous directory
+
+Use Case: Navigate the filesystem efficiently during administration or scripting.
+
+---
+
+### 3. pwd
+
+Purpose: Print the current working directory.
+
+Example:
+
+
+pwd
+
+
+Use Case: Confirm the directory you are in before performing operations like copy or delete.
+
+---
+
+### 4. mkdir
+
+Purpose: Create directories.
+
+Options:
+
+ mkdir newdir → create a single directory
+ mkdir -p /tmp/project/docs → create nested directories if parent does not exist
+ mkdir -m 755 newdir → set permissions at creation
+
+Use Case: Organize files into structured directories for projects, logs, or backups.
+
+---
+
+### 5. rmdir
+
+Purpose: Remove empty directories.
+
+Example:
+
+
+rmdir olddir
+
+
+Use Case: Clean up empty directories safely. Cannot delete non-empty directories.
+
+---
+
+### 6. rm
+
+Purpose: Remove files or directories.
+
+Options:
+
+ rm file.txt → remove a single file
+ rm -r dir → recursively delete directory and contents
+ rm -rf dir → force delete without confirmation
+ rm -i file.txt → interactive mode
+
+Example:
+
+
+rm -rf /tmp/oldfiles
+
+
+Use Case: Remove temporary files, old logs, or directories, but use carefully to avoid accidental data loss.
+
+---
+
+### 7. cp
+
+Purpose: Copy files or directories.
+
+Options:
+
+ cp file1 file2 → copy a single file
+ cp -r dir1 dir2 → copy directories recursively
+ cp -u file /dest → copy only if source is newer
+ cp -v file1 /dest → verbose output
+
+Example:
+
+
+cp -r /home/docs /backup/docs
+
+
+Use Case: Backup files, duplicate data, or move configuration files safely.
+
+---
+
+### 8. mv
+
+Purpose: Move or rename files/directories.
+
+Examples:
+
+ mv file.txt /tmp/ → move a file
+ mv oldname.txt newname.txt → rename a file
+ mv -i file /dest → interactive prompt before overwrite
+
+Use Case: Organize filesystem, rename files, or relocate directories.
+
+---
+
+### 9. touch
+
+Purpose: Create empty files or update timestamps.
+
+Examples:
+
+ touch file.txt → create new empty file
+ touch -c file.txt → do not create if it does not exist
+ touch -t 202511291300 file.txt → set specific timestamp
+
+Use Case: Create placeholder files, update modification times for scripts or logs.
+
+---
+
+### 10. file
+
+Purpose: Identify file type.
+
+Examples:
+
+ file file.txt → ASCII text file
+ file /bin/ls → ELF 64-bit executable
+
+Use Case: Verify whether a file is text, binary, executable, or script before executing or editing.
+
+---
+
+### 11. stat
+
+Purpose: Show detailed file info including size, permissions, inode, timestamps.
+
+Examples:
+
+ stat file.txt → show all info
+ stat -c "%n %s %U %G" file.txt → custom output: name, size, user, group
+
+Use Case: Audit files, check last access/modification times, verify ownership.
+
+---
+
+### 12. chmod
+
+Purpose: Change file permissions.
+
+Examples:
+
+ chmod 755 script.sh → standard executable permissions
+ chmod u+x file.txt → add execute permission for user
+ chmod -R 700 /home/rohit → recursively set permissions
+
+Use Case: Secure files, allow scripts to execute, manage access in multi-user environments.
+
+---
+
+### 13. chown
+
+Purpose: Change file or directory owner/group.
+
+Examples:
+
+ chown rohit file.txt → change owner
+ chown rohit:users file.txt → change owner and group
+ chown -R rohit:users /home/rohit → recursive change
+
+Use Case: Assign ownership for security and proper management of files.
+
+---
+
+### 14. ln
+
+Purpose: Create links to files.
+
+Examples:
+
+ ln file1 file2 → hard link
+ ln -s file1 file1_link → symbolic link
+ ln -sf target linkname → force overwrite
+
+Use Case: Create shortcuts or share files without duplicating data.
+
+---
+
+### 15. find
+
+Purpose: Locate files or directories based on name, type, size, permissions, modification time, etc.
+
+Examples:
+
+ find /home -name ".log" → find files by name
+ find /var/log -type d -name "log" → directories only
+ find /tmp -size +50M → files larger than 50 MB
+ find /var/log -mtime -7 → files modified in last 7 days
+ find /tmp -name ".log" -exec rm {} \; → execute command on each match
+
+Use Case: Automate cleanup, locate files for backup, or identify files by size/date for audits.
+
+---
+
+### 16. locate
+
+Purpose: Quickly find files using a pre-built database.
+
+Examples:
+
+ locate file1.txt → find file
+ sudo updatedb → update the search database
+
+Use Case: Faster than find for large filesystems when the database is updated.
+
+---
+
+### 17. tree
+
+Purpose: Show directory structure in a tree view.
+
+Examples:
+
+ tree /home → full directory tree
+ tree -L 2 /home → limit depth to 2 levels
+ tree -a /home → include hidden files
+
+Use Case: Visualize directory hierarchies and subdirectories.
+
+---
+
+### 18. wc
+
+Purpose: Count lines, words, or characters in a file.
+
+Examples:
+
+ wc file.txt → show lines, words, and characters
+ wc -l file.txt → count lines
+ wc -w file.txt → count words
+ wc -c file.txt → count characters
+
+Use Case: Script analytics, check file size in lines or words.
+
+---
+
+### 19. head / tail
+
+Purpose: Preview the start or end of files.
+
+Examples:
+
+ head file.txt → first 10 lines
+ head -n 20 file.txt → first 20 lines
+ tail file.txt → last 10 lines
+ tail -f /var/log/messages → live log monitoring
+
+Use Case: Quickly debug logs, check configuration files, or monitor active logs.
+
+---
+
+### 20. cat / less / more
+
+Purpose: Read file content.
+
+Examples:
+
+ cat file.txt → print entire file
+ less file.txt → scroll interactively
+ more file.txt → scroll page by page
+
+Use Case: Read large configuration files, logs, or scripts efficiently.
+
+---
+
+### 21. tar / zip
+
+Purpose: Archive and compress files or directories.
+
+Examples:
+
+ tar -cvf backup.tar /home/docs → create tar archive
+ tar -xvf backup.tar → extract tar archive
+ tar -czvf backup.tar.gz /home/docs → gzip compression
+ zip archive.zip file1 file2 → create zip archive
+ unzip archive.zip → extract zip
+
+Use Case: Backup directories, compress data for transfer, or archive logs.
+
+---
+
+### 22. grep
+
+Purpose: Search for patterns in files or command output.
+
+Examples:
+
+ grep "ERROR" /var/log/messages → search text
+ grep -i "error" /var/log/messages → case-insensitive
+ grep -r "Listen" /etc/httpd/ → recursive search
+ grep -n "failed" /var/log/secure → show line numbers
+ ps aux | grep nginx → filter process list
+
+Use Case: Analyze logs, search configuration files, filter command outputs.
+
+---
+
+### 23. find (advanced use)
+
+Purpose: Locate files/directories and perform actions on them.
+
+Examples:
+
+ find /var/log -name ".log" -mtime +30 -delete → delete logs older than 30 days
+ find /home -type f -size +100M → find large files
+ find /etc -type f -perm 644 → find files with specific permissions
+ find /var/log -name ".log" -exec gzip {} \; → compress all .log files
+
+Use Case: Automate cleanup, manage backups, audit filesystem permissions, or compress files in bulk.
+
+---
+
+This gives you a comprehensive, detailed explanation of all file and directory management commands with options, examples, and real-world use cases, in plain text form, ready for study or reference.
+
+---
+
+If you want, I can combine all Linux commands including CPU, memory, network, processes, logs, users, and file management into a single complete “Linux Admin Master Guide” in detailed text form — a one-stop reference.
+
+Do you want me to do that next?

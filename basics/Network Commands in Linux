@@ -1,0 +1,445 @@
+
+Linux networking  fundamental concepts :
+
+
+## 1️⃣ Interfaces
+
+What it is:
+
+ A network interface is a hardware or virtual connection that allows your system to communicate on a network.
+ Examples: eth0 (Ethernet), wlan0 (Wi-Fi), lo (loopback), docker0 (Docker virtual interface).
+
+Key Points:
+
+ Each interface has a name (eth0, ens33, lo) and a state (UP or DOWN).
+ Interfaces can have multiple IP addresses assigned.
+
+Example:
+ip link show
+
+
+Output:
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP mode DEFAULT group default qlen 1000
+    link/ether 00:11:22:33:44:55 brd ff:ff:ff:ff:ff:ff
+
+
+ UP → interface is active
+ LOWER_UP → link detected (cable connected)
+ link/ether → MAC address
+
+---
+
+## 2️⃣ Addresses
+
+What it is:
+
+ IP addresses assigned to an interface so it can send/receive data.
+ Each interface can have multiple IP addresses (IPv4 or IPv6).
+
+Types of IP addresses:
+
+ IPv4: 192.168.1.10
+ IPv6: fe80::1a2b:3c4d
+ Loopback: 127.0.0.1 (internal system communication)
+
+Example:
+ip addr show eth0
+
+
+Output:
+inet 192.168.1.10/24 brd 192.168.1.255 scope global eth0
+inet6 fe80::1a2b:3c4d/64 scope link
+
+
+ inet → IPv4
+ inet6 → IPv6
+ /24 → subnet mask (255.255.255.0)
+
+---
+
+## 3️⃣ Links
+
+What it is:
+
+ The physical or logical connection layer of the network interface.
+ A “link” refers to the connection status of an interface: whether the network cable is connected, Wi-Fi is associated, or the interface is enabled.
+
+Example:
+ip link show eth0
+
+
+Output:
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP>
+
+ UP → interface enabled
+ LOWER_UP → physical link detected (cable connected)
+
+---
+
+## 4️⃣ Routes
+
+What it is:
+
+ A route defines where network packets should go.
+ Linux keeps a routing table to decide which interface and gateway to use to reach a specific network.
+
+Example:
+ip route
+
+
+Output:
+default via 192.168.1.1 dev eth0
+192.168.1.0/24 dev eth0 proto kernel scope link src 192.168.1.10
+
+
+Explanation:
+1. default via 192.168.1.1 dev eth0 → all traffic to unknown networks goes through gateway 192.168.1.1 via eth0.
+2. 192.168.1.0/24 dev eth0 → traffic for the local subnet 192.168.1.0/24 is sent directly via eth0.
+
+
+## Note: Focus here : vvvvimp 
+================================
+
+## 1️⃣ Network Layers (OSI / TCP-IP perspective)
+
+When your system sends data to a router, multiple layers are involved:
+
+| Layer                 | Component / Role                     | Example Notes                                                                                                                    
+| --------------------- | ------------------------------------ | ---------------------------------------------------- |
+| **Physical Layer**    | The actual link (cable, Wi-Fi radio) | Ethernet cable, fiber optics, Wi-Fi signal. Determines if the link is “UP” (LOWER_UP).                        |
+| **Data Link Layer**   | MAC addressing & frames              | Your NIC uses MAC addresses to communicate with the router/switch. ARP resolves IP → MAC.                       |
+| **Network Layer**     | IP addressing & routing              | IP addresses and routing tables decide which interface or router to send packets through.                       |
+| **Transport Layer**   | TCP/UDP ports                        | TCP ensures delivery; UDP for fast connections. Not visible at IP routing but part of end-to-end communication. |
+| **Application Layer** | Programs using the network           | HTTP, SSH, DNS queries, email clients, etc.                                                                     |
+
+
+
+## 2️⃣ Components Between System & Router
+
+### a) Network Interface Card (NIC)
+
+ Hardware that connects your system to the network.
+ Has a MAC address and can be assigned multiple IPs.
+ Example: eth0, wlan0, enp0s3.
+
+### b) Link
+
+ The physical/logical connection to the next device.
+ Examples:
+
+   Ethernet cable plugged in
+   Wi-Fi connected to an AP
+   Virtual link (VM or container network)
+
+### c) Switch / Hub
+
+ Connects multiple devices within the same subnet.
+ Operates mostly at Layer 2 (Data Link).
+ Your NIC sends frames to the switch, which forwards them to the correct device (or router).
+
+### d) Router / Gateway
+
+ Connects your subnet to other subnets or the Internet.
+ Has a MAC address and IP on each connected network.
+ Determines where packets should go based on IP routing table.
+
+### e) ARP / MAC Table
+
+ ARP resolves IP → MAC of the next hop.
+ The router or switch uses MAC tables to forward frames correctly.
+
+### f) Firewall / Security Devices
+
+ May exist between system and router.
+ Filters traffic based on IP, port, protocol.
+ Could be Linux iptables, network firewall appliance, or cloud security group.
+
+---
+
+## 3️⃣ Packet Journey Example (Server → Internet)
+
+1. Application Layer: curl google.com
+2. Transport Layer: TCP connection created on port 80 or 443
+3. Network Layer: IP packet is prepared with destination IP (Google DNS resolves hostname)
+4. Data Link Layer: MAC address of router determined via ARP
+5. Physical Layer / Link: Packet sent over Ethernet cable or Wi-Fi
+6. Router: Receives frame, looks at IP, forwards toward Internet
+7. Switches / Intermediate Devices: Forward frames toward destination
+8. Destination: Internet server receives TCP/IP packet
+
+---
+
+### Summary Table
+
+| Component       | Layer               | Function                         |
+| --------------- | ------------------- | -------------------------------- |
+| NIC             | Physical/Data Link  | Sends/receives frames            |
+| Link            | Physical            | Cable/Wi-Fi connection           |
+| Switch          | Data Link           | Forward frames within LAN        |
+| Router          | Network             | Forward packets between networks |
+| ARP / MAC table | Data Link           | Map IP → MAC                     |
+| Firewall        | Network / Transport | Filter traffic based on rules    |
+| Application     | Application         | Initiates network communication  |
+
+
+
+
+## 1️⃣ ip – Modern Tool for Network Management
+
+ip is the replacement for the old ifconfig. You can manage addresses, interfaces, routes, and links.
+
+### Show IP addresses
+ip addr
+ip a
+
+
+ Shows all interfaces with IPv4 and IPv6 addresses, MAC addresses, and state (UP/DOWN).
+
+### Show only links/interfaces
+ip link show
+ip link
+
+
+ Shows interface state, MTU, MAC address.
+ Example: ip link set eth0 up → brings interface up.
+
+### Show routing table
+ip route
+
+
+ Shows default gateway, routes for subnets.
+ Example:
+default via 192.168.1.1 dev eth0
+192.168.1.0/24 dev eth0 proto kernel scope link src 192.168.1.10
+
+
+### Common Options
+| Option                                 | Purpose                       |
+| -------------------------------------- | ----------------------------- |
+| ip addr show <interface>             | Show IP of specific interface |
+| ip link set <interface> up/down      | Enable/disable interface      |
+| ip route add <network> via <gateway> | Add static route              |
+| ip route del <network>               | Delete static route           |
+
+---
+
+## 2️⃣ ifconfig – Legacy Network Tool
+ Older tool for network interfaces, now mostly replaced by ip.
+ Shows IP, netmask, broadcast, RX/TX stats.
+
+
+ifconfig
+ifconfig -a        # all interfaces
+ifconfig eth0       # show only eth0
+
+
+Example Output
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.1.10  netmask 255.255.255.0  broadcast 192.168.1.255
+        ether 00:11:22:33:44:55
+        RX packets 1000  bytes 1234567
+
+
+---
+
+## 3️⃣ ping – Test Connectivity
+ Sends ICMP packets to check if a host is reachable.
+
+
+ping google.com
+ping -c 5 8.8.8.8   # send 5 packets
+ping -i 2 google.com # send every 2 seconds
+
+
+Use Cases:
+ Check if a host is reachable
+ Measure round-trip time (latency)
+
+---
+
+## 4️⃣ traceroute / tracepath – Trace Path to Host
+
+ Shows network hops between your machine and a host.
+
+traceroute google.com
+tracepath google.com
+
+
+Example Output:
+1  192.168.1.1  1.0 ms
+2  10.1.0.1     10 ms
+3  8.8.8.8      20 ms
+
+
+Shows routers along the path and latency for each hop.
+
+---
+
+## 5️⃣ netstat – Network Statistics (Legacy)
+
+ Shows open connections, listening ports, routing, interface stats.
+
+netstat -tulnp
+
+ -t → TCP
+ -u → UDP
+ -l → Listening sockets
+ -n → Show numeric IPs/ports
+ -p → Show PID/program using port
+
+Example:
+
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program
+tcp        0      0 0.0.0.0:22              0.0.0.0:             LISTEN      1234/sshd
+
+
+---
+
+## 6️⃣ ss – Modern Replacement for netstat
+
+ Similar to netstat, faster and more feature-rich.
+
+
+ss -tulnp       # list listening TCP/UDP ports
+ss -s           # summary
+ss -t -a        # all TCP sockets
+
+
+ Shows which processes are listening on which ports.
+
+---
+
+## 7️⃣ nslookup – DNS Lookup
+
+ Query DNS to resolve domain names to IPs.
+
+
+nslookup google.com
+nslookup google.com 8.8.8.8   # query specific DNS server
+
+
+ Returns IP addresses and server used.
+
+---
+
+## 8️⃣ dig – Advanced DNS Query
+
+ Shows detailed DNS information (records, TTL, etc.).
+
+
+dig google.com        # full query
+dig +short google.com # concise output
+dig google.com MX     # MX mail records
+
+
+Use Cases: Troubleshooting DNS issues.
+
+---
+
+## 9️⃣ ethtool – NIC Information
+
+ Shows NIC driver, speed, duplex, link status.
+
+
+ethtool eth0          # basic info
+ethtool -i eth0       # driver info
+ethtool -S eth0       # statistics
+
+
+ Example: Speed: 1000Mb/s, Duplex: Full, Link detected: yes
+
+---
+
+## 10️⃣ tcpdump – Capture Network Traffic
+
+ Monitor packets on an interface.
+
+
+tcpdump -i eth0           # capture packets on eth0
+tcpdump -i eth0 -c 10     # capture 10 packets
+tcpdump -i eth0 -nn port 80 # capture HTTP packets without DNS resolution
+
+
+Use Case: Debug network issues, analyze traffic.
+
+---
+
+## 11️⃣ curl / wget – HTTP/HTTPS Tests
+
+ Test web connectivity, download files.
+
+
+curl -I https://example.com  # fetch headers
+curl -L https://example.com  # follow redirects
+wget https://example.com/file.txt
+
+
+ Useful to check API endpoints or website availability.
+
+---
+
+## 12️⃣ nmcli – NetworkManager CLI
+
+ Manage interfaces and connections.
+
+
+nmcli device status          # show interface state
+nmcli connection show        # list saved connections
+nmcli connection up eth0     # bring up connection
+nmcli connection down eth0   # bring down
+
+
+---
+
+## 13️⃣ ping6 – IPv6 Ping
+
+
+ping6 google.com
+
+
+ Test IPv6 connectivity.
+
+---
+
+## 14️⃣ arp / ip neigh – ARP Table
+
+ Shows mapping between IP and MAC addresses.
+
+
+arp -n
+ip neigh show
+
+
+---
+
+## 15️⃣ Check Public IP
+
+curl ifconfig.me
+curl icanhazip.com
+
+
+
+
+# ✅ Summary Table – Linux Network Commands
+
+| Command            | Description                  | Key Options / Examples                              |
+| ------------------ | ---------------------------- | --------------------------------------------------- |
+| ip a / ip addr | Show IP addresses            | ip addr show eth0                                 |
+| ip link          | Interface status & MAC       | ip link set eth0 up                               |
+| ip route         | Routing table                | ip route, ip route add <net> via <gw>           |
+| ifconfig         | Legacy interface info        | ifconfig -a, ifconfig eth0                      |
+| ping             | Test host connectivity       | ping -c 5 google.com                              |
+| ping6            | IPv6 connectivity            | ping6 google.com                                  |
+| traceroute       | Trace network path           | traceroute google.com                             |
+| netstat          | Connections, listening ports | netstat -tulnp                                    |
+| ss               | Modern netstat               | ss -tulnp, ss -s                                |
+| nslookup         | DNS lookup                   | nslookup google.com 8.8.8.8                       |
+| dig              | Advanced DNS                 | dig +short google.com                             |
+| ethtool          | NIC info                     | ethtool eth0, ethtool -i eth0                   |
+| tcpdump          | Capture network traffic      | tcpdump -i eth0 -c 10                             |
+| curl / wget    | HTTP / download              | curl -I https://example.com                       |
+| nmcli            | NetworkManager CLI           | nmcli device status, nmcli connection up <name> |
+| arp / ip neigh | ARP table                    | arp -n, ip neigh show                           |
+| curl ifconfig.me | Public IP                    | curl ifconfig.me                                  |
+
+

@@ -1,0 +1,276 @@
+ 
+
+ 1. "uname — Print system/kernel information
+
+ Syntax
+
+
+uname [OPTION]
+
+
+ Common Options (Explained Clearly)
+
+  Option     Meaning                  Example       Output Description                                                                          
+   -------    ---------------------    ----------    -----------------------------------------------------------------------------------------   
+   uname    Prints kernel name       uname       Usually Linux                                                                             
+   -a       All information          uname -a    Kernel name, nodename, kernel release, version, machine, processor, hardware platform, OS   
+   -s       Kernel name              uname -s    e.g., Linux                                                                               
+   -n       Node/hostname            uname -n    e.g., server0                                                                             
+   -r       Kernel release           uname -r    e.g., 5. 4.0-362.el9.x86_64                                                               
+   -v       Kernel version           uname -v    Build date & time                                                                           
+   -m       Machine hardware name    uname -m    e.g., x86_64, aarch64                                                                   
+   -p       Processor type           uname -p    May show unknown                                                                          
+   -i       Hardware platform        uname -i    e.g., x86_64                                                                              
+   -o       Operating system         uname -o    Usually GNU/Linux                                                                         
+
+
+
+ 2. hostname — Show or set the system hostname
+
+ Basic Usage
+
+
+hostname
+
+Shows current hostname.
+
+ Useful Options
+
+   Option                Description                     Example               
+   ------------------    ----------------------------    -------------------   
+   hostname            Show hostname                   hostname            
+   hostname newname    Set new hostname (temporary)    hostname server0    
+   -I                  Show all IP addresses           hostname -I         
+   -f                  Show FQDN                       hostname -f         
+
+
+
+ 3. hostnamectl — Manage hostname and system info
+
+ Purpose
+
+Shows OS version, chassis, kernel, architecture, hostname, etc.
+
+ Basic Command
+
+
+hostnamectl
+
+
+ Options
+
+   Option                   Description                 Example                                              
+   ---------------------    ------------------------    --------------------------------------------------   
+   set-hostname <name>    Permanently set hostname    hostnamectl set-hostname web-server                
+   --pretty               Set a “pretty name”         hostnamectl set-hostname "My Server" --pretty      
+   --static               Set static hostname         hostnamectl set-hostname server0  --static         
+   --transient            Temporary hostname          hostnamectl set-hostname temp-server --transient   
+
+note: Pretty = More readable format.
+      static = permanent 
+
+ 4. uptime — Shows uptime + load average
+
+ Basic Command
+
+
+uptime
+
+
+ Typical Output
+
+
+ 4:32:59 up 3 days,  5: 0,  2 users,  load average: 0. 0, 0.05, 0.0 
+
+
+ Meaning
+
+ up 3 days → system has been running for 3 days
+ 2 users → logged-in users
+ load average
+
+   last   min, 5 min,  5 min CPU load
+   <   = healthy
+   > CPU count = overloaded
+
+
+
+ 5. uptime -p — Pretty uptime
+
+ Usage
+
+
+uptime -p
+
+
+ Output
+
+
+up 3 days, 5 hours
+
+
+note: Pretty = More readable format.
+
+
+
+ 6. whoami — Shows current logged user
+
+ Usage
+
+
+whoami
+
+Returns your effective username.
+
+Example:
+root
+
+
+
+
+ 7. who — Shows currently logged-in users
+
+ Usage
+
+
+who
+
+
+ Example Output
+
+
+rohit   pts/0    2025-0 -26  0: 2 ( 92. 68. . 0)
+
+
+ Fields Meaning
+
+ username
+ terminal (pts/0)
+ login date/time
+ source IP
+
+ Useful Options
+
+   Option      Description        Example    
+   --------    ---------------    --------   
+   who -b    Last boot time     who -b   
+   who -H    Add header         who -H   
+   who -q    Number of users    who -q   
+
+---
+
+ 8. w — Detailed logged-in user activity
+
+ Usage
+
+
+w
+
+
+ What it shows
+
+ username
+ TTY
+ remote IP
+ login time
+ idle time
+ JCPU
+ PCPU
+ current process (what user is doing)
+
+ Useful Options
+
+   Option    Description     Example   
+   ------    ------------    -------   
+   w -h    No header       w -h    
+   w -f    Show from IP    w -f    
+
+---
+
+ 9. id — Return user identity info
+
+ Basic Usage
+
+
+id
+
+
+ Output Example
+
+
+uid= 000(rohit) gid= 000(rohit) groups= 000(rohit), 0(wheel)
+
+
+ Meaning
+
+ UID → User ID
+ GID → Group ID
+ groups → All groups user belongs to
+
+ Options
+
+   Option      Description          
+   --------    ------------------   
+   id -u     Show UID             
+   id -g     Show GID             
+   id -G     Show all group IDs   
+   id -un    Show only username   
+   id -gn    Show group name      
+
+---
+
+  10. timedatectl — Time, UTC, NTP settings
+
+ Basic Usage
+
+
+timedatectl
+
+
+ Shows
+
+ Local time
+ Universal time
+ RTC time
+ Timezone
+ NTP enabled/active
+ DST
+
+ Useful Options
+
+   Option                  Description           Example                                        
+   --------------------    ------------------    --------------------------------------------   
+   list-timezones        Show all timezones    timedatectl list-timezones                   
+   set-timezone TZ       Set timezone          timedatectl set-timezone Asia/Kolkata        
+   set-ntp true/false    Enable/disable NTP    timedatectl set-ntp true                     
+   set-time              Set system time       timedatectl set-time "2025-0 -30  0:30:00"   
+
+---
+
+11. date — Display or set system date/time
+
+ Usage
+
+
+date
+
+
+ Example Output
+
+
+Thu Jan 30  4:25: 0 IST 2025
+
+
+ Formatting Options
+
+   Option                Description    Example        
+   ------------------    -----------    ------------   
+   date "+%Y-%m-%d"    YYYY-MM-DD     2025-0 -30   
+   date "+%H:%M:%S"    HH:MM:SS        4:30:55     
+   date -u             UTC time       date -u      
+
+ Set system date/time (manual)
+
+
+sudo date -s "2025-0 -30  0: 5:00"
+

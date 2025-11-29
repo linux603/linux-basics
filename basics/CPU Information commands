@@ -1,0 +1,251 @@
+
+
+## 1️⃣lscpu – CPU Architecture Summary
+
+Description: Shows high-level CPU info in a human-readable format.
+
+Basic command:
+lscpu
+
+
+Output includes:
+ Architecture (x86_64, arm64)
+ CPU op-mode (32/64-bit)
+ CPU(s) (total cores)
+ Thread(s) per core
+ Core(s) per socket
+ Socket(s)
+ Vendor ID
+ Model name
+ CPU MHz
+ Cache size
+ Flags (vmx, sse, avx)
+
+Common options:
+
+| Option | Description                                    |
+| ------ | ---------------------------------------------- |
+|-p   | Show in parsable format (good for scripts) |
+|-e   | Show extended CPU info                     |
+|-s   | Show summary                               |
+|-x   | Show all extended info in key=value format |
+
+Examples:
+lscpu
+lscpu -p      # script-friendly comma-separated output
+lscpu -e      # extended info including core ID, socket ID
+
+
+---
+
+## 2️⃣cat /proc/cpuinfo – Detailed CPU Info
+
+Description: Reads CPU info directly from the kernel.
+
+Command:
+cat /proc/cpuinfo
+
+
+Output includes:
+ Processor number
+ Vendor ID
+ CPU family
+ Model name
+ Stepping
+ CPU MHz
+ Cache size
+ Flags (sse, avx, vmx)
+ Physical ID / Core ID
+
+Common use cases:
+
+Count number of CPUs:
+cat /proc/cpuinfo | grep -c processor
+
+List CPU models:
+cat /proc/cpuinfo | grep "model name" | uniq
+
+View CPU flags:
+cat /proc/cpuinfo | grep flags | uniq
+
+
+---
+
+## 3️⃣nproc – Number of CPU cores
+
+Description: Prints the number of processing units available (logical cores).
+
+Command:
+nproc
+
+Options:
+
+| Option  | Description                                          |
+| ------- | ---------------------------------------------------- |
+|--all | Show total CPU cores, ignoring affinity restrictions |
+
+Examples:
+nproc
+nproc --all
+
+
+Use case: Useful in scripts or CI/CD pipelines to parallelize jobs:
+make -j$(nproc)
+
+
+---
+
+## 4️⃣top – Real-Time CPU Usage
+
+Description: Interactive command showing CPU/memory usage per process.
+
+Command:
+top
+
+
+Useful keys intop:
+
+| Key | Action                      |
+| --- | --------------------------- |
+|1 | Show per-CPU usage          |
+|P | Sort processes by CPU usage |
+|M | Sort by memory usage        |
+|k | Kill a process by PID       |
+|r | Renice (change priority)    |
+|q | Quit                        |
+
+Options:
+
+| Option         | Description                         |
+| -------------- | ----------------------------------- |
+|-d <seconds> | Set refresh delay, e.g.,top -d 3 |
+|-p <pid>     | Monitor specific PID                |
+|-u <user>    | Show processes of a specific user   |
+
+Example:
+
+
+top -d 2          # Refresh every 2 seconds
+top -u root       # Show root processes only
+top -p 1234       # Monitor PID 1234
+
+
+---
+
+## 5️⃣htop – Interactive CPU Monitor
+
+Description: Advanced, colorful, interactive alternative totop. Needs installation.
+
+Install:
+sudo yum install htop      # RHEL/CentOS
+sudo apt install htop      # Ubuntu/Debian
+
+
+Command:
+htop
+
+
+Features:
+ Per-core CPU bars
+ Tree view of processes
+ Kill/renice processes
+ Search/filter processes
+ Shows memory, swap, CPU usage, load averages
+
+Options:
+| Option         | Description                   |
+| -------------- | ----------------------------- |
+|-d <seconds> | Delay between refreshes       |
+|-u <user>    | Show processes of a user only |
+|-p <pid>     | Monitor specific PID(s)       |
+
+Example:
+htop -u root      # Show root user processes
+htop -p 1234      # Monitor a specific PID
+
+
+---
+
+## 6️⃣mpstat – Per-CPU Usage Statistics
+Description: Reports CPU usage per processor (requiressysstat package).
+
+Install:
+sudo yum install sysstat
+sudo apt install sysstat
+
+
+Command:
+mpstat
+
+
+Options:
+| Option               | Description                                    |
+| -------------------- | ---------------------------------------------- |
+|-P <CPU>           | Report for a specific CPU (0,1, orALL) |
+|-u                 | Show CPU utilization (user/system/idle/iowait) |
+|<interval> <count> | Repeat every interval seconds, count times     |
+
+Examples:
+mpstat -P ALL 2 5     # Show all CPUs every 2 sec, 5 times
+mpstat -P 0           # Show only CPU 0 stats
+mpstat 1 3            # Report for all CPUs every 1 sec, 3 times
+
+
+Output Columns:
+%usr → time spent in user space
+%sys → system/kernel time
+%iowait → time waiting for I/O
+%idle → idle time
+
+---
+
+## 7️⃣sar -u – CPU Usage History
+
+Description: Shows historical CPU usage. Part ofsysstat package.
+
+Enable collection (RHEL/CentOS):
+
+
+sudo systemctl enable --now sysstat
+
+
+Command:
+sar -u
+
+
+Options:
+| Option               | Description                                        |
+| -------------------- | -------------------------------------------------- |
+|<interval> <count> | Show CPU stats every interval seconds, count times |
+|-P <CPU>           | Show per-CPU stats (ALL or CPU number)           |
+|-f <file>          | Read from a different sar data file                |
+
+Examples:
+sar -u 1 5        # CPU usage every 1 sec, 5 times
+sar -P ALL 2 3    # Per-CPU usage, every 2 sec, 3 times
+sar -u -f /var/log/sa/sa28  # Read historical file
+
+
+Output Columns:
+%usr → user CPU
+%sys → system CPU
+%iowait → waiting for I/O
+%idle → idle time
+
+
+# ✅ Summary Table (All Commands)
+
+| Command             | Description                | Key Options                      |
+| ------------------- | -------------------------- | -------------------------------- |
+|lscpu             | CPU architecture summary   |-p,-e,-s,-x           |
+|cat /proc/cpuinfo | Detailed per-core CPU info |grep,uniq,wc -l          |
+|nproc             | Number of CPU cores        |--all                          |
+|top               | Real-time CPU/memory usage |-d,-p,-u                 |
+|htop              | Interactive CPU monitor    |-d,-u,-p                 |
+|mpstat            | CPU usage per core         |-P <CPU>,<interval> <count> |
+|sar -u            | CPU usage history          |<interval> <count>,-P,-f |
+
+
+
+
+

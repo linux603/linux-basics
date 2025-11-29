@@ -1,0 +1,217 @@
+
+🟦 1. cat /etc/os-release — OS Name & Version
+
+This file contains system identification data for all Linux distributions.
+
+##Usage
+
+
+cat /etc/os-release
+
+
+##Typical Output
+
+
+NAME="Rocky Linux"
+VERSION="9.3 (Blue Onyx)"
+ID="rocky"
+VERSION_ID="9.3"
+PRETTY_NAME="Rocky Linux 9.3 (Blue Onyx)"
+
+
+##Explanation of Fields
+
+| Field            | Meaning                    |
+| ---------------- | -------------------------- |
+| NAME           | OS name                    |
+| VERSION        | OS version (major + minor) |
+| ID             | Short OS identifier        |
+| VERSION_ID     | Numeric version            |
+| PRETTY_NAME    | Human-readable OS name     |
+| HOME_URL       | Official website           |
+| SUPPORT_URL    | Support page               |
+| BUG_REPORT_URL | Bug reporting page         |
+
+> No command options — its just a readable file.
+
+---
+
+🟦 2. cat /etc/redhat-release — RHEL Based OS Version
+
+For RHEL, Rocky, AlmaLinux, CentOS.
+
+##Usage
+
+
+cat /etc/redhat-release
+
+
+##Example Output
+
+
+Rocky Linux release 9.3 (Blue Onyx)
+
+
+> Again, no options — it is just a version file specific to RHEL-family systems.
+
+---
+
+🟦 3. lsb_release — Linux Standard Base Information
+
+Works on Ubuntu, Debian, Rocky (after installing redhat-lsb-core), etc.
+
+##Usage
+
+
+lsb_release [OPTION]
+
+
+##All Important Options
+
+| Option | Description                   | Example           |
+| ------ | ----------------------------- | ----------------- |
+| -a   | Show all LSB information  | lsb_release -a  |
+| -d   | Show OS description           | lsb_release -d  |
+| -i   | Show distributor ID           | lsb_release -i  |
+| -r   | OS release number             | lsb_release -r  |
+| -c   | Codename (e.g., focal, jammy) | lsb_release -c  |
+| -s   | Short output (compact)        | lsb_release -ds |
+| -v   | LSB version compatibility     | lsb_release -v  |
+
+##Example Output (lsb_release -a)
+
+
+Distributor ID: Ubuntu
+Description:    Ubuntu 22.04.3 LTS
+Release:        22.04
+Codename:       jammy
+
+
+---
+
+🟦 4. dmesg | head — Boot Messages
+
+##What is dmesg?
+
+dmesg prints kernel and boot-related messages.
+
+##Basic Usage
+
+
+dmesg | head
+
+
+Shows the first few boot messages.
+
+##Useful Options
+
+| Option       | Description                       | Example                  |
+| ------------ | --------------------------------- | ------------------------ |
+| dmesg      | Show all kernel logs              | dmesg                  |
+| -T         | Convert timestamps to human time  | dmesg -T               |
+| -k         | Kernel messages only              | dmesg -k               |
+| -l <level> | Filter severity (err, warn, info) | dmesg -l err           |
+| -w         | Watch live kernel messages        | dmesg -w               |
+| --level=   | Multi-level filter                | dmesg --level=err,warn |
+
+##Severity Levels (Important for Admins)
+
+ emerg
+ alert
+ crit
+ err
+ warn
+ notice
+ info
+ debug
+
+##Examples
+
+Show only errors:
+
+
+dmesg -l err
+
+
+Watch kernel logs live:
+
+
+dmesg -w
+
+
+Readable timestamps:
+
+
+dmesg -T
+
+
+---
+
+🟦 5. journalctl -b — Boot Logs (systemd)
+
+journalctl reads the systemd journal logs.
+
+##Show current boot logs
+
+
+journalctl -b
+
+
+##Show previous boot logs
+
+(If multiple boots exist)
+
+
+journalctl -b -1
+journalctl -b -2
+
+
+---
+
+##Important Journalctl Options for Admins
+
+| Option          | Description                      | Example                                 |
+| --------------- | -------------------------------- | --------------------------------------- |
+| -b            | Logs from current boot           | journalctl -b                         |
+| -k            | Kernel logs only                 | journalctl -k                         |
+| -u <service>  | Show logs for a specific service | journalctl -u sshd                    |
+| -f            | Follow logs live (like tail -f)  | journalctl -f                         |
+| --since       | Logs from specific time          | journalctl --since "2 hours ago"      |
+| --until       | Logs up to specific time         | journalctl --until "2025-01-30 14:00" |
+| -p <level>    | Filter by priority               | journalctl -p err                     |
+| -r            | Reverse output (newest first)    | journalctl -r                         |
+| --disk-usage  | Check journal log disk usage     | journalctl --disk-usage               |
+| --vacuum-size | Cleanup journal logs             | journalctl --vacuum-size=500M         |
+| --vacuum-time | Delete logs older than X         | journalctl --vacuum-time=30d          |
+
+##Priority Levels (important!)
+
+ 0 = emerg
+ 1 = alert
+ 2 = crit
+ 3 = err
+ 4 = warning
+ 5 = notice
+ 6 = info
+ 7 = debug
+
+##Examples
+
+Show only error logs:
+
+
+journalctl -p err
+
+
+Show logs for SSH service:
+
+
+journalctl -u sshd
+
+
+Live logs:
+
+
+journalctl -f
+
+

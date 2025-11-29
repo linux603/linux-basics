@@ -1,0 +1,162 @@
+
+
+## 1️⃣ uptime – System Uptime & Load
+
+Command:
+
+
+uptime
+
+
+Example Output:
+
+
+ 13:45:10 up 5 days, 3:22,  3 users,  load average: 0.15, 0.25, 0.30
+
+
+Explanation:
+
+ 13:45:10 → Current time
+ up 5 days, 3:22 → System has been running for 5 days, 3 hours 22 minutes
+ 3 users → Number of logged-in users
+ load average: 0.15, 0.25, 0.30 → Average CPU/system load over:
+
+  1. 1 minute
+  2. 5 minutes
+  3. 15 minutes
+
+Options:
+
+| Option | Description                               |
+| ------ | ----------------------------------------- |
+| -p   | Pretty uptime, e.g., up 5 days, 3 hours |
+| -s   | Show boot time                            |
+| -h   | Human-readable (modern Linux)             |
+
+Example:
+
+
+uptime -p
+# Output: up 5 days, 3 hours, 22 minutes
+
+uptime -s
+# Output: 2025-11-24 10:23:12
+
+
+---
+
+## 2️⃣ w – Users and System Load
+
+Command:
+
+
+w
+
+
+Example Output:
+
+
+ 13:50:21 up 5 days, 3:27, 3 users,  load average: 0.15, 0.25, 0.30
+USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
+root     pts/0    192.168.1.10     10:23   1:23   0.10s  0.03s 
+
+
+Explanation:
+
+ First line → uptime, number of users, load average
+ Columns:
+
+   USER → logged-in user
+   TTY → terminal
+   FROM → IP/host connected from
+   LOGIN@ → login time
+   IDLE → idle time
+   JCPU → total CPU time of processes attached to terminal
+   PCPU → CPU time of current process
+   WHAT → command being run
+
+---
+
+## 3️⃣ who – Users Logged In
+
+Command:
+
+
+who
+
+
+Example Output:
+
+
+root     pts/0    2025-11-24 10:23 (192.168.1.10)
+user1    pts/1    2025-11-24 11:00 (192.168.1.20)
+
+
+Explanation:
+
+ Shows who is logged in, terminal, login time, and IP.
+
+---
+
+## 4️⃣ top – Real-Time Load Monitoring
+
+Command:
+
+
+top
+
+
+Explanation:
+
+ Shows live CPU, memory, and process usage.
+ Load average is displayed at the top: load average: 0.15, 0.25, 0.30
+ Press 1 to see per-core CPU usage.
+
+---
+
+## 5️⃣ uptime vs load average – Understanding
+
+ Uptime: How long system has been running.
+ Load average: How busy the system is over time (1, 5, 15 min).
+
+   1.0 load per CPU core means full utilization.
+   Example: On a 4-core CPU:
+
+     Load 4.0 → all cores fully busy
+     Load 2.0 → 50% busy
+
+---
+
+## 6️⃣ cat /proc/loadavg – Load Average File
+
+Command:
+
+
+cat /proc/loadavg
+
+
+Example Output:
+
+
+0.15 0.25 0.30 3/150 23456
+
+
+Explanation:
+
+ 0.15 0.25 0.30 → load averages (1, 5, 15 min)
+ 3/150 → 3 currently running processes / 150 total processes
+ 23456 → last PID used
+
+---
+
+## 7️⃣ uptime vs w vs who Summary
+
+| Command             | Purpose                            | Key Info                                |
+| ------------------- | ---------------------------------- | --------------------------------------- |
+| uptime            | System uptime + load average       | 1, 5, 15 min load                       |
+| uptime -p         | Pretty uptime                      | e.g., up 5 days, 3 hours                |
+| w                 | Active users + what they are doing | Load + terminal + idle + command        |
+| who               | Logged-in users                    | Terminal, login time, IP                |
+| cat /proc/loadavg | Raw load info                      | Load, running/total processes, last PID |
+
+

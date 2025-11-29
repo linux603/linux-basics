@@ -1,0 +1,292 @@
+
+
+## 1️⃣ df – Disk Free / Usage
+
+Command:
+
+
+df
+df -h
+df -Th
+
+
+Explanation:
+
+ Shows filesystem disk space usage.
+ Columns:
+
+   Filesystem → partition or mount point
+   Size → total size
+   Used → used space
+   Avail → available space
+   Use% → percentage used
+   Mounted on → mount point
+
+Options:
+
+| Option | Description                              |
+| ------ | ---------------------------------------- |
+| -h   | Human-readable (GB/MB)                   |
+| -T   | Show filesystem type                     |
+| -i   | Show inode usage                         |
+| -a   | Show all filesystems, including 0 blocks |
+
+Example:
+
+
+df -Th
+Filesystem     Type  Size  Used Avail Use% Mounted on
+/dev/sda1      ext4   50G   20G   28G  42% /
+tmpfs          tmpfs  2G    0     2G   0%  /dev/shm
+
+
+---
+
+## 2️⃣ du – Disk Usage of Files/Directories
+
+Command:
+
+
+du /var/log
+du -sh /var/log
+du -h --max-depth=1 /home
+
+
+Explanation:
+
+ Shows disk usage of directories and subdirectories.
+ Columns:
+
+   Size → disk used by file/directory
+   Directory/File → path
+
+Options:
+
+| Option          | Description                        |
+| --------------- | ---------------------------------- |
+| -h            | Human-readable                     |
+| -s            | Summary (total only)               |
+| --max-depth=N | Show subdirectories up to N levels |
+
+Example:
+
+
+du -sh /var/log
+# Output: 250M  /var/log
+
+
+---
+
+## 3️⃣ lsblk – List Block Devices
+
+Command:
+
+
+lsblk
+lsblk -f
+lsblk -a
+
+
+Explanation:
+
+ Shows all block devices (disks, partitions, LVM, RAID).
+ Columns:
+
+   NAME → device name (sda, sda1)
+   MAJ:MIN → device numbers
+   RM → removable device (0/1)
+   SIZE → size
+   TYPE → disk, part, lvm
+   MOUNTPOINT → mounted path
+
+Options:
+
+| Option      | Description                    |
+| ----------- | ------------------------------ |
+| -f        | Show filesystem type and label |
+| -a        | Show empty devices             |
+| -o <cols> | Specify columns                |
+
+Example:
+
+
+lsblk -f
+NAME   FSTYPE LABEL UUID                                 MOUNTPOINT
+sda                                                       
+├─sda1 ext4         1234-5678-90ab-cdef                /
+└─sda2 swap         2345-6789-01bc-def0                [SWAP]
+
+
+---
+
+## 4️⃣ mount / findmnt – Mounted Filesystems
+
+Command:
+
+
+mount
+findmnt
+findmnt -t ext4
+
+
+Explanation:
+
+ Shows currently mounted filesystems and their mount options.
+ Example:
+
+
+/dev/sda1 on / type ext4 (rw,relatime,data=ordered)
+
+
+Options:
+
+| Option        | Description                        |
+| ------------- | ---------------------------------- |
+| -t <type>   | Show only specific filesystem type |
+| -o <option> | Filter by mount options            |
+
+---
+
+## 5️⃣ blkid – Show Filesystem UUID
+
+Command:
+
+
+blkid
+blkid /dev/sda1
+
+
+Explanation:
+
+ Shows filesystem type, UUID, and labels.
+ Example:
+
+
+/dev/sda1: UUID="1234-5678-90ab-cdef" TYPE="ext4" PARTUUID="abcd1234-01"
+
+
+---
+
+## 6️⃣ stat – File / Directory Disk Info
+
+Command:
+
+
+stat /var/log/syslog
+
+
+Explanation:
+
+ Shows file size, blocks, inode, access/modification times.
+
+Key Info:
+
+ Size → file size in bytes
+ Blocks → disk blocks used
+ IO Block → filesystem block size
+ Inode → unique identifier on filesystem
+
+---
+
+## 7️⃣ fdisk / parted – Partition Info
+
+Command:
+
+
+sudo fdisk -l
+sudo parted -l
+
+
+Explanation:
+
+ Lists all disks and partitions with sizes, types, and boot flags.
+ Example (fdisk -l):
+
+
+Disk /dev/sda: 50 GiB, 53687091200 bytes
+Device     Start      End  Sectors Size Type
+/dev/sda1   2048 104857599 104855552 50G Linux filesystem
+
+
+---
+
+## 8️⃣ iostat – Disk I/O Statistics
+
+Command:
+
+
+iostat
+iostat -x 2 5
+
+
+Explanation:
+
+ Shows CPU + Disk I/O usage.
+ Columns:
+
+   tps → transfers per second
+   kB_read/s → read throughput
+   kB_wrtn/s → write throughput
+   %util → disk utilization
+
+Options:
+
+| Option               | Description                     |
+| -------------------- | ------------------------------- |
+| -x                 | Extended stats per device       |
+| -d                 | Show only device stats          |
+| <interval> <count> | Repeat every N seconds, M times |
+
+---
+
+## 9️⃣ df -i – Inode Usage
+
+Command:
+
+
+df -i
+
+
+Explanation:
+
+ Shows number of inodes used/free.
+ Inodes track files/directories, so running out of inodes can prevent creating new files even if space is available.
+
+Example Output:
+
+
+Filesystem      Inodes  IUsed   IFree IUse% Mounted on
+/dev/sda1      3276800 102400 3174400    4% /
+
+
+---
+
+## 10️⃣ duf (Optional Tool)
+
+ Modern disk usage viewer with colors (install separately).
+ Example:
+
+
+duf
+
+
+ Shows disks, usage %, type, and mount points in an easy-to-read table.
+
+---
+
+# ✅ Summary Table – Disk & Storage Commands
+
+| Command             | Purpose                     | Key Options / Examples                         |
+| ------------------- | --------------------------- | ---------------------------------------------- |
+| df                | Disk usage per filesystem   | df -h, df -Th, df -i                     |
+| du                | Disk usage per directory    | du -sh /var/log, du -h --max-depth=1 /home |
+| lsblk             | List block devices          | lsblk -f, lsblk -a                         |
+| mount / findmnt | Mounted filesystems         | findmnt -t ext4                              |
+| blkid             | Show filesystem UUID/labels | blkid /dev/sda1                              |
+| stat              | File/directory info         | stat /var/log/syslog                         |
+| fdisk / parted  | Partition info              | sudo fdisk -l, sudo parted -l              |
+| iostat            | Disk I/O usage              | iostat -x 2 5                                |
+| df -i             | Inode usage                 | df -i                                        |
+| duf               | Modern disk viewer          | duf                                          |
+
+

@@ -1,0 +1,366 @@
+
+
+## 1️⃣ / – Root Directory
+
+Purpose:
+
+ Top-level of the filesystem tree.
+ All other directories branch from /.
+ Houses essential directories like /bin, /etc, /home, /var, /usr.
+
+Key Points:
+
+ Do not store personal files directly here – they should go under /home or /srv.
+ Critical for booting – deleting files here may break the system.
+
+Commands:
+
+
+ls -l /
+tree -L 1 /    # shows only top-level directories
+
+
+---
+
+## 2️⃣ /bin – Essential User Binaries
+
+Purpose:
+
+ Contains basic command-line utilities for all users.
+ Commands required for both single-user mode and multi-user mode.
+
+Examples of commands:
+
+ ls, cat, cp, mv, , date
+
+Key Points:
+
+ Should never contain local or third-party software.
+ Used during system repair if /usr is unavailable.
+
+Command:
+
+
+ls /bin
+which 
+
+
+---
+
+## 3️⃣ /sbin – System Binaries (Root/Admin)
+
+Purpose:
+
+ Contains system administration commands primarily for root.
+ Used for system repair, maintenance, booting.
+
+Examples:
+
+ fdisk → partition management
+ ifconfig → configure network interfaces
+ mount → mount filesystems
+
+Command:
+
+
+ls /sbin
+
+
+---
+
+## 4️⃣ /usr – User Programs
+
+Purpose:
+
+ Stores non-essential binaries, libraries, and documentation.
+ Mounted read-only on multi-user systems (can be shared over network).
+
+Subdirectories:
+
+ /usr/bin → user programs
+ /usr/sbin → administrative programs
+ /usr/lib → libraries
+ /usr/share → documentation, man pages, icons, etc.
+
+Commands:
+
+ls /usr/bin | head
+ls /usr/share/doc
+
+
+Key Insight:
+
+ /usr is usually the largest directory because it contains most installed software.
+
+---
+
+## 5️⃣ /etc – Configuration Files
+
+Purpose:
+
+ Holds system-wide configuration files.
+ Only static text files; binaries are not stored here.
+
+Examples:
+
+ /etc/passwd → user accounts
+ /etc/fstab → filesystem mount info
+ /etc/hosts → IP to hostname mapping
+ /etc/ssh/sshd_config → SSH server config
+
+Command:
+
+
+ls /etc
+cat /etc/fstab
+
+
+Best Practice:
+
+ Don’t store scripts or binaries here. Only configs.
+
+---
+
+## 6️⃣ /var – Variable Data
+
+Purpose:
+
+ Stores files that change frequently during system operation.
+ Includes logs, caches, spool files.
+
+Important Subdirectories:
+
+ /var/log → system and service logs
+ /var/tmp → temporary files (persist across reboot)
+ /var/spool → print queues, mail queues
+ /var/lib → state information for applications (e.g., databases)
+
+Commands:
+
+
+ls /var/log
+tail -f /var/log/messages
+
+
+Key Insight:
+
+ /var is dynamic; monitor disk usage here, especially /var/log.
+
+---
+
+## 7️⃣ /home – User Home Directories
+
+Purpose:
+
+ Each regular user gets a personal directory here.
+ Stores personal files, settings, and hidden configuration files (dotfiles).
+
+Example: /home/rohit contains .rc, .ssh, and personal documents.
+
+Commands:
+
+
+ls -la /home/rohit
+du -sh /home/
+
+
+---
+
+## 8️⃣ /root – Root User Home
+
+Purpose:
+
+ Home directory for the root user.
+ Similar to /home, but only for administrative tasks.
+
+Command:
+
+
+ls -la /root
+
+
+---
+
+## 9️⃣ /tmp – Temporary Files
+
+Purpose:
+
+ Temporary files created by users and applications.
+ Usually cleared on reboot (depends on distro).
+
+Command:
+
+
+ls /tmp
+rm -rf /tmp/mytempfile
+
+
+Key Points:
+
+ Do not store critical data here.
+ Applications often write temporary session files here.
+
+---
+
+## 🔟 /dev – Device Files
+
+Purpose:
+
+ Special files representing hardware devices or pseudo-devices.
+
+Examples:
+
+ /dev/sda → first hard disk
+ /dev/tty → terminal
+ /dev/null → discard output
+
+Commands:
+
+
+ls -l /dev
+ls -l /dev/sda
+
+
+Key Insight:
+
+ Linux treats everything as a file, including hardware devices.
+
+---
+
+## 1️⃣1️⃣ /proc – Process & Kernel Info (Virtual Filesystem)
+
+Purpose:
+
+ Virtual filesystem representing kernel and process information.
+ Files aren’t stored on disk; they’re generated on access.
+
+Examples:
+
+ /proc/cpuinfo → CPU info
+ /proc/meminfo → memory info
+ /proc/<PID> → process info
+
+Commands:
+
+
+cat /proc/cpuinfo
+cat /proc/meminfo
+ls /proc/$$      # current shell
+
+
+---
+
+## 1️⃣2️⃣ /sys – Kernel & Device Info (Virtual FS)
+
+Purpose:
+
+ Provides sysfs – kernel interface for devices and drivers.
+ Used by udev and system scripts.
+
+Commands:
+
+
+ls /sys/class/net   # list network interfaces
+
+
+---
+
+## 1️⃣3️⃣ /opt – Optional/Third-Party Software
+
+Purpose:
+
+ For manually installed or third-party applications.
+ Example: Google Chrome, VMware, custom software.
+
+Command:
+
+
+ls /opt
+
+
+---
+
+## 1️⃣4️⃣ /lib – Essential Libraries
+
+Purpose:
+
+ Shared libraries needed by binaries in /bin and /sbin.
+ On 64-bit systems, /lib64 exists for 64-bit libraries.
+
+Command:
+
+
+ls /lib
+ls /lib64
+
+
+---
+
+## 1️⃣5️⃣ /media & /mnt – Mount Points
+
+Purpose:
+
+ /media → automatic mount points for removable media (USB, CD-ROM)
+ /mnt → temporary manual mount points
+
+Command:
+
+
+mount | grep /media
+mount /dev/sdb1 /mnt
+
+
+---
+
+## 1️⃣6️⃣ /srv – Service Data
+
+Purpose:
+
+ Contains data for system services.
+ Example: /srv/www → web server data, /srv/ftp → FTP server files.
+
+Command:
+
+
+ls /srv
+
+
+---
+
+## 1️⃣7️⃣ Hidden Files (dotfiles)
+
+ Files starting with . are hidden, often configuration files in a user’s home.
+ Example: .rc, .vimrc, .ssh/
+
+Command:
+
+
+ls -la /home/rohit
+
+
+---
+
+## 🔹 Summary Table of Major Directories
+
+| Directory    | Purpose                      | Example Files/Commands |
+| ------------ | ---------------------------- | ---------------------- |
+| /          | Root                         | ls /                   |
+| /bin       | Essential user binaries      | ls, cp, mv             |
+| /sbin      | Admin binaries               | fdisk, ifconfig        |
+| /usr       | Installed software           | /usr/bin, /usr/lib     |
+| /etc       | Configuration files          | /etc/fstab, /etc/hosts |
+| /var       | Variable files               | /var/log, /var/spool   |
+| /home      | User home                    | /home/username         |
+| /root      | Root home                    | /root/.rc          |
+| /tmp       | Temporary files              | /tmp/testfile          |
+| /dev       | Device files                 | /dev/sda, /dev/null    |
+| /proc      | Process/kernel info          | /proc/cpuinfo          |
+| /sys       | Kernel & device info         | /sys/class/net         |
+| /opt       | Optional software            | /opt/google/chrome     |
+| /lib       | Libraries                    | /lib, /lib64           |
+| /media     | Auto-mounted removable media | /media/usb             |
+| /mnt       | Temporary mounts             | mount /dev/sdb1 /mnt   |
+| /srv       | Service data                 | /srv/www               |
+| Hidden files | User configs                 | .rc, .ssh          |
+
+
