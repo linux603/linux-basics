@@ -1,0 +1,411 @@
+
+
+#  PROJECT: High-Availability Server-Based Order Processing Platform
+
+Role: Linux Administrator | DevOps Engineer | SRE
+Environment:
+✔ On-premises physical servers
+✔ Cloud-based VMs
+✔ No Kubernetes
+✔ Services running on Linux servers (systemd)
+✔ Nginx/HAProxy for traffic routing
+
+---
+
+# 📝 1. Project Overview (Plain English Summary)
+
+I worked on building and maintaining a server-based production environment that powered an e-commerce order processing system.
+All services ran directly on:
+
+ Linux virtual machines
+ Bare-metal servers
+ With systemd as process manager
+
+The platform supported:
+
+ Public-facing APIs (user traffic)
+ Internal service APIs (order, payment, inventory)
+ Background worker servers
+ Database cluster
+ SAP Ariba enterprise integration
+
+My role was to ensure:
+
+ Uptime
+ Scalability
+ Security
+ Monitoring
+ Reliable deployments
+ Performance tuning
+ Incident response
+
+---
+
+#  2. Architecture Diagram (Server-Based Environment)
+
+```
+                      ┌──────────────────────────┐
+                      │        Internet           │
+                      └─────────────┬────────────┘
+                                    │
+                      ┌─────────────▼─────────────┐
+                      │        Public DNS          │
+                      └─────────────┬─────────────┘
+                                    │
+                ┌───────────────────▼──────────────────┐
+                │ CDN (Akamai/CloudFront)              │
+                └───────────────────┬──────────────────┘
+                                    │
+         ┌──────────────────────────▼──────────────────────────┐
+         │ WAF + DDoS Layer (Cloudflare/AWS Shield/Firewall)   │
+         └──────────────────────────┬──────────────────────────┘
+                                    │
+            ┌───────────────────────▼────────────────────────┐
+            │ Public Load Balancer (ELB/HAProxy/Nginx LB)    │
+            └───────────────────────┬────────────────────────┘
+                                    │
+      ┌─────────────────────────────▼────────────────────────────────┐
+      │              Reverse Proxy Layer (Nginx/HAProxy)             │
+      └─────────────────────────────┬────────────────────────────────┘
+                                    │
+            ┌───────────────────────▼──────────────────────────────┐
+            │           Application Server Farm (Linux VMs)         │
+            │  - API Server 1                                       │
+            │  - API Server 2                                       │
+            │  - API Server 3 (Active/Active/Active)                │
+            └───────────────────────┬──────────────────────────────┘
+                                    │
+      ┌─────────────────────────────▼────────────────────────────────┐
+      │        Internal Microservices (Deployed on Linux servers)    │
+      │   - Order Service (port 8081)                                │
+      │   - Payment Service (port 8082)                              │
+      │   - Inventory Service (port 8083)                            │
+      │   - Notification Service (port 8084)                         │
+      └─────────────────────────────┬────────────────────────────────┘
+                                    │
+             ┌──────────────────────▼─────────────────────────────┐
+             │     Message Queue (Kafka/RabbitMQ Servers)         │
+             └──────────────────────┬─────────────────────────────┘
+                                    │
+                     ┌──────────────▼───────────────┐
+                     │ Background Worker Servers     │
+                     │ - Order processing            │
+                     │ - Payment confirmation         │
+                     └──────────────┬───────────────┘
+                                    │
+            ┌────────────────────────▼─────────────────────────────┐
+            │     Database Cluster (Postgres/MySQL/MariaDB)        │
+            │  - Primary + Replica servers (HA setup)               │
+            └────────────────────────┬─────────────────────────────┘
+                                     │
+              ┌──────────────────────▼──────────────────────────────┐
+              │     External Systems – SAP Ariba Integration        │
+              └─────────────────────────────────────────────────────┘
+
+
+ Monitoring/Logging: Prometheus Node Exporter, Grafana, ELK/Loki  
+ CI/CD: Jenkins/GitHub Actions  
+ Deployment: Bash scripts, Ansible, systemd  
+```
+
+---
+
+# 📝 3. Detailed Explanation of All Layers (Server-Based)
+
+---
+
+#  3.1 Internet-Facing Layer
+
+### Public DNS
+
+Maps domain → public LB IP:
+
+ `api.myshop.com` → 3.12.10.5 (Load Balancer)
+
+### CDN
+
+ Caches static content
+ Reduces backend load
+
+### WAF + DDoS
+
+ Blocks SQL injection, XSS
+ Filters bots
+ Mitigates large DDoS attacks
+
+### Public Load Balancer
+
+ Checks server health
+ Routes traffic to Nginx reverse proxy
+
+### Nginx/HAProxy Reverse Proxy
+
+ Terminates SSL
+ Routes traffic based on path:
+
+   `/api/order → Order server`
+   `/api/payment → Payment server`
+
+---
+
+#  3.2 Application Layer — Running on LINUX SERVERS (No Kubernetes)
+
+Each microservice runs as a systemd service on a dedicated Linux VM.
+
+Example:
+
+```
+[Unit]
+Description=Order Service
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/order-service
+Restart=always
+User=appuser
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Microservices:
+
+### Order Service
+
+ Handles order creation
+ Validates products
+ Stores in DB
+
+### Payment Service
+
+ Calls payment gateway
+ Updates payment status
+
+### Inventory Service
+
+ Checks and updates stock
+
+### Notification Service
+
+ Email/SMS/Push
+
+Every service has:
+
+ Logs in `/var/log/app`
+ Nginx upstream configuration
+ FirewallD rules
+ Node health checks
+
+---
+
+#  3.3 Internal Server-to-Server Communication
+
+Internal services must talk to each other:
+
+ Order → DB
+ Payment → Kafka
+ Workers → SAP Ariba
+
+Linux firewall rules ensure only allowed ports work.
+
+Example:
+
+```
+firewall-cmd --permanent --add-port=8081/tcp
+firewall-cmd --permanent --add-port=5432/tcp
+firewall-cmd --reload
+```
+
+---
+
+#  3.4 Message Queue Layer (Kafka / RabbitMQ)
+
+Kafka servers run on Linux machines:
+
+ `kafka01.internal`
+ `kafka02.internal`
+
+Used for:
+
+ Payment events
+ Order dispatched events
+ Inventory updates
+
+Workers subscribe to topics and process jobs.
+
+---
+
+#  3.5 Background Worker Servers
+
+Worker servers:
+
+ Pull tasks from Kafka
+ Process payments
+ Export data to SAP Ariba
+ Send notification emails/SMS
+ Update order lifecycle
+
+Run as systemd or cron jobs.
+
+---
+
+#  3.6 Database Cluster
+
+Replicated Postgres/MySQL setup:
+
+ Primary DB server
+ Replica DB servers
+ Auto failover using scripts or PgPool-II
+
+Backups:
+
+ Daily full backup
+ WAL log archiving
+
+Monitoring:
+
+ Slow queries
+ Replication lag
+ Connection count
+
+---
+
+#  3.7 External Enterprise Integration – SAP Ariba
+
+ Worker servers call SAP Ariba REST APIs
+ Uses OAuth2 tokens
+ Handles retries & failures
+ Full audit logs stored in DB
+
+---
+
+#  3.8 Monitoring, Logging & Alerting
+
+### Prometheus Node Exporter
+
+Monitors:
+
+ CPU
+ Memory
+ Disk
+ I/O
+ Network
+ Service health
+
+### Grafana
+
+Dashboards for:
+
+ API latency
+ Requests per second
+ DB stats
+ Kafka queue depth
+
+### ELK / Loki Logs
+
+ Nginx logs
+ App logs
+ Worker logs
+ OS logs
+
+### Alerting
+
+Triggered when:
+
+ API error rate > threshold
+ Disk > 80%
+ DB replication lag
+ High load average
+ Node down
+
+---
+
+#  3.9 CI/CD Deployment Pipeline
+
+### Tools:
+
+ GitHub Actions / Jenkins
+ Bash scripts
+ Ansible + SSH
+ Artifactory/Nexus registry
+
+Pipeline flow:
+
+1. Developer pushes code
+2. CI builds package
+3. Runs tests
+4. Creates versioned artifact
+5. Deploys to server via Ansible
+6. Restarts systemd service
+7. Performs health checks
+
+---
+
+# 📝 4. Roles & Responsibilities (Server-Based)
+
+---
+
+#  Linux Administration
+
+ Setup and maintain 200+ Linux servers
+ SSH access management
+ Hardening: SELinux, auditd
+ Kernel tuning (sysctl)
+ LVM, disk mgmt, RAID
+ Log rotation & journald mgmt
+ Process mgmt (systemd)
+ Firewalld configuration
+ TCP tuning for high traffic
+
+---
+
+#  DevOps Responsibilities
+
+ Automated deployments using Ansible
+ CI/CD pipelines
+ Environment provisioning
+ Managing secrets/vault
+ Writing deployment scripts
+ Infrastructure as Code (Terraform)
+ Maintaining Git branching model
+
+---
+
+#  SRE Responsibilities
+
+ Monitoring & alerting setup
+ SLIs/SLOs for services
+ Performance tuning
+ HA & failover strategy
+ Load testing (JMeter)
+ Incident response (24×7 on-call)
+ RCA reports
+ Auto-healing automation
+ Log analysis
+
+---
+
+#  Why This Project Is Strong
+
+✔ Linux server-based (your expertise)
+✔ No Kubernetes (old-school enterprise setups)
+✔ Heavy DevOps automation
+✔ Strong SRE principles
+✔ Real-world public + internal traffic
+✔ Enterprise integration (SAP Ariba)
+✔ On-call & production experience
+✔ Fits fintech, ecommerce, SaaS, enterprise
+
+---
+
+#  If you want, I can give you next:
+
+### ✅ A resume-ready version of this entire project
+
+### ✅ Visual PNG diagram
+
+### ✅ Interview-ready 2-minute explanation
+
+### ✅ Technical Q&A on this project
+
+Just tell me!

@@ -1,0 +1,455 @@
+
+#  What are *Internet-Facing* Services?
+
+Definition:
+Services that are accessible from the public internet by customers, partners, or external systems.
+
+Characteristics:
+
+* Can be reached without being inside the company network.
+* Must be highly secure (WAF, rate limits, TLS, IAM, API keys).
+* Requires high availability and DDOS protection.
+* Exposed through public DNS / public IP / CDN / API gateway.
+
+Examples:
+
+* VSCO: Photo upload/download APIs, user authentication, CDN.
+* SAP Ariba: Supplier/buyer login portal, ERP integration endpoints.
+* PhonePe: UPI payment API, merchant payment API, user app backend.
+
+Typical components:
+
+* Public APIs
+* Mobile/web backend
+* Payment gateways
+* Login & session services
+* CDN/static content
+* Merchant APIs
+
+As an SRE/Linux Admin:
+You ensure these public-facing services are:
+
+* Secure
+* Monitored
+* Scalable
+* Highly available
+* Resilient
+
+---
+
+#  What are *Internal* Services?
+
+Definition:
+Services used inside the company by employees, automated systems, CI/CD pipelines, or backend jobs.
+NOT accessible from the internet.
+
+Characteristics:
+
+* Private network only (VPC, ON-PREM, VPN, zero-trust).
+* Lower exposure, but often more critical for operations.
+* Supports backend workflows, analytics, jobs, integrations.
+* Access controlled by RBAC/SSO/VPN.
+
+Examples:
+
+* VSCO: Content moderation tools, internal analytics pipelines.
+* SAP Ariba: Workflow engine, invoice/PO processors, reconciliation systems.
+* PhonePe: Fraud detection engine, settlement systems, ledger services.
+
+Typical components:
+
+* Databases & internal APIs
+* ETL pipelines / cron jobs
+* Internal dashboards
+* CI/CD systems
+* Admin tools
+* Monitoring/Logging systems
+* Message brokers
+
+As an SRE/Linux Admin:
+You maintain:
+
+* Access control
+* Internal networking/VPC
+* Infrastructure automation
+* On-call support for backend systems
+* CI/CD & deployment workflows
+
+---
+
+# 🧩 Simple Comparison Table
+
+| Attribute          | Internet-Facing             | Internal                            |
+| ------------------ | ------------------------------- | --------------------------------------- |
+| Visible to     | External users/customers        | Internal employees/services             |
+| Security level | Extremely high                  | High, but behind private network        |
+| Traffic load   | Unpredictable, large            | Controlled, predictable                 |
+| Access method  | Public DNS, CDN, API Gateway    | Private VPC, VPN, SSO                   |
+| Risk           | DDOS, hacking, data leak        | Misconfig, performance issues           |
+| SRE focus      | Availability, latency, security | Reliability, access control, automation |
+
+---
+
+
+
+#  1. Public DNS
+
+What it is:
+A publicly accessible DNS (Domain Name System) that translates domain names → public IP addresses.
+
+Use case:
+When a customer hits `api.company.com`, Public DNS resolves it to the Load Balancer IP.
+
+Why important:
+Internet-facing services rely on public DNS so users can reach your app.
+
+---
+
+#  2. CDN (Content Delivery Network)
+
+What it is:
+Global servers caching static content closer to users.
+
+Use case:
+Images, videos, CSS, JS — used in VSCO-like traffic where media load time must be fast.
+
+Why important:
+Reduces latency and protects your origin servers.
+
+---
+
+#  3. Load Balancers (LB)
+
+What it is:
+Distributes traffic across multiple servers.
+
+Types:
+
+* ALB (Application LB – L7 HTTP)
+* NLB (Network LB – L4 TCP/UDP)
+* Ingress (Kubernetes traffic entry)
+
+Use case:
+If 1 server crashes, LB routes traffic to healthy servers → High availability.
+
+---
+
+#  4. Public IP
+
+What it is:
+IP address reachable from the internet.
+
+Use case:
+Load balancers, APIs, web apps use it for public access.
+
+---
+
+#  5. Firewalls + WAF (Web Application Firewall)
+
+Firewalls:
+Control ports and IP traffic (network-level security).
+
+WAF:
+Protects web apps from attacks:
+
+* SQL injection
+* XSS
+* Bots
+* Brute force
+
+Use case:
+Internet-facing services must have WAF.
+
+---
+
+#  6. Entry Point
+
+The first system that receives incoming client traffic.
+
+Examples:
+
+* CDN
+* Load balancer
+* API gateway
+* Ingress controller
+
+Use case:
+All security + routing begin at the entry point.
+
+---
+
+#  7. SSL/TLS Certificates
+
+What it is:
+Encryption layer (HTTPS).
+Protects data from eavesdropping.
+
+Use case:
+Payment apps like PhonePe/GPay must use TLS 1.2+.
+
+---
+
+#  8. WAF Rules
+
+Rules that block malicious traffic.
+
+Examples:
+
+* Block SQL injection
+* Block bots
+* Block suspicious user-agents
+* Limit request size
+
+---
+
+#  9. Rate Limiting
+
+What it is:
+Limit number of requests per second.
+
+Use case:
+Prevents misuse, DDOS, API abuse.
+E.g., only 100 requests/user/minute.
+
+---
+
+#  10. DDOS Protection
+
+Stops massive attack traffic from overwhelming servers.
+
+Use case:
+PhonePe-like systems must prevent attackers from flooding APIs with millions of calls.
+
+---
+
+#  11. ALB / NLB / Ingress
+
+ALB: HTTP/HTTPS smart routing.
+NLB: TCP/UDP lightweight LB.
+Ingress: Kubernetes traffic entry (L7 routing).
+
+Use case:
+Kubernetes clusters rely heavily on Ingress for routing API traffic.
+
+---
+
+#  12. Reverse Proxy (Nginx / HAProxy)
+
+What it is:
+A proxy server that routes and controls traffic before reaching application servers.
+
+Use cases:
+
+* URL routing
+* Caching
+* SSL termination
+* IP filtering
+* Load balancing
+
+---
+
+#  13. Multi-zone Servers
+
+Deploy servers across multiple availability zones (AZs).
+
+Use case:
+If one AZ fails, other AZs continue running → HA.
+
+---
+
+#  14. Auto Scaling (Horizontal Scaling)
+
+Adding more servers automatically when load increases.
+
+Use case:
+Traffic spikes (e.g., UPI Festival season → PhonePe load increases).
+
+---
+
+#  15. Health Checks
+
+LB tests if servers are healthy.
+
+Use case:
+If a server responds slowly, traffic is removed until it recovers.
+
+---
+
+#  16. Failover Mechanisms
+
+Automatically switch to standby or backup systems when the primary fails.
+
+Use case:
+Databases, load balancers, and K8s nodes rely on failover.
+
+---
+
+#  17. Prometheus (Metrics Collection)
+
+What it is:
+Pull-based monitoring system.
+
+Use case:
+Collect metrics like:
+
+* CPU
+* Memory
+* Latency
+* Request rate
+* Pod status
+
+Used heavily in SRE.
+
+---
+
+#  18. Grafana (Dashboards)
+
+Visualization tool for metrics.
+
+Use case:
+Create real-time dashboards for:
+
+* API latency
+* Error rate
+* DB slow queries
+
+---
+
+#  19. ELK / Loki (Logging)
+
+Log analysis and storage.
+
+Use cases:
+
+* Search logs
+* Debug issues
+* Detect errors
+
+ELK: Elasticsearch + Logstash + Kibana
+Loki: Lightweight log solution like ELK.
+
+---
+
+#  20. Jaeger (Tracing)
+
+Distributed tracing tool.
+
+Use case:
+Traces request path across microservices:
+API → Service A → Service B → DB → Queue
+
+Useful in debugging:
+
+* Latency
+* Microservice bottlenecks
+* Timeout chains
+
+---
+
+#  21. tcpdump / ss
+
+Linux network debugging tools.
+
+tcpdump: Capture network packets.
+ss: Shows active connections, ports, sockets.
+
+Use case:
+Debug connectivity issues:
+
+* packet drops
+* slow traffic
+* port not reachable
+
+---
+
+#  22. API → DB
+
+Application calls database.
+
+Use case:
+Order service → MySQL/POSTGRES/MongoDB.
+
+Performance issues here cause:
+
+* 5xx errors
+* Latency
+* Timeouts
+
+---
+
+#  23. Microservice → Message Queue
+
+Microservices communicate via queues:
+
+* Kafka
+* RabbitMQ
+* SQS
+
+Use case:
+Order service → Payment queue
+PhonePe: Payment events go to Kafka for processing.
+
+---
+
+#  24. Worker → Storage
+
+Background jobs consume data from queues, process, and store output.
+
+Use case:
+Media processing workers store results in S3.
+
+---
+
+#  25. SAP system → Ariba API
+
+Enterprise integrations communicate over private + secure channels.
+
+Use case:
+Sync POs, invoices, suppliers.
+
+---
+
+#  26. DNS resolves
+
+DNS must correctly convert domain → IP.
+
+If DNS fails:
+No one can reach your application.
+
+---
+
+#  27. Firewall Ports Open
+
+Firewall must allow required traffic.
+
+Examples:
+
+* 80/443 → HTTP/HTTPS
+* 5432 → Postgres
+* 9092 → Kafka
+
+If blocked → service unreachable.
+
+---
+
+#  28. Latency Low
+
+Lower response time = better performance.
+
+Use case:
+UPI APIs cannot handle >100ms latency.
+Every millisecond matters.
+
+---
+
+#  29. No Packet Drops
+
+Packets must travel end-to-end without loss.
+
+Packet drops cause:
+
+* Timeout
+* Retries
+* Slow APIs
+* Microservice failures
+

@@ -1,0 +1,31 @@
+Who are your end users of your production services ?
+
+
+Victoria’s Secret – End Users of Production Services 
+
+“In my previous role supporting an e-commerce environment similar to Victoria’s Secret, our production services were used by two major groups:
+
+### 1. External End Users (Primary)
+
+* Millions of global retail customers accessing the website and mobile app
+* Users browsing the catalog, adding items to cart, checking out, and tracking orders
+* Peak-season high-traffic customers (Black Friday, Holiday sales)
+
+### 2. Internal Business Teams
+
+* Merchandising & Inventory teams using internal dashboards
+* Marketing & Promotions team managing product launches and campaigns
+* Order management, fulfillment, and logistics team
+* Customer care team, relying on CS tools integrated with production APIs
+* Engineering & product teams consuming microservices internally
+
+I ensured stability, uptime, scalability, and performance for services that directly impacted revenue, checkout flows, page load times, and overall customer shopping experience.”
+
+
+
+ 
+
+
+
+
+
