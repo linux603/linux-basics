@@ -106,10 +106,110 @@ switch
 router
 firewall
 
-# On-Premise Example (Office)
+ On-Premise Example (Office)
  Ethernet → LAN port on server
  Switch → connects all office systems
  Router → connects office to ISP
  Firewall → protects office network
+
+
+
+
+
+
+ On-Prem Network Architecture 
+
+
+| Component                  | What it does                                       | Linux Admin Role                                  |
+| -------------------------- | -------------------------------------------------- | ------------------------------------------------- |
+| Router                 | Connects different networks (LAN ↔ WAN / Internet) | Check routes, troubleshoot connectivity           |
+| Switch                 | Connects multiple devices within LAN               | Verify port connectivity, VLANs                   |
+| Firewall               | Controls inbound/outbound traffic                  | Check rules, open required ports                  |
+| Load Balancer          | Distributes traffic to multiple servers            | Ensure backend servers healthy                    |
+| DNS Server             | Resolves hostnames → IPs                           | Test/validate name resolution (`dig`, `nslookup`) |
+| DHCP Server            | Dynamically assigns IPs                            | Check IP assignment for servers                   |
+| Web / App / DB Servers | Hosts applications                                 | Maintain, patch, monitor services                 |
+| Monitoring / Logging   | Collects metrics & logs                            | Monitor system health, alerts                     |
+
+---
+
+ 2️⃣ Typical LAN / WAN Setup
+
+ LAN (Local Area Network) → inside building
+ WAN (Wide Area Network) → connects multiple offices / data centers
+ DMZ (Demilitarized Zone) → public-facing servers (web, mail)
+
+---
+
+ 3️⃣ Linux Admin Responsibilities (On-Prem)
+
+ Check network interfaces:
+ip a
+
+
+ Verify routes:
+ip route
+
+
+ Test connectivity:
+ping <IP>
+traceroute <IP>
+
+
+ Check firewall rules:
+iptables -L
+firewalld --list-all
+
+
+ Validate DNS resolution:
+dig www.example.com
+nslookup www.example.com
+
+
+ Ensure servers are reachable from LAN/WAN
+
+
+
+
+              Internet / WAN
+                     |
+                 Firewall
+                     |
+               Load Balancer
+                     |
+          ------------------------
+          |                      |
+     DMZ Subnet              Internal LAN
+  Web / Mail Servers      App / DB / Storage
+          |                      |
+        Switch                  Switch
+      /    |    \             /    |    \
+Server1 Server2 Server3   Server4 Server5 Server6
+
+
+---
+
+ 5️⃣ Key Concepts for Linux Admin
+
+1. LAN vs WAN
+
+    LAN → Local connectivity
+    WAN → Connects multiple sites / Internet
+
+2. DMZ
+
+    Public-facing services
+    Firewalled from internal network
+
+3. Routing & Firewall
+
+    Linux admins check connectivity between subnets
+    Ensure proper routes exist and firewall allows traffic
+
+4. DNS
+
+    Internal / external name resolution
+    Troubleshoot application access issues
+
 
 
