@@ -1,0 +1,129 @@
+
+
+ OSI Model – 7 Layers
+
+The OSI model (Open Systems Interconnection) divides network communication into 7 layers. Each layer has a specific role.
+
+---
+
+ 1️⃣ Physical Layer (Layer 1)
+
+ What it does: Transmits raw bits over physical media.
+ Examples: Ethernet cables, fiber, NIC, hubs, switches (hardware level) at electrical level.
+ Linux Admin Role: Check NIC, cables, link lights, `ethtool eth0'
+
+Layman Meaning: The cables and hardware that carry electricity or light to send data.
+IT Meaning: Sends raw bits (0s and 1s) over physical media.
+
+
+
+---
+
+ 2️⃣ Data Link Layer (Layer 2)
+
+ What it does: Packages bits into frames, uses MAC addresses for delivery inside LAN.
+ Examples: Switches, VLANs, MAC addresses
+ Linux Admin Role: Check MAC, configure VLAN, use `ip link`, `brctl`
+
+
+Layman Meaning: Like a postman in your building, delivering letters to the right apartment using MAC addresses.
+
+IT Meaning: Packages bits into frames, uses MAC addresses, handles LAN communication.
+
+---
+
+ 3️⃣ Network Layer (Layer 3)
+
+ What it does: Routes packets between networks using IP addresses
+ Examples: Routers, IP addressing, subnetting, routing tables
+ Linux Admin Role: Check IP config, routes (`ip route`), troubleshoot connectivity
+
+Layman Meaning: Like a city map and postal system, routing packages between buildings (networks).
+
+IT Meaning: Routes packets between networks using IP addresses.
+
+---
+
+ 4️⃣ Transport Layer (Layer 4)
+
+ What it does: Provides end-to-end communication, ensures data delivery
+ Examples: TCP, UDP, ports
+ Linux Admin Role: Check active ports, TCP/UDP services, `netstat`, `ss`, `telnet`
+
+Layman Meaning: Like a courier service that ensures delivery, ensures packages arrive complete and in order.
+
+IT Meaning: Provides end-to-end communication, ensures reliability using TCP/UDP.
+
+---
+
+ 5️⃣ Session Layer (Layer 5)
+
+ What it does: Manages sessions / connections between applications
+ Examples: SSH, NFS, FTP sessions
+ Linux Admin Role: Monitor session connections, logins, and active sessions
+
+Layman Meaning: Like a session manager at a hotel, keeping track of which rooms are active and who’s connected.
+
+IT Meaning: Manages sessions or connections between applications.
+
+---
+
+ 6️⃣ Presentation Layer (Layer 6)
+
+ What it does: Formats / encrypts data for the application
+ Examples: SSL/TLS, encryption, compression, character encoding
+ Linux Admin Role: Configure SSL/TLS for services, check certificates
+
+Layman Meaning: Like a translator, converting data into a format the receiver can understand.
+
+IT Meaning: Formats, encrypts, or compresses data for applications.
+
+---
+
+ 7️⃣ Application Layer (Layer 7)
+
+ What it does: Interface between network and user applications
+ Examples: HTTP, HTTPS, FTP, SMTP, DNS
+ Linux Admin Role: Manage services (Apache, Nginx, Samba, DNS), troubleshoot application access
+
+Layman Meaning: Like a shopkeeper, directly serving customers and providing services.
+
+IT Meaning: Provides network services to end-users.
+
+---
+
+ Mnemonic to Remember the 7 Layers
+
+```
+All People Seem To Need Data Processing
+1 2 3 4 5 6 7
+```
+
+ A → Application
+ P → Presentation
+ S → Session
+ T → Transport
+ N → Network
+ D → Data Link
+ P → Physical
+
+Or reversed (from bottom → top): Please Do Not Throw Sausage Pizza Away
+
+
++-------------------+
+| 7 Application     |  HTTP, FTP, DNS
++-------------------+
+| 6 Presentation    |  SSL/TLS, Encryption
++-------------------+
+| 5 Session         |  SSH, NFS sessions
++-------------------+
+| 4 Transport       |  TCP, UDP, Ports
++-------------------+
+| 3 Network         |  IP, Routing
++-------------------+
+| 2 Data Link       |  MAC, Switch, VLAN
++-------------------+
+| 1 Physical        |  Cables, NIC, Hub
++-------------------+
+
+

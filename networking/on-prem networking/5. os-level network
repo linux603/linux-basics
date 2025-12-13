@@ -1,179 +1,144 @@
+ OS-Level Network Configuration
 
-OS level network configuration
+---
 
-ehternet card
-		
-	
+ 1️⃣ Ethernet Card (NIC)
 
-		IP ADDRESS
-	=============================
+ Every Linux machine has at least one network interface card (NIC).
+ Examples: `eth0`, `eth1`, `eth2`
+ Each NIC has a unique MAC address (Media Access Control) → like a hardware ID.
 
-IP = internet protocol
-	ip is equal to address for your house
+Special hardware:
 
-		192.168.145.80  address for one machine
-	s/o, xxxx, house number 2, 2n street,area name,city,state-pin 560036 or 516108
+ HBA (Host Bus Adapter) → for storage access, has WWN (World Wide Number)
 
-			IP CLASSES
-		=====================
-	Class  A    = network  - computers
-	Class  B   = Network - computers
-	Class  C   = Network - computers
-	Class  D   = multi casting network ( tv channels, live streaming)
-	Class  E    = r & d ( research and dev) network
+---
 
-		1  to 255
-ip 1 to 255
+ 2️⃣ IP Address Basics
 
-	IBM = 10 lakhs
-	Accenture = 15 lakhs employess
-how we can allocate 15 lakhs ips for all employees
+ IP = Internet Protocol address → like the house address of your machine.
+ Example:
 
-		1.1.1.1
-		1.1.1.2
-		1.1.1.3
-		1.1.1.255  
-	
-	255 * 255 * 255 * 255
-				8       8         8       8      = 32 bits
-		IP  V4  = 32 bits     oct1 . oct2. oct3 . oct4
-		IP  V6 = 128 bits   
-	
-		IPV4 = 192.168.145.1
-		IPV6 = 11345ABC.2342DE3D.156ABE7E.88567EG7
+```
+192.168.145.80 → unique address for one machine
+```
 
+ IPv4: 32 bits → 4 octets (e.g., 192.168.145.1)
 
-			IANA = Internet Assigned number authority
+ IPv6: 128 bits → larger address space (e.g., 11345ABC.2342DE3D.156ABE7E.88567EG7)
 
-	1 -255
-	IANA team created or catogoriged IP to public and privite
+ Loopback IP: `127.0.0.1`
 
+   Used internally within the machine for services like SSH, HTTP, NFS
 
+---
 
-		1 -255
+ 3️⃣ IP Classes
 
-		public = internet
-		private = personal,with in company network
+| Class | Purpose               | Range (Public) | Private Range           |
+| ----- | --------------------- | -------------- | ----------------------- |
+| A     | Large networks        | 1-126...    | 10...                |
+| B     | Medium networks       | 128-191...  | 172.16.. – 172.31.. |
+| C     | Small networks        | 192-223...  | 192.168..             |
+| D     | Multicast             | 224-239...  | N/A                     |
+| E     | Research/Experimental | 240-255...  | N/A                     |
 
-								private     			Public		
-			A CLASS = 1 - 126				10.*.*.*			1-9 and 11-126.*.*.*
-								1*255*255*255
-				127 is reserved for loop back  	
-			B CLASS = 128 - 191			172.16.*.* - 172.31.*.*        	128-172 and 173 to 191
-							1*15*255*255
-			C CLASS =  192 - 223			192.168.*.*
-								1*1*255*255
-			D CLASS = 224 - 239		15*255*255*255	
-			E CLASS = 240 - 255
+Tip: If IP starts with `10`, it’s Class A private.
 
+ Example:
 
+```
+10.1.1.2 → private
+2.1.1.2  → public
+172.1.1.4 → public
+```
 
-	10.1.1.2   is it private or public?  private
-	2.1.1.2  is it private or public?  public
-	172.1.1.4  is it private or public? public
+---
 
+ 4️⃣ Netmask
 
-	Netmask values for network classes
-	   network	netmask
-	10.*.*.*		255.0.0.0
-	172.16.*.*	255.255.0.0
-	192.168.*.*         	255.255.255.0
+ Defines network vs host portion of IP
+  | Network | Netmask |
+  |---------|---------|
+  | 10... | 255.0.0.0 |
+  | 172.16.. | 255.255.0.0 |
+  | 192.168.. | 255.255.255.0 |
 
-umask is for permissions
-netmask is for network IP address
+ Remember: Netmask ≠ umask (umask → file permissions)
 
+---
 
-		        10.h.h.h
-		         n.h.h.h
+ 5️⃣ Static vs Dynamic IP
 
-		 10 as soon as it see ip address starts with 10 it(network) understands it is a A class private IP
-			h.h.h = host
+ Static IP: fixed, recommended for servers
+ Dynamic IP: assigned by DHCP server, may change over time
 
-	192.168.h.h
-	 N       N    H  H
+Set DHCP (dynamic) in Linux:
 
+```bash
+vi /etc/sysconfig/network-scripts/ifcfg-ens33
+BOOTPROTO=dhcp
+ONBOOT=yes
+```
 
+Set Static IP in Linux:
 
-		each and every machine will have min one ethernet netcard
-	
-		eth0 = MAC address  meadia access controller ( MAC means unique number of ehternet card)
-		eth1 = MAC Address
-		eth2 = MAC Address
-	
-HBA (host bus adapter) using this we can access the storage
-	HBA will have one unique number, what is that ? wwn = world wide number
-eth0 (ethernet card 0) also will have one unique number that is MAC address
+```bash
+vi /etc/sysconfig/network-scripts/ifcfg-ens33
+BOOTPROTO=static
+ONBOOT=yes
+IPADDR=192.168.145.100
+NETMASK=255.255.255.0
+GATEWAY=192.168.145.1
+```
 
-		IP address is assigned to MAC address
-		bank account is mapped with AADHAAR
+---
 
-***** what is the use of loop back IP?
-	127.0.0.1
-	
-	ftp,ssh,nfs,samba,http these are all network services
-		internally or within machine services will use loop back ip to connect each other
-		
-	if service want to go out then IP address using ehternet card
+ 6️⃣ Multiple IPs on a Single NIC
 
-	How to assign Static IP address to ethernet card
-	==================================
-				
-		Static IP Address      we will fix the one static ip for ehternet card
-		Dynamic IP address  there will be a one dhcp server that will assign dynamic ip to ethernet card
-			
-			randomly ip will be assigned to ehternet cards
-				today one ip eth0
-				tomorrow there will be a another ip for same eth0
-	there will be bunch of ip's with dhcp server
-		dhcp server will allocate IP address for invidual machines
-		
-	which IP method is recommended for servers? Static IP
+```bash
+vi /etc/sysconfig/network-scripts/ifcfg-ens33
+BOOTPROTO=static
+ONBOOT=yes
 
-	how to get dhcp Ip for machine?
-		vi /etc/sysconfig/network-scripts/ifcfg-ens33
-			BOOTPROTO=dhcp
-			
-		
-	how to get static IP for machine?
-		vi /etc/sysconfig/network-scripts/ifcfg-ens33
-			BOOTPROTO=static
-			IPADDR=192.168.145.100
-			NETMASK=255.255.255.0
-			GATEWAY=192.168.145.1
+IPADDR0=192.168.145.100
+PREFIX0=24
+GATEWAY0=192.168.145.1
 
-***** how many ip address we can assign for single machine
-		255
-	
-GATEWAY: way for network. all network systems has to use single way to go out and come inside .
-		easy monitor if we maintain one gateway.	
+IPADDR1=192.168.145.101
+PREFIX1=24
+GATEWAY1=192.168.145.1
+```
 
-		192.168.*.*  65000 ip's
-	
-		in/out   i have to keep 65000 watch mans for individual machine
+---
 
-suppose if i keep one main gate for all 65000 IP's then how man watch mans are required?   
-			1
-that 1 is nothing but gateway
+ 7️⃣ Gateway
+
+ Acts as a single exit/entry point for all traffic from the network
+ Simplifies monitoring → only one place to check traffic
+
+-
 
 
+                         WAN / Internet
+                               |
+                          +------------+
+                          |  Firewall  |
+                          +------------+
+                               |
+                          +------------+
+                          |   Router   |
+                          +------------+
+                               |
+                    ------------------------
+                    |                      |
+               LAN Switch 1             LAN Switch 2
+            (Office / Building A)   (Office / Building B)
+           /      |       \        /      |       \
+       PC1      PC2      PC3    PC4      PC5      PC6
+     eth0     eth0     eth0    eth0     eth0     eth0
+   
+   IP: static or dynamic
+   Netmask / Gateway configured
 
-***** How to assign multiple ip addresses to single ethernet card?
-	vi /etc/sysconfig/network-scripts/ifcfg-ens33
-		BOOTPROTO=static
-		ONBOOT=yes
-		IPADDR0=192.168.145.100
-		PREFIX0=24
-		NETMASK0=255.255.255.0
-		GATEWAY0=192.168.145.1
-		IPADDR1=192.168.145.101
-		PREFIX1=24
-		NETMASK1=255.255.255.0
-		GATEWAY1=192.168.145.1
-
-
-		Ping
-		telnet
-		nc
-		traceroute
-		nmap
-		ss or netstat
+PC (eth0/IP) → Switch → Router → Firewall → WAN / Internet
