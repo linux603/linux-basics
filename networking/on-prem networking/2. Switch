@@ -1,0 +1,28 @@
+ Switch
+
+Layman meaning:
+A switch is like a power strip for networking.
+It connects many computers inside the same network.
+
+Simple example:
+
+ 10 computers in an office
+ All connected to one switch
+  → Now they can talk to each other
+
+IT meaning:
+
+ Switch works inside LAN
+ It uses MAC addresses
+ It does NOT connect to the internet directly
+
+Example:
+
+ Sharing printer
+ Internal file sharing
+ Internal application access
+
+
+
+
+

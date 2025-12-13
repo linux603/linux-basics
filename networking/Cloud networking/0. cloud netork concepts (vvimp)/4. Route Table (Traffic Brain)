@@ -1,0 +1,76 @@
+ Route Table (Traffic Brain)
+
+
+
+ ---> What is a Route Tablel
+A Route Table is a set of rules that tells network traffic where to go.
+
+ Think of it as a map for your cloud network.
+ Every packet leaving a server asks:
+  “Where should I go next?”
+  The route table answers this.
+
+  --->Why Route Table is Needed
+
+ 1️⃣ Without a route → traffic stops
+
+ Even if IGW is attached, without a route → server cannot reach the internet
+ Internal traffic between subnets also needs routing
+
+ 2️⃣ Control traffic paths
+ Decide which subnet can reach which network
+ Direct traffic to IGW, NAT, peering, VPN, or local subnet
+
+Example 
+0.0.0.0/0 → IGW
+
+ `0.0.0.0/0` → all IPs (anywhere on internet)
+ `→ IGW` → send this traffic to Internet Gateway
+
+  Linux Admin Role (Practical)
+
+ 1️⃣ Debug internet access issues
+
+ If server cannot reach internet:
+
+ip route
+
+ Check default route (0.0.0.0/0)
+ Check route points to correct gateway (IGW/NAT)
+
+ 2️⃣ Verify internal connectivity
+
+ Subnet-to-subnet traffic requires correct routes
+ Check traffic goes to local route
+
+
+
+  ---> Important Notes :
+
+ Each subnet must be associated with a route table
+ Subnet inherits rules from the associated route table
+ You can have multiple route tables for different subnets
+
+
+
+  ---> Real-Life 
+
+Company setup:
+ VPC CIDR: `10.0.0.0/16`
+ Public subnet: `10.0.1.0/24` → route `0.0.0.0/0 → IGW`
+ Private subnet: `10.0.2.0/24` → route `0.0.0.0/0 → NAT`
+
+Result:
+ Public servers → direct internet access
+ Private servers → access internet through NAT only
+
+
+
+  One-Line Interview Answer ********imp
+
+> A route table is a set of rules in a VPC that directs network traffic, ensuring packets reach the correct destination such as IGW, NAT, or local subnet.
+
+
+
+
+Route Table = Traffic Brain → “Where should packets go?

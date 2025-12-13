@@ -1,0 +1,148 @@
+ Subnet (Network Segmentation)
+
+
+  ---> What is a Subnet (Very Simple)
+
+A subnet is a smaller network created inside a VPC.
+
+ If VPC is a big land,
+ Subnets are rooms inside that land.
+
+You divide one large network into smaller parts to organize and secure resources.
+
+
+
+  ---> Why Subnets are Needed
+
+ 1️⃣ Security separation
+
+ Not all servers should be exposed to the internet
+ Some must stay private
+
+ 2️⃣ Traffic control
+
+ Decide which servers can:
+
+   Talk to internet
+   Talk only internally
+
+ 3️⃣ Better organization
+
+ Separate:
+
+   Web servers
+   App servers
+   Database servers
+  Types of Subnets (Very Important)
+
+
+
+1. Public Subnet
+
+What it is
+Subnet that has a route to the internet
+
+Used for
+ Web servers
+ Bastion servers
+ Load balancers
+
+Example IP
+10.0.1.0/24
+
+Result
+ Server is reachable from internet (if firewall allows)
+
+
+2. Private Subnet
+
+What it is
+ Subnet with no direct internet access
+
+Used for
+ Database servers
+ Internal application servers
+
+Example IP
+10.0.2.0/24
+
+Result
+
+ Server is internal only
+ Cannot be accessed directly from internet
+
+
+
+Important Clarification:
+
+ Subnet itself is not public or private
+ Route table makes it public or private
+
+ Route to Internet Gateway → Public
+ No route to Internet Gateway → Private
+
+
+
+  ---> Linux Admin Role
+
+ 1️⃣ Know where the server is placed
+
+Linux admin must know:
+
+ Which subnet the server is in
+
+Why?
+
+ To understand reachability
+
+
+
+ 2️⃣ Public Subnet = Reachable
+
+If server is in:
+
+ Public subnet
+ Has public IP
+ Firewall allows access
+
+ Linux admin can SSH directly.
+
+
+
+ 3️⃣ Private Subnet = Internal Only
+
+If server is in:
+
+ Private subnet
+ No public IP
+
+ Linux admin must:
+
+ Use bastion host
+ Use VPN
+ Use internal jump server
+
+
+
+  ---> Real-Life:
+
+Company setup:
+ Public subnet → Web server
+ Private subnet → Database server
+
+Users access:
+Internet → Web Server → Database
+
+
+Database is never exposed to internet → secure
+
+
+
+  One-Line Interview Answer   *********imp
+
+> A subnet is a smaller network inside a VPC used to segment resources for security and traffic control, such as separating public and private servers.
+
+
+
+VPC = Big network
+Subnet = Smaller secure sections

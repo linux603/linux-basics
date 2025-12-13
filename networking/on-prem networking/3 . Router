@@ -1,0 +1,20 @@
+ Router
+
+Layman meaning:
+A router is a gateway that connects your internal network to the internet or another network.
+
+Simple example:
+
+ Home Wi-Fi router
+ Office router connected to ISP
+
+IT meaning:
+
+ Router connects one network to another network
+ Routes traffic based on IP address
+ Provides internet access
+
+Example:
+
+ Office LAN → Internet
+ Branch office → Head office

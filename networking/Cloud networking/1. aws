@@ -1,0 +1,154 @@
+ AWS Network Architecture (Simplified)
+
+
+
+ 1️⃣ VPC (Virtual Private Cloud)
+
+ Private isolated network in AWS
+ Contains subnets, route tables, gateways
+ You define CIDR block (e.g., 10.0.0.0/16)
+
+
+
+ 2️⃣ Subnets
+
+ Smaller networks inside VPC
+ Public Subnet → Servers accessible from Internet
+ Private Subnet → Internal servers (DB, App)
+
+Example:
+
+```
+Public: 10.0.1.0/24
+Private: 10.0.2.0/24
+```
+
+
+
+ 3️⃣ Internet Gateway (IGW)
+
+ Connects VPC → Internet
+ Needed for public servers (web servers, bastion hosts)
+
+
+
+ 4️⃣ NAT Gateway
+
+ Allows private subnet servers to access Internet outbound only
+ Common for OS patching and package updates
+
+
+
+ 5️⃣ Route Tables
+
+ Decide where traffic goes
+ Public subnet route table:
+
+```
+0.0.0.0/0 → IGW
+```
+
+ Private subnet route table:
+
+```
+0.0.0.0/0 → NAT Gateway
+```
+
+
+
+ 6️⃣ Security Groups (SG)
+
+ VM-level firewall
+ Stateful
+ Allow only required ports (22, 80, 443)
+
+
+
+ 7️⃣ Network ACL (NACL)
+
+ Subnet-level firewall
+ Stateless
+ Optional extra security layer
+
+
+
+ 8️⃣ Load Balancer
+
+ Distributes traffic across multiple EC2 instances
+ Types:
+
+   ALB (Application Load Balancer) – Layer 7
+   NLB (Network Load Balancer) – Layer 4
+ Works with public/private subnets
+
+
+
+ 9️⃣ VPN / VPC Peering
+
+ Private connectivity between VPCs or on-prem network
+ VPN → Encrypted tunnel over Internet
+ VPC Peering → Direct private connection (same cloud)
+
+
+
+ 10️⃣ DNS (Route 53)
+
+ Converts domain → IP
+ Manages internal & external DNS
+ Used by Linux admins to debug DNS issues
+
+
+
+ 11️⃣ Flow S
+
+```
+Users
+   ↓
+Route 53 / DNS
+   ↓
+Load Balancer
+   ↓
+Public Subnet EC2 Instances
+        ↓
+   Private Subnet (DB / App Servers)
+        ↓
+NAT Gateway → Internet (for outbound)
+```
+
+
+
+ 12️⃣ Linux Admin Role in AWS Network
+
+ Check VPC, Subnet, and IP allocation
+ Validate Security Groups and NACL
+ Test connectivity using `ping`, `traceroute`
+ Ensure servers in private subnet can access Internet (via NAT) for patching
+ Debug VPN / Peering / DNS issues
+
+
+
+ 13️⃣  Diagram 
+
+```
+            Internet Users
+                 |
+             Route 53 (DNS)
+                 |
+          
+          |  Load Balancer |
+          
+           |            |
+      Public Subnet   Public Subnet
+      EC2 Web Server  EC2 Web Server
+           |            |
+           -
+                |
+           Private Subnet
+      App / DB Servers (No public IP)
+                |
+             NAT Gateway
+                |
+             Internet (Outbound only)
+```
+
+

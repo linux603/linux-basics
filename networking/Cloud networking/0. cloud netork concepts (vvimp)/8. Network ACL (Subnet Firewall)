@@ -1,0 +1,105 @@
+ Network ACL (Subnet Firewall)
+
+
+ 🔹 What is a Network ACL 
+
+A Network ACL (NACL) is a cloud-level firewall that works at the subnet level.
+
+👉 It controls which traffic is allowed in and out of a subnet
+👉 It is stateless 
+
+
+ 🔹 Where it Works
+
+Internet
+   ↓
+Network ACL (Subnet level)
+   ↓
+Security Group (VM level)
+   ↓
+Linux OS Firewall
+   ↓
+Application
+
+
+
+
+ 🔹 What “Stateless” Means (Important)
+
+Stateless = no memory
+
+ Inbound and outbound rules are separate
+ If you allow inbound traffic → you must also allow outbound reply traffic
+
+Example:
+
+ Allow inbound TCP 80
+ Must allow outbound ephemeral ports (1024–65535)
+
+Otherwise:
+ Website will not work
+
+
+
+ 🔹 Why NACL Is Needed
+
+ 1️⃣ Extra protection layer
+
+ Acts as first security gate
+ Blocks unwanted traffic before it reaches VMs
+
+ 2️⃣ Enterprise-level control
+
+ Useful for compliance-heavy environments
+ Central control for entire subnet
+
+
+
+ 🔹 Key Differences 
+
+| Feature          | NACL             | Security Group / NSG        |
+| ---------------- | ---------------- | --------------------------- |
+| Level            | Subnet           | VM / NIC                    |
+| Stateful         | ❌ No            | ✅ Yes                     |
+| Rules            | Allow + Deny     |  Allow only                 |
+| Inbound/Outbound | Separate rules   | Return traffic auto-allowed |
+| Default behavior | Cloud dependent  | Deny all (implicit)         |
+
+
+
+
+ 🔹 Linux Admin Role 
+
+ Rarely configured directly by Linux admins
+ Very useful during enterprise troubleshooting
+
+If traffic is blocked:
+ SG is open
+ OS firewall is open
+ App is running
+
+👉 Then check NACL
+ 🔹 Real-Life Example
+
+Company blocks:
+ All traffic from suspicious IP ranges
+ Entire subnet protected at once
+
+Instead of:
+ Configuring each VM individually
+
+
+
+ 🔹 One-Line Interview  *********imp 
+
+> A Network ACL is a stateless, subnet-level firewall that provides an additional security layer by controlling inbound and outbound traffic for an entire subnet.
+
+
+
+
+NACL = Subnet gate (stateless)
+SG = VM gate (stateful)
+
+
+
+

@@ -1,0 +1,115 @@
+
+what is netowrk? 
+
+creating connectivity between 2 or more than 2 components to transfer data.
+
+data:
+
+what is data?
+
+files,audio,video,voice
+
+how to create connectivity or how to create network between 2 or more than 2 components?
+			1. Cable
+			2. wifi
+
+Types of networks
+=================
+		1. intranet (LAN)
+		2. Extranet (MAN)
+		3. Internet  (WAN) we are using internet to connect each other
+
+1. LAN ( Loacal area network):
+   creating network between components with in building
+   using cables can possible to create network between all components within building
+		using below components we can create network between all the components with in building
+		patch panel
+		swith
+		router
+
+Layman meaning:
+A LAN is like the network inside your home, office, or a school building. All computers and devices inside one building can talk to each other.
+
+Very simple example:
+You connect your laptop, printer, CCTV, and mobile to the same Wi-Fi router at home → that is a LAN.
+In an office, all employees desktops are connected to one switch → LAN.
+
+IT example:
+To create a LAN in an office building:
+
+Patch panel – wires from all rooms terminate here
+
+Switch – connects all computers
+
+Router – connects the LAN to the internet
+
+Cables (Cat6/Cat5e) – carry the data
+
+Scenario:
+If 50 employees work in the same building on different floors, their systems connect through switches to form a LAN. They can share files, use a common printer, and access internal apps.
+
+2. MAN(metropolitan area network)
+	create netwrk between one building to another building
+			or
+	creating network between one area building to another area building with in same city
+
+	cable
+	router
+
+Layman meaning:
+This is a network that connects two or more buildings across a city.
+
+Very simple example:
+Imagine a company with:
+
+one office in Chennai T. Nagar,
+another office in Chennai Velachery
+
+If they connect both buildings using a fiber cable → that is a MAN.
+
+
+IT example:
+
+Fiber cable or leased line provided by ISP
+Routers on both sides connect the offices
+Dedicated bandwidth (e.g., 100 Mbps point-to-point link)
+
+Scenario:
+A bank has 10 branches in the same city. All are connected to the head office to access centralized banking applications → this is a MAN network.
+
+3. WAN ( wide area network)  Internet
+
+ISP = internet service providers
+
+Layman meaning:
+WAN is the biggest network — the internet itself.
+It connects cities, countries, and the whole world.
+
+Very simple example:
+When you use:
+Jio / Airtel data,
+Broadband at home,
+Wi-Fi in a hotel,
+
+IT example:
+WAN is when:
+Company offices in India, USA, UK are all connected
+Using ISP services like Airtel, Vodafone, Jio, Tata
+
+Scenario:
+Amazons headquarters in the USA is connected with data centers in India, Singapore, and Europe using dedicated WAN links.
+
+
+main network components :
+ethernet 
+switch
+router
+firewall
+
+# On-Premise Example (Office)
+ Ethernet → LAN port on server
+ Switch → connects all office systems
+ Router → connects office to ISP
+ Firewall → protects office network
+
+

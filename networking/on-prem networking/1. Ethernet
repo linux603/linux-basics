@@ -1,0 +1,429 @@
+
+Ethernet card :
+
+Layman meaning:
+Ethernet is the network connection that allows a computer or server to talk to other devices.
+
+Simple example:
+ Your desktop has a LAN port at the back.
+ When you connect a network cable (LAN cable) → that is Ethernet.
+
+IT meaning:
+ Ethernet is a network interface (NIC) present in every server, laptop, desktop.
+ It uses a MAC address to identify the device.
+
+Where used:
+ Home computer
+ Office server
+ Data center servers
+ Cloud VMs (virtual Ethernet)
+
+NIC (Network Interface Card) : physical (hardware) and  logical (OS level).
+    Where NIC is in a Linux Server (Layman) :
+    Think of a Linux server like a mobile phone:
+    NIC = SIM / Wi-Fi chip
+    It is the entry and exit point for network data
+
+a.Physically
+    NIC is a network card attached to the server motherboard
+    It has:
+    LAN port
+    MAC address
+
+    Physical Location (Hardware Level)
+    On a physical server:
+    NIC is:
+    Built into the motherboard OR
+    Installed as a PCI card
+    Back side of the server (LAN cable connected)
+
+b.Logically (Inside Linux OS)
+    Linux represents NIC as a network interface
+    Example names:
+    eth0
+    ens33/etc/netplan/
+    enp0s3
+    eno1
+    NIC Location Inside Linux OS
+    Linux sees NIC as files & interfaces
+    | Kernel view (live NICs) | /sys/class/net/                 |
+    | RHEL NIC config         | /etc/sysconfig/network-scripts/ |
+    | Ubuntu NIC config       | /etc/netplan/                   |
+
+
+VVVVVVVVVIMP 
+ What is OS- LEVEL (EX:RHEL/Ubuntu) NIC Configuration?
+    NIC configuration means telling to Linux os:
+    Which network card to use
+    What IP address it should have
+    How it connects to other networks
+    Whether it should start automatically
+    Without NIC configuration, the server cannot communicate.
+
+ NIC config ptahs are :
+ rhel/centos : /etc/sysconfig/network-scripts/
+ debian/ubuntu : /etc/netplan/
+
+ inside this paths you can find or create nic config files like :
+    eth0
+    ens33/etc/netplan/
+    enp0s3
+    eno1
+
+    Why NIC Configuration is Important
+    Server must be reachable (SSH, apps, DB)
+    IP must stay same after reboot
+    Required for on-premise and cloud servers
+
+How Linux Admin Configures NIC (assigne ip to server)
+1.Identify NIC:
+
+    ip link
+    or
+    ls /sys/class/net/
+
+you can see nic file names  as :    
+    lo
+    ens33
+    ifcfg-ens33
+
+2. Decide IP Type
+    Linux admin decides:
+    DHCP → IP automatically
+    Static → Fixed IP (servers)
+
+3. NIC Configuration in RHEL / CentOS 
+    
+    vi /etc/sysconfig/network-scripts/ifcfg-ens33
+
+    and any one static or DHCP type of configuratins in the file and save and quite then restart the networkmanager  service.
+
+
+        Static IP Example :
+        --
+        TYPE=Ethernet
+        BOOTPROTO=static
+        DEVICE=ens33
+        ONBOOT=yes
+        IPADDR=192.168.1.10
+        NETMASK=255.255.255.0
+        GATEWAY=192.168.1.1
+        DNS1=8.8.8.8
+
+
+        DHCP Example :
+        
+
+        BOOTPROTO=dhcp
+        ONBOOT=yes
+
+4. NIC Configuration in Ubuntu
+
+    vi /etc/netplan/01-netcfg.yaml
+
+    static:
+    
+
+    network:
+    version: 2
+    ethernets:
+        ens33:
+        dhcp4: no
+        addresses:
+            - 192.168.1.10/24
+        gateway4: 192.168.1.1
+        nameservers:
+            addresses: [8.8.8.8]
+
+
+    save & quite form /etc/netplan/01-netcfg.yaml
+
+    then netplan apply
+
+5. Bring NIC UP in all type of os 
+
+    nmcli device connect ens33
+    or 
+    systemctl restart NetworkManager
+
+Verify Connectivity:
+    ip addr
+    ip route
+    ping 8.8.8.8
+    ping google.com
+
+
+
+
+
+Field-by-Field  in configuratin file 
+
+
+Static IP Configuration Fields (RHEL / CentOS)
+
+### Example File
+/etc/sysconfig/network-scripts/ifcfg-ens33
+
+
+### Example Content
+TYPE=Ethernet
+BOOTPROTO=static
+DEVICE=ens33
+NAME=ens33
+ONBOOT=yes
+IPADDR=192.168.1.10
+NETMASK=255.255.255.0
+GATEWAY=192.168.1.1
+DNS1=8.8.8.8
+
+
+
+
+### 1️⃣ TYPE=Ethernet
+
+What it means:
+
+ Type of network connection
+
+Why used:
+
+ Tells Linux this is a wired network card
+
+👉 Usually always Ethernet
+
+
+
+### 2️⃣ BOOTPROTO=static
+
+What it means:
+
+ How the IP address is assigned
+
+Values:
+
+ static → manual IP (server use)
+ dhcp → automatic IP
+
+Why used:
+
+ Servers must keep the same IP always
+
+
+
+### 3️⃣ DEVICE=ens33
+
+What it means:
+
+ Actual NIC name detected by Linux
+
+Why used:
+
+ Linux applies this config to this NIC only
+
+👉 Must match output of:
+
+bash
+ip link
+
+
+
+
+### 4️⃣ NAME=ens33
+
+What it means:
+
+ Human-readable name of the interface
+
+Why used:
+
+ Used by NetworkManager for identification
+
+👉 Usually same as DEVICE
+
+
+
+### 5️⃣ ONBOOT=yes
+
+What it means:
+
+ Bring NIC up automatically during boot
+
+Why used:
+
+ Without this, network will not start after reboot
+
+If set to no:
+
+ Admin must enable NIC manually
+
+
+
+### 6️⃣ IPADDR=192.168.1.10
+
+What it means:
+
+ Static IP address of the server
+
+Why used:
+
+ Server needs a fixed identity on the network
+
+👉 Example: Web server, DB server
+
+
+
+### 7️⃣ NETMASK=255.255.255.0
+
+What it means:
+
+ Defines the network size
+
+Layman meaning:
+
+ Tells which devices are in the same network
+
+👉 /24 network
+
+
+
+### 8️⃣ GATEWAY=192.168.1.1
+
+What it means:
+
+ Router IP
+
+Why used:
+
+ Needed to reach:
+
+   Internet
+   Other networks
+
+👉 Without gateway → no internet
+
+
+
+### 9️⃣ DNS1=8.8.8.8
+
+What it means:
+
+ DNS server address
+
+Why used:
+
+ Converts domain names to IP addresses
+
+Example:
+
+text
+google.com → 142.250.x.x
+
+
+👉 Without DNS → only IP ping works
+
+
+
+##  What Happens After Configuration
+
+1. System boots
+2. NIC detected
+3. This file is read
+4. IP, gateway, DNS applied
+5. Network becomes active
+
+
+
+********************imp for interview 
+
+##  What is Dynamic IP?
+
+Dynamic IP is an IP address that is automatically assigned to a system by a DHCP server.
+
+### Layman example:
+
+ When you connect your mobile to Wi-Fi, it automatically gets an IP.
+ You don’t manually enter any IP details.
+ Next day, you may get a different IP.
+
+👉 That is dynamic IP.
+
+##  How Dynamic IP Works (Simple Flow)
+1. System connects to network
+2. Sends request: “I need an IP”
+3. DHCP server assigns an available IP
+4. IP is valid for some time (lease)
+5. IP may change later
+
+##  Where Dynamic IP is Used
+ Home computers
+ Laptops
+ Mobile phones
+ Temporary systems
+ Test environments
+
+
+##  What is Static IP?
+Static IP is an IP address that is manually assigned and never changes.
+
+### Layman example:
+ Your house address never changes
+ Courier always reaches you
+
+👉 That is static IP.
+
+
+##  Where Static IP is Used
+ Web servers
+ Database servers
+ Mail servers
+ Production systems
+ Cloud VMs (mostly)
+
+---
+
+##  Difference Between Static and Dynamic IP
+
+| Feature          | Static IP        | Dynamic IP       |
+| ---------------- | ---------------- | ---------------- |
+| IP assignment    | Manual           | Automatic (DHCP) |
+| IP change        | Never            | Can change       |
+| Configuration    | Admin configured | No manual config |
+| Stability        | Very stable      | Not stable       |
+| Use case         | Servers          | Clients          |
+| Maintenance      | Admin effort     | Low effort       |
+| Security control | Easy             | Less control     |
+
+
+
+##  Linux Example
+
+### Dynamic IP (DHCP)
+BOOTPROTO=dhcp
+
+### Static IP
+BOOTPROTO=static
+IPADDR=192.168.1.10
+
+note:
+Static = Server (fixed)
+Dynamic = Device (auto)
+
+---
+
+##  One-Line Interview Answer
+
+> Static NIC configuration fields define how a Linux server gets a fixed IP, gateway, and DNS so that the network is available automatically after reboot.
+
+> Dynamic IP is an IP address automatically assigned by a DHCP server and may change over time, whereas static IP is manually configured and remains fixed.
+
+
+
+
+
+
+
+
+
+
+
+

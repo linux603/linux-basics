@@ -1,0 +1,27 @@
+
+## 4️⃣ Firewall
+
+Layman meaning:
+A firewall is a security guard for your network.
+
+Simple example:
+
+ It decides:
+
+   Who can enter
+   Who is blocked
+   What is allowed
+
+What firewall can monitor:
+
+ Which websites are opened
+ How long Facebook or WhatsApp is used
+ Which applications are accessed
+ What data/files are sent or received
+ Incoming and outgoing traffic
+
+IT meaning:
+
+ Controls traffic using rules
+ Protects from hackers
+ Blocks unauthorized access

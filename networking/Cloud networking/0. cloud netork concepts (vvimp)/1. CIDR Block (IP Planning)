@@ -1,0 +1,119 @@
+ CIDR Block (IP Planning)
+
+ ---> What is a CIDR Block 
+
+A CIDR block defines the range of IP addresses that your cloud network (VPC/VNet) can use.
+
+ In simple words:
+CIDR decides how many servers you can have and what IPs they get.
+
+
+
+  ---> Example Explained 
+
+ Example CIDR:
+10.0.0.0/16
+
+
+ What this means:
+
+ `10.0.0.0` → Network starting IP
+ `/16` → Size of the network
+
+ This CIDR gives:
+
+ IP range from `10.0.0.0` to `10.0.255.255`
+ About 65,000 private IP addresses
+
+
+
+  ---> Why CIDR is Needed
+
+ 1️⃣ Prevent IP conflicts
+
+ Every server must have a unique IP
+ CIDR ensures IPs don’t overlap
+
+ Without CIDR:
+
+ Two servers may get same IP
+ Network breaks
+
+
+
+ 2️⃣ Proper scaling
+
+ Small CIDR → limited servers
+ Large CIDR → future expansion
+
+ Example:
+
+ `/24` → ~256 IPs (small setup)
+ `/16` → ~65,000 IPs (enterprise setup)
+
+
+
+  Common CIDR Sizes (Easy to Teach)
+
+| CIDR | IP Count | Usage            |
+| /24  | ~256     | Small lab        |
+| /20  | ~4096    | Medium setup     |
+| /16  | ~65K     | Large production |
+
+
+
+  ----> Linux Admin Role
+
+ 1️⃣ Ensure VM IP is inside CIDR
+
+Linux admin checks:
+ip addr
+
+Example:
+10.0.1.15
+
+
+ Must belong to :
+10.0.0.0/16
+
+If not → server won’t communicate.
+
+
+
+ 2️⃣ Debug “IP not reachable” issues
+
+Common issue:
+
+ VM has IP `192.168.1.10`
+ VPC CIDR is `10.0.0.0/16`
+
+ Wrong network → no connectivity
+
+Linux admin identifies:
+
+ IP mismatch
+ Wrong network placement
+
+  ---> Real-Life 
+
+Company plans:
+ 20 servers today
+ 200 servers in future
+
+They choose:
+10.0.0.0/16
+
+ Enough IPs now and later
+ No need to redesign network
+
+
+
+  One-Line Interview Answer     ***********imp
+
+> A CIDR block defines the IP address range for a cloud network and helps in IP planning, avoiding conflicts, and enabling scalable network design.
+
+
+
+CIDR = IP range + network size
+
+

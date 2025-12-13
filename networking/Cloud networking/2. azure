@@ -1,0 +1,120 @@
+ Azure Network Architecture 
+
+
+
+ 1️⃣ Virtual Network (VNet)
+
+ Azure equivalent of VPC
+ Private isolated network
+ Contains subnets, route tables, NSGs
+ Define IP range (CIDR), e.g., `10.1.0.0/16`
+
+
+
+ 2️⃣ Subnets
+
+ Smaller networks inside VNet
+ Public Subnet → VMs reachable from Internet (Web / Bastion)
+ Private Subnet → Internal servers (App / DB)
+
+
+
+ 3️⃣ Internet Gateway (Azure calls it Public IP / Default Route)
+
+ Needed for Internet access for public subnet
+
+
+
+ 4️⃣ NAT Gateway
+
+ Allows private subnet VMs to access Internet outbound only
+ Needed for patching and updates
+
+
+
+ 5️⃣ Route Tables
+
+ Direct traffic within VNet or to Internet
+ Associate with subnets
+
+```text
+Public Subnet → 0.0.0.0/0 → Internet
+Private Subnet → 0.0.0.0/0 → NAT Gateway
+```
+
+
+
+ 6️⃣ Network Security Groups (NSG)
+
+ VM/subnet-level firewall
+ Stateful
+ Allows required ports only (SSH, HTTP, HTTPS)
+
+
+
+ 7️⃣ Azure Firewall / NACL
+
+ Subnet-level stateless firewall
+ Optional extra layer
+
+
+
+ 8️⃣ Load Balancer
+
+ Distributes traffic across VMs
+ Types:
+
+   Azure LB (Layer 4)
+   Application Gateway (Layer 7)
+
+
+
+ 9️⃣ VPN / VNet Peering
+
+ VNet Peering → Connects VNets privately within Azure
+ Site-to-Site VPN → Connect on-prem network to Azure
+ Linux admin ensures routing, connectivity, and firewall rules
+
+
+
+ 10️⃣ DNS
+
+ Azure DNS or custom DNS server
+ Converts domain → IP
+ Debugged using `dig`, `nslookup` in Linux
+
+
+
+ 11️⃣ Linux Admin Role
+
+ Validate VNet, Subnet, NSG, and route tables
+ Test connectivity using Linux tools
+ Ensure private subnet can access Internet via NAT
+ Troubleshoot VPN / Peering / DNS issues
+
+
+
+
+```
+             Internet Users
+                    |
+                  DNS
+                    |
+            --
+            | Azure LoadBalancer |
+            --
+              |              |
+       Public Subnet     Public Subnet
+       VM Web Server     VM Web Server
+              |              |
+              -
+                     |
+              Private Subnet
+           App / DB Servers
+                     |
+                 NAT Gateway
+                     |
+                  Internet
+```
+
+

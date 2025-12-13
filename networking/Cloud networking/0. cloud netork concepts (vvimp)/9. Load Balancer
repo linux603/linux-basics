@@ -1,0 +1,248 @@
+ Load Balancer
+
+
+ 🔹 What is a Load Balancer 
+
+A Load Balancer is a cloud component that distributes incoming traffic across multiple servers (VMs).
+
+Instead of sending all users to one server, traffic is shared.
+
+
+
+ 🔹 Why Load Balancer is Needed
+
+ 1️⃣ High Availability
+
+ If one server fails, traffic is sent to healthy servers
+ Application remains available
+
+ 2️⃣ Scalability
+
+ More users → add more servers
+ Load balancer automatically spreads traffic
+
+
+
+ 🔹 How It Works (Simple Flow)
+
+
+User
+ ↓
+Load Balancer (Public IP / DNS)
+ ↓
+VM1   VM2   VM3
+
+
+Users never access servers directly.
+
+
+
+ 🔹 Common Types)
+
+ Layer 4 (TCP/UDP) – fast, simple
+ Layer 7 (HTTP/HTTPS) – smart routing (URL, headers)
+
+
+
+ 🔹 Linux Admin Role 
+
+ 1️⃣ Configure web/application servers
+
+ Ensure web service is running (nginx/apache)
+ App must listen on correct port (80/443/8080)
+ Firewall must allow traffic from Load Balancer
+
+
+
+ 2️⃣ Health Check Troubleshooting
+
+Load balancer checks server health using:
+
+ HTTP response
+ TCP connection
+ Custom URL
+
+If server is unhealthy, traffic is stopped.
+
+Linux admin checks:
+
+systemctl status nginx
+curl http://localhost/health
+ss -tulnp
+
+
+
+
+ 🔹 Common Problem Scenario
+
+ Website down even though server is running
+
+Check:
+
+ Health check URL correct?
+ App responding with HTTP 200?
+ Security Group allows traffic from LB?
+ OS firewall allows LB traffic?
+
+
+
+ 🔹 Real-Life Example
+
+ 3 web servers behind load balancer
+ One server crashes
+ Users don’t notice any downtime
+
+
+ 
+ 🔹 One-Line Interview Answer  imp 
+  
+> A Load Balancer distributes traffic across multiple servers to ensure high availability and scalability.
+
+
+
+Users hit Load Balancer, not servers
+
+
+
+
+
+
+
+
+===============
+
+
+
+
+Load Balancer – Linux Admin Role
+
+
+
+ 🔹 What Linux Admin is NOT doing
+
+        ❌ Creating load balancer type (ALB/NLB)
+        ❌ Designing cloud architecture
+        ❌ Managing DNS routing
+
+👉 These are usually cloud / DevOps tasks
+
+
+
+ 🔹 What Linux Admin ACTUALLY DOES
+
+
+ 1️⃣ Prepare Backend Linux Servers
+
+Linux admin ensures:
+
+ OS is up and reachable
+ Correct packages installed
+ Service is running
+
+ 2️⃣ Configure Application Ports
+
+ App listens on correct port (80 / 443 / 8080)
+
+ss -tulnp
+
+ App binds to 0.0.0.0, not localhost
+  ❌ `127.0.0.1`
+  ✅ `0.0.0.0`
+
+ 3️⃣ Configure Health Check Endpoint
+
+Load balancer checks health using:
+
+ `/`
+ `/health`
+ `/status`
+
+Linux admin ensures:
+
+curl http://localhost/health
+
+returns 200 OK
+
+
+
+ 4️⃣ Firewall Configuration (Critical)
+
+ Cloud Firewall (SG / NSG)
+
+ Allow traffic from Load Balancer
+ Open required ports
+
+ OS Firewall
+
+bash
+firewall-cmd --add-service=http --permanent
+firewall-cmd --reload
+
+
+
+
+ 5️⃣ Troubleshoot “Unhealthy Instance”
+
+When LB marks server unhealthy, Linux admin checks:
+
+1️⃣ Is service running?
+
+systemctl status nginx
+
+
+2️⃣ Is app responding?
+
+curl localhost
+
+
+3️⃣ Is port open?
+
+ss -tulnp
+
+
+4️⃣ OS firewall blocking?
+
+firewall-cmd --list-all
+
+
+ 6️⃣ Logs & Monitoring
+
+bash
+/var/log/nginx/access.log
+/var/log/nginx/error.log
+journalctl -u nginx
+
+ 7️⃣ SSL / TLS Support (Optional)
+
+Linux admin:
+
+ Installs certificates (if terminated on server)
+ Fixes permission issues
+ Validates HTTPS
+
+
+ 🔹 Real-Life Scenario
+
+❌ Website down
+LB shows 2/3 servers unhealthy
+
+Linux admin finds:
+
+ Service stopped on 1 server
+ Health check URL wrong on another
+
+Fix → site works again ✔️
+
+
+
+ 🔹 One-Line Interview Answer
+
+> As a Linux admin, I configure backend servers, ensure applications are running and reachable, open required ports, and troubleshoot health check failures for load balancers.
+
+
+
+
+Load Balancer manages traffic
+Linux Admin keeps servers healthy
+
+

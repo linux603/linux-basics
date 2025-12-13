@@ -1,0 +1,158 @@
+ GCP Network Architecture
+
+
+
+ 1️⃣ VPC (Virtual Private Cloud)
+
+ GCP private network, isolated per project
+ Can span regions (global) or be regional
+ Define IP range (CIDR) for subnets
+
+
+
+ 2️⃣ Subnets
+
+ Public Subnet → VM has external IP → reachable from Internet
+ Private Subnet → VM has only internal IP → internal traffic only
+
+
+
+ 3️⃣ Internet Gateway / Cloud NAT
+
+ IGW → Allows public subnet VMs to receive traffic from Internet
+ Cloud NAT → Private subnet VMs → Internet outbound only (patches, updates)
+
+
+
+ 4️⃣ Route Tables
+
+ GCP automatically creates default routes
+ You can define custom routes for peering, VPN, or specific CIDRs
+
+
+
+ 5️⃣ Firewall Rules
+
+ GCP firewall = Security Groups in AWS / NSG in Azure
+ VM-level / subnet-level rules
+ Stateful by default
+ Example: Allow TCP 22, 80, 443
+
+
+
+ 6️⃣ Load Balancer
+
+ Distributes traffic across multiple VMs
+ Types:
+
+   HTTP(S) Load Balancer → Layer 7
+   Network Load Balancer → Layer 4
+
+
+
+ 7️⃣ VPN / VPC Peering
+
+ VPC Peering → Private connectivity between two VPCs
+ Cloud VPN → Connect on-prem or other cloud network securely
+ Linux admin ensures routing, firewall, and connectivity
+
+
+
+ 8️⃣ DNS (Cloud DNS)
+
+ Converts domain → IP
+ Linux admin debug using:
+
+```bash
+dig
+nslookup
+```
+
+
+
+ 9️⃣ Linux Admin Role
+
+ Verify VPC, subnet, firewall, route tables
+ Test connectivity with Linux tools (`ping`, `traceroute`, `ssh`)
+ Ensure private subnet VMs can access Internet via NAT
+ Troubleshoot VPN / Peering / DNS issues
+
+
+
+```
+             Internet Users
+                    |
+                  Cloud DNS
+                    |
+            -
+            |  GCP Load Balancer  |
+            -
+              |               |
+       Public Subnet      Public Subnet
+       VM Web Server      VM Web Server
+              |               |
+              --
+                     |
+              Private Subnet
+            App / DB Servers
+                     |
+                Cloud NAT
+                     |
+                  Internet
+```
+
+
+
+
+
+AWS vs Azure vs GCP – Key Network Differences
+
+| Feature                  | AWS                                                                  | Azure                                                 | GCP                                           |
+| ------------------------ | -------------------------------------------------------------------- | ----------------------------------------------------- | --------------------------------------------- |
+| VPC / Network Name   | VPC                                                                  | VNet                                                  | VPC                                           |
+| Subnet               | Subnet (public/private)                                              | Subnet (public/private)                               | Subnet (regional, public/private)             |
+| IP Assignment        | Private IPs, Elastic IP (optional public)                            | Private IPs, Public IP (optional)                     | Private IPs, External IP (optional)           |
+| Internet Access      | Internet Gateway (IGW)                                               | Public IP + Default Route                             | Default Internet / IGW equivalent             |
+| Private Outbound     | NAT Gateway / NAT Instance                                           | NAT Gateway                                           | Cloud NAT                                     |
+| Firewall             | Security Group (VM-level, stateful) / NACL (subnet-level, stateless) | NSG (VM/subnet, stateful) / Azure Firewall (optional) | Firewall Rules (VM/subnet, stateful)          |
+| Load Balancer        | ALB (L7) / NLB (L4)                                                  | Application Gateway (L7) / LB (L4)                    | HTTP(S) LB (L7) / Network LB (L4)             |
+| Private Connectivity | VPC Peering, VPN, Transit Gateway                                    | VNet Peering, VPN Gateway, ExpressRoute               | VPC Peering, Cloud VPN, Shared VPC            |
+| DNS                  | Route 53                                                             | Azure DNS                                             | Cloud DNS                                     |
+| Routing              | Route Tables (custom per subnet)                                     | Route Tables (custom per subnet)                      | Routes (per VPC, auto and custom)             |
+| Key Linux Admin Role | Validate SG/NACL, route tables, LB, DNS, NAT                         | Validate NSG, route tables, LB, DNS, NAT              | Validate Firewall, route tables, LB, DNS, NAT |
+
+
+
+ 🔹 Key Conceptual Differences
+
+1. Firewall implementation
+
+    AWS → SG (stateful) + NACL (stateless)
+    Azure → NSG (stateful) + optional Azure Firewall
+    GCP → Firewall Rules (stateful) only, no separate stateless NACL
+
+2. Private subnet Internet access
+
+    AWS → NAT Gateway
+    Azure → NAT Gateway
+    GCP → Cloud NAT
+
+3. Load Balancer names
+
+    AWS → ALB / NLB
+    Azure → App Gateway / LB
+    GCP → HTTP(S) LB / Network LB
+
+4. Private connectivity terminology
+
+    AWS → VPC Peering, Transit Gateway
+    Azure → VNet Peering, ExpressRoute (for on-prem)
+    GCP → VPC Peering, Cloud VPN, Shared VPC
+
+5. DNS service
+
+    AWS → Route 53
+    Azure → Azure DNS
+    GCP → Cloud DNS
+
+

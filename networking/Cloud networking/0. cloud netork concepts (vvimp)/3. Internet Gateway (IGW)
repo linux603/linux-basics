@@ -1,0 +1,120 @@
+
+ Internet Gateway (IGW)
+
+  -->What is an Internet Gateway ?
+
+An Internet Gateway (IGW) is a cloud component that connects your VPC to the internet.
+
+ Without IGW:
+
+ Your cloud network is completely private
+ No server can talk to the internet
+ No internet can reach your server
+
+Think of IGW as the main door of your cloud network.
+
+
+
+  --->Why Internet Gateway is Needed
+
+ Cloud networks are private by default
+
+ When you create a VPC, it has no internet access
+ This is done for security
+
+ IGW is added only when you want public access
+
+
+
+  --->What IGW Actually Does
+
+ Allows incoming traffic from internet → VPC
+ Allows outgoing traffic from VPC → internet
+ Works together with:
+
+   Route table
+   Public IP
+
+ IGW alone is not enough
+(It must be used in routing)
+
+
+
+  --->Linux Admin Role (Very Important)
+
+ 1️⃣ SSH not working? Check IGW
+
+If Linux admin cannot SSH to server:
+
+ First question: Does VPC have an IGW attached?
+
+No IGW = No SSH (even if server is public)
+
+
+
+ 2️⃣ Required for public servers
+
+Servers that need IGW:
+
+ Web servers
+ Bastion servers
+ Jump hosts
+
+Servers that do not need IGW:
+
+ Database servers
+ Internal application servers
+
+
+
+  --->What IGW Does NOT Do 
+
+ IGW does NOT open ports
+ IGW does NOT give public IP
+ IGW does NOT control security
+
+ Those are handled by:
+
+ Public IP
+ Route table
+ Security Group / Firewall
+
+
+
+  --->Real-Life 
+
+Company setup:
+ Web server in public subnet
+ IGW attached to VPC
+ Route `0.0.0.0/0` → IGW
+
+Result:
+ Users access website from internet
+
+If IGW is removed:
+ Website goes down immediately
+
+
+
+ ---> Simple Traffic Flow :
+
+Internet
+   ↓
+Internet Gateway
+   ↓
+VPC
+   ↓
+Subnet
+   ↓
+Linux Server
+
+---> One-Line Interview Answer ***********imp
+
+> An Internet Gateway allows a VPC to communicate with the internet and is required for public-facing servers.
+
+
+
+
+
+No IGW = No Internet
+
