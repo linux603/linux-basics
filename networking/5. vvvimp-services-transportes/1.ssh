@@ -1,0 +1,378 @@
+SSH (secure shell)
+
+			1. install software package  name 
+			2. service : sshd 
+			3. daemon : sshd
+			4. port : 22 
+			5. configuration file : /etc/ssh/sshd_config 
+
+			note : Service: sshd & Transport: TCP
+			sshd is the service running on the server, and TCP is the method used to carry SSH data safely between two machines.
+
+
+
+
+ unique feature of ssh is security or data encryption
+
+	ftp : only send data in binary 
+	ssh : send data encryption format, no one can extract data which is encrypted except right owner.
+
+	each and every server will have 2 keys in .ssh hidden diectory which existes in every user home path. 
+		1. public key ( encrypt the data)
+		2. private key ( decrypt the data)
+
+		ex: for root user 
+		/root/.ssh 
+		ex: for rk user 
+		/home/rk/.ssh 
+
+
+When we use SSH, SCP, or SFTP between machine to machine, the two machines first perform a handshake to exchange security keys. 
+After that, a secure tunnel is created between them. All data sent through this tunnel is encrypted, so the communication is safe.
+
+note:
+Over the ftp data is traveling in binary format
+over the ssh data will travel in ecryption format
+the parcel will extract with right pub and private keys only.
+
+These services directly use the SSH protocol for security.
+ssh =  secure shell 
+scp =  secure copying
+sftp = secure file trafer protocal
+-
+ftp = file trafer protocal (Non-secure protocol)  do not encrypt data by default.
+
+note :
+https = Hypertext Transfer Protocol Secure 
+uses TLS/SSL for data encrypt & decription, not SSH 
+HTTP = Hypertext Transfer Protocol (Non-secure protocol)  do not encrypt data by default.
+
+
+differce between ssh & ftp :
+
+		SSH																								FTP(file transfer protocal)
+
+1. we can transfer files and directories to remote machine in encryption format				we can trasfer only files
+2. data is encrypted and trasfered to remote machine										data trasfered in binary formatn 
+3. remote administration can possible														we can not do remote administration only limited commands 
+											
+
+
+ > how to connect to remote machint using ssh service?
+      how to connect from one machine to another machine using ssh?
+
+		sync: ssh remotemachineip
+		
+		ssh username@remotemachineip
+		or 
+		ssh -l username remotemachineip
+
+
+-> how to copy file/directory to remote machine using ssh service?
+
+	scp -r /dir rk@192.168.145.10:/home/rk/
+
+	scp = secure copy
+
+
+		note :
+	we have 10 Linux administrator in team. all these 10 admins required root user credentials to perform administration task for all linux servers.
+	becoause normal user con't execute root user or administration task.
+
+	is normal user can execute useradd command? no, only root user can do 
+	is normal user can execute lvcreate command? no, only root user can do
+
+
+vvvvvimp 
+-> how to deny root login through ssh service?
+
+	step 1 : change the ssh paramter that is "PermitRootLogin" to no
+		vi /etc/ssh/sshd_config
+	
+		PermitRootLogin no
+
+	Step 2 : restart the service
+		systemctl restart sshd
+
+note :
+> in IT sectore, We don’t let people log in as root directly because root has full control of the system. If someone guesses the root password, they can do anything. 
+  By logging in as a normal user and using sudo when needed, the system is safer, mistakes are less dangerous, and we know who did what.
+
+
+-> How to disable normal users?
+	
+	step 1 : specify users in ssh configuration file  under DenyUsers list
+			vi /etc/ssh/sshd_config
+				DenyUsers rk bindu pratap
+	Step 2 : restart the ssh service
+			systemctl restart sshd
+
+-> how to deny groups?
+		vi /etc/ssh/sshd_config
+			DenyGroups	group1 group2
+
+
+
+-> How to change the ssh service port number?
+	
+	what is the default port number of ssh? 22
+	going forward want use 2222 for ssh service?
+
+step 1 : update new port number in configuration file
+		vi /etc/ssh/sshd_config
+			Port 2222
+Step 2 : update se linux policy. because right now se linux knows 22 port is for ssh service but now we are chainging to 2222
+		semanage  port -a -t ssh_port_t  -p tcp 2222
+step 3 : Restart the service
+		systemctl restart sshd
+
+	systemctl restart sshd
+
+
+
+-> how to configuring password less authentication between 2 machines?
+
+Passwordless authentication (usually using SSH keys) is used to log in without typing a password.
+
+	machine 1 : 192.168.145.10
+	machine 2 : 192.168.145.186
+
+	186 machine want to connect with 10 as rk user without password
+
+	rk has to share public key with 10 machine prasad user then password less is allowed
+
+
+	step1 :  login to 186 machine as a rk user and generate keys
+		
+		then run command : ssh-keygen
+		
+							do enter
+							do enter
+							do enter
+
+	step 2 : share pub key with remote machine
+			
+			ssh-copy-id -i id_rsa.pub 192.168.145.10
+			or 
+			manuvally we can copy 
+
+	
+	now do ssh to 192.168.145.10, whithout asking password ssh will happens now.
+
+
+	Here’s a clear explanation:
+
+
+ Why we do it:
+
+1️⃣ Improved security
+
+ Passwords can be guessed or stolen.
+ SSH keys are much harder to crack.
+
+2️⃣ Automation
+
+ Useful for scripts, backups, and automated deployments where typing a password is not practical.
+
+3️⃣ Convenience
+
+ No need to remember or enter passwords repeatedly.
+
+
+
+
+
+
+vvvvvvvvvvvvvimp intervivew question 
+-------------------------------------
+
+ Question1 :
+=============
+An EC2 instance is not accessible via SSH for user rk.
+How will you troubleshoot and fix the issue step by step?
+
+ Answer : 
+============
+I will troubleshoot the issue in a layered approach: form network → OS → SSH → user.
+
+
+ Step 1: Check EC2 Instance State
+========
+Ensure the instance is running.
+
+AWS Console → EC2 → Instance State = Running
+
+✔ if Running → proceed with next to check 
+❌ if Stopped → start the instance
+
+
+
+ Step 2: Verify Public IP / DNS
+=======
+Ensure the instance has a public IP (if connecting from the internet).
+
+✔ Public IP present → proceed with next to check
+❌ No public IP → assign Elastic IP,
+
+
+
+ Step 3: Check Security Group (Most Common Issue)
+=======
+Ensure SSH port 22 is allowed.
+
+Inbound Rule
+
+ Protocol: TCP
+ Port: 22
+ Source: Client IP or 0.0.0.0/0 (temporary)
+
+❌ Not allowed → add rule
+
+
+
+ Step 4: Check Network ACL (NACL)
+
+Ensure NACL allows:
+
+ Inbound TCP 22
+ Outbound Ephemeral ports (1024–65535)
+
+❌ Blocked → update NACL
+
+
+
+ Step 5: Check Route Table
+
+Ensure subnet has a route to the internet.
+
+text
+0.0.0.0/0 → Internet Gateway
+
+
+❌ Missing → add IGW route
+
+
+
+ Step 6: Verify SSH Command (Client Side)
+
+Use correct user and key.
+
+bash
+ssh -i rk.pem rk@<public_ip>
+
+
+❌ Wrong user or key → use correct ones
+
+
+
+ Step 7: Check SSH Service on EC2
+
+Login via EC2 Instance Connect / SSM / Recovery and verify:
+
+systemctl status sshd
+
+
+❌ Not running → start it:
+
+systemctl start sshd
+systemctl enable sshd
+
+
+
+
+ Step 8: Check SSH Port Listening
+
+
+ss -tulnp | grep :22
+
+
+❌ Not listening → check sshd config and restart
+
+
+
+ Step 9: Verify Firewall on OS
+
+Check if OS firewall is blocking SSH.
+
+firewall-cmd --list-all
+
+
+❌ Port not allowed:
+
+firewall-cmd --add-port=22/tcp --permanent
+firewall-cmd --reload
+
+
+
+
+ Step 10: Check User rk Exists
+
+
+id rk
+
+
+❌ User missing → create user:
+
+
+useradd rk
+
+
+ Step 11: Check SSH Key for User rk
+
+Ensure public key exists and permissions are correct.
+
+cat /home/rk/.ssh/authorized_keys
+
+
+Permissions:
+chmod 700 /home/rk/.ssh
+chmod 600 /home/rk/.ssh/authorized_keys
+chown -R rk:rk /home/rk/.ssh
+
+
+
+
+ Step 12: Check SSH Configuration
+
+vi /etc/ssh/sshd_config
+
+
+Verify:
+
+ini
+PermitRootLogin no
+AllowUsers rk
+PasswordAuthentication no
+
+
+Restart:
+systemctl restart sshd
+
+
+ Step 13: Check SELinux (If Enabled)
+
+getenforce
+
+
+If enforcing:
+
+setsebool -P ssh_sysadm_login on
+
+
+
+
+ Final Root Causes (Most Common)
+
+ ❌ Security group missing port 22
+ ❌ Wrong username or SSH key
+ ❌ SSH service not running
+ ❌ User key or permission issue
+ ❌ No public IP / route issue
+
+
+
+ Interview One-Liner ***************vvvvvvvipm
+
+> I troubleshoot SSH issues by checking EC2 state, security groups, NACLs, routing, SSH service status, user existence, SSH keys, firewall rules, and SELinux.
+
+

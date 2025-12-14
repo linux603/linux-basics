@@ -1,0 +1,140 @@
+ =====================================================================================
+To use any service, certain prerequisites must be met before it can function properly.
+ =======================================================================================
+
+1. Most services are installed by default on many Linux servers. If a required service is not installed, we must install it as a prerequisite before we can use
+	    yum install <service.package.name
+
+2. after installing any service, we must 
+		Start the service                 = systemctl start <service>
+		Enable the service at boot		  = systemctl enable <service>
+		Verify the service status         = systemctl status <service>
+
+3. Ensure the service is listening on its port
+    	
+
+	note : if the service is NOT listening, it means:
+														The service is not running, or
+														The service failed to start, or
+														The port is changed in configuration, or
+														The service is blocked by firewall or SELinux
+
+4. if port blocked, Allow the port in the firewall
+		firewall-cmd --add-port=<port>/tcp --permanent
+		firewall-cmd --reload
+
+5. Check or update the configuration file (if required)
+		vi /etc/<service>/<config_file>
+		systemctl restart <service>
+
+
+6. Test access from client side to server side
+
+After configuring a service, we must test connectivity from the client to the server.
+
+If the connection is successful, everything is OK.
+If it fails, we must check and fix network-level settings.
+
+
+ 🔹 On-Prem (Data Center)
+
+If access fails, check:
+
+ Firewall rules (hardware or OS firewall)
+ Router / switch configuration
+ VLAN / subnet routing
+ Port allowed between networks
+
+Commands:
+
+ping server_ip
+telnet server_ip port
+nc -zv server_ip port
+
+
+ 🔹 AWS
+
+If access fails, check:
+
+ Security Groups (inbound rules)
+ NACL (Network ACL)
+ Route Table
+ Public / Private IP
+ Internet Gateway / NAT Gateway
+
+Example:
+
+ Allow port 22 / 80 / 443 in Security Group
+
+
+ 🔹 Azure
+
+If access fails, check:
+
+ Network Security Group (NSG) inbound rules
+ Subnet NSG association
+ Route tables (UDR)
+ Public IP attached to VM
+ Azure Firewall (if used)
+
+Example:
+
+ NSG must allow required port from source IP
+
+
+ 🔹 GCP
+
+If access fails, check:
+
+ VPC Firewall Rules
+ Network tags / service accounts
+ Subnet and routing
+ Public IP enabled
+
+Example:
+
+ GCP firewall rule must allow the port and protocol
+
+
+> If client access fails, we troubleshoot network-level controls like firewalls, security groups, NSGs, or VPC rules based on the environment.
+
+
+
+Services / Transport (Important for Linux Admin)
+
+| Service               | Description             | Port(s)                        | Protocol  |
+| ----------------------| ----------------------- | ------------------------------ | --------- |
+| FTP                   | File Transfer           | 20, 21                         | TCP       |
+| SSH                   | Secure Remote Login     | 22                             | TCP       |
+| Telnet                | Remote Login (Insecure) | 23                             | TCP       |
+| SMTP                  | Mail Transfer           | 25                             | TCP       |
+| DNS                   | Name Resolution         | 53                             | TCP / UDP |
+| DHCP                  | IP Assignment           | 67, 68                         | UDP       |
+| HTTP                  | Web Service             | 80                             | TCP       |
+| HTTPS                 | Secure Web              | 443                            | TCP       |
+| NFS                   | Network File System     | 2049                           | TCP / UDP |
+| Samba (SMB/CIFS)      | Windows File Sharing    | 137, 138 (UDP), 139, 445 (TCP) |           |
+| NTP                   | Time Synchronization    | 123                            | UDP       |
+| SNMP                  | Monitoring              | 161, 162                       | UDP       |
+| LDAP                  | Directory Service       | 389                            | TCP / UDP |
+| LDAPS                 | Secure LDAP             | 636                            | TCP       |
+
+
+
+
+Although Linux provides many services and transport protocols at the OS level, a Linux administrator is typically responsible for managing and configuring only a specific set of core services. 
+These include remote access services like SSH, network services such as DNS, DHCP, NTP, file-sharing services like NFS and Samba, web services like HTTP/HTTPS, and basic mail or database services as required by the environment. 
+Other services are managed by application, network, or security teams. The Linux administrator’s role is to ensure these essential services are properly installed, configured, secured, monitored, and available.
+
+
+****************vvvvimp 
+there are chances to ask question like below in intervioew
+
+what is the port number for frp?
+what is the port number for dns?
+what is the port number for sftp?
+what is the port number for ntp?
+
+what is the servie name of shh?
+what is the servie name of dns?
+what is the servie name of ntp?
