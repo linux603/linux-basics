@@ -1,0 +1,158 @@
+Netstat or ss:
+===========
+
+	network staticstics   ( rhel 5 & 6)
+	ss  (socket staticstics) ( rhel 7 & 8 )
+
+service will have one reserved port number
+	ftp 20/21
+	ssh 22
+	nfs 2049
+
+Using ss or netstat, we can check the status of network ports and see which services are listening. If a service is running correctly, its assigned port will usually be in the LISTEN state.
+
+
+Below is **connection types (TCP states)** explained in the **same Linux admin notes format** you are using 👇
+
+
+
+ Connection Types (TCP States)
+================================
+Connection types show the current status of a network connection
+Used in netstat / ss output
+
+
+ 1. LISTEN
+============
+Service is running
+Waiting to accept incoming connections
+
+Example:
+sshd listening on port 22
+
+
+
+
+ 2. ESTABLISHED
+=================
+Connection is active
+Data transfer is happening
+
+
+Meaning:
+Client ↔ Server communication in progress
+
+
+
+
+ 3. SYN_SENT
+==============
+Client sent connection request
+Waiting for server response
+
+
+Occurs when:
+Client initiates TCP connection
+
+
+
+
+ 4. SYN_RECV
+==============
+Server received connection request
+Waiting for client acknowledgement
+
+
+Occurs when:
+Server is accepting new connection
+
+
+
+
+ 5. FIN_WAIT1
+===============
+Connection termination started
+Local system sent FIN packet
+
+
+
+
+ 6. FIN_WAIT2
+===============
+Waiting for remote system to close
+
+
+
+
+ 7. CLOSE_WAIT
+================
+Remote system closed connection
+Local system still open
+
+
+Common issue:
+Application not closing socket properly
+
+
+
+
+ 8. TIME_WAIT
+===============
+Connection closed
+OS waiting before releasing port
+
+
+Purpose:
+Prevent delayed packets from corrupting new connections
+
+
+
+
+ 9. LAST_ACK
+==============
+Waiting for final acknowledgement
+
+
+
+
+ 10. CLOSED
+=============
+Connection fully terminated
+No active session
+
+
+
+
+ UDP Connection Type
+======================
+UDP is connectionless
+No ESTABLISHED or LISTEN handshake
+
+
+In output:
+UNCONN → UDP socket active
+
+
+
+imp::::
+LISTEN       → waiting for connection
+ESTABLISHED  → active connection
+TIME_WAIT   → connection closing
+CLOSE_WAIT  → application issue
+
+ex:
+
+established showning 20 that means hom many remote machines are connected? 20 servers are connected with this system.
+
+	netstat -nap | grep :21
+	netstat -nap | grep ssh
+
+-n  → show IP addresses and port numbers in numeric format
+-a  → all connections
+-p  → process ID / service name
+-l  → only listening services not the established
+	
+    netstat -nl 
+
+	ss -nap | grep :21
+	ss -nap | grep ssh

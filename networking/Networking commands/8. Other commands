@@ -1,0 +1,124 @@
+
+1.ip (modern command – recommended)
+=====================================
+The ip utility is the modern networking tool in Linux, replacing legacy commands like ifconfig and route, 
+and is used to manage interfaces, IP addresses, routing tables, and link status.
+
+Common usage:
+ip addr show        → show IP address
+ip link show        → show network interfaces
+ip route show       → show routing table
+we can use also :
+ip a
+ip addr
+
+
+Interface UP / DOWN commands :
+-----------------------------
+Using `ip` (recommended) Bring interface DOWN
+
+command : ip link set eth0 down
+
+Using `ip` (recommended) Bring interface UP
+
+command : ip link set eth0 up
+
+
+Using `ip` (recommended) Show interface state
+
+command : ip link show eth0
+
+
+States:
+UP        → interface enabled
+DOWN      → interface disabled
+
+
+
+2. route (legacy)
+Used to view routing table
+Replaced by ip route
+
+command : route -n
+
+Gateway
+Destination
+Interface
+
+
+3.ifconfig (legacy)
+
+command : ifconfig
+
+Older network configuration command
+Deprecated but still available in some systems
+
+
+
+
+4. tcpdump (packet capture)
+
+Used to capture and analyze network packets
+Very useful for troubleshooting
+
+Common usage:
+tcpdump -i eth0
+tcpdump -i eth0 port 22
+tcpdump -i eth0 port 53
+
+
+
+
+
+ 5. Restart network interface
+ 
+
+ NetworkManager restart (all interfaces)
+
+systemctl restart NetworkManager
+
+
+
+
+ 6. Assign / remove IP address (ip)
+
+
+ Add IP address
+
+
+ip addr add 192.168.1.10/24 dev eth0
+
+
+ Delete IP address
+
+
+ip addr del 192.168.1.10/24 dev eth0
+
+
+
+
+ 7. Enable / Disable interface via systemd (rare)
+
+systemctl stop NetworkManager
+systemctl start NetworkManager
+
+
+
+ 8. Check cable / link status
+
+
+ethtool eth0
+
+
+ 9. Flush IP addresses
+
+
+ip addr flush dev eth0
+
+
+ 10. Flush routes
+
+
+ip route flush dev eth0
+
+

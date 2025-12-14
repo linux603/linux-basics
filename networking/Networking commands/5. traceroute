@@ -1,0 +1,11 @@
+ traceroute:
+ ==========
+
+using traceroute we can trace the route in network. exactly which hops is not forwarding traffic to further that we can understand using traceroute output.
+
+syn: traceroute 192.168.145.185 
+	using traceroute we can test the route exactly in which hops traffic is breaking
+
+	who are the owners for these components(switches,routers,firewalls)? Network team
+	what is your role? Linux os administrator(OS administrator)
+	pull the traceroute report and share with network team to look on it . so and so hops is not forwarding traffic to next but could you please look on it.

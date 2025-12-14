@@ -1,0 +1,11 @@
+
+ nmap:
+======
+	using nmap we can scan what are the port numbers (services) listening(running) in remote machine
+		
+	nmap remotemachineip
+	nmap 192.168.145.100
+
+*****imp how to identify which are the port numbers are listening in remote machine?
+		nmap 
+	sync : nmap remotemachineip

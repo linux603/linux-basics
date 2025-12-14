@@ -1,0 +1,16 @@
+
+ping:
+======
+ping command or service is used for test the route status.
+	sync : ping -c 4 remotemachineip
+
+		or
+		ping remotemachineipaddress
+		
+*****imp which service is used for ping?
+
+	-->it use the ICMP protocol 	
+    -->ICMP means (internet control message protocol) in the network it use port number also
+	
+*****imp what is the port number of ICMP?
+		7

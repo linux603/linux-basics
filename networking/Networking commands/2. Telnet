@@ -1,0 +1,40 @@
+
+ Telnet:
+ ======
+	telnet is the service which is used to test service status in remote machine.
+	is the remote machine service is running and accepting connections or not
+	that we can get it through telnet command.
+
+	in remote machine
+		ssh is running  so remote machines can connect through ssh(22)
+	in remote machine
+		 ssh is not running then remote machines can't connect or establish connection.
+
+	machine1
+	machine2
+		machine 1 want to connect to machine 2 via ssh service. so here we have see is ssh service is running machine2 . if ssh service is not running in
+			machine2 then machine1 can not connect.
+	
+			if ssh service is running in machine2 then machine1 or any other machines connect connect with machine2.
+
+	how to check service status?
+		systemctl status sshd
+		systemctl status nfs
+		systemctl status vsftpd
+		systemctl status httpd
+
+	systemctl start sshd
+	systemctl stop sshd
+	systemctl restart sshd
+	systemctl status sshd
+	systemctl reload sshd
+			rhel 5 & 6
+		service sshd restart 
+			RHEL 7 & 8
+		systemctl start sshd
+
+		
+	telnet 192.168.145.100 22
+	
+	hold the ctrl key and press ]
+		telnet > quit

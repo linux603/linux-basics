@@ -1,0 +1,90 @@
+DNS query testing commands
+==============================
+
+1. dig (Domain Information Groper)
+====================================
+
+dig is an advanced DNS troubleshooting tool
+gives detailed DNS response
+mostly used by Linux admins
+
+
+dig is an advanced DNS troubleshooting tool
+gives detailed DNS response
+mostly used by Linux admins
+
+Command:1
+dig google.com
+
+what it does:
+queries default DNS server
+resolves google.com → IP address
+
+Output shows:
+QUESTION SECTION  → what you asked
+ANSWER SECTION    → IP address (A record)
+AUTHORITY SECTION → authoritative DNS
+ADDITIONAL        → extra DNS info
+
+Command:2
+dig google.com @8.8.8.8
+
+What it does:
+queries specific DNS server (8.8.8.8 – Google DNS)
+bypasses local DNS (/etc/resolv.conf)
+used to test external DNS
+
+
+Command:3
+dig google.com +short
+
+What it does:
+shows only IP address
+hides extra DNS details
+
+
+2.nslookup (legacy but common)
+=================================
+older DNS query tool
+still available in all Linux systems
+simple output
+
+
+Command:1
+nslookup google.com
+
+What it does:
+queries default DNS server
+resolves hostname → IP
+
+Output shows:
+DNS server used
+resolved IP address
+
+Command:2
+nslookup google.com 8.8.8.8
+
+What it does:
+queries specific DNS server (8.8.8.8)
+ignores local DNS configuration
+
+
+3.host (simple & fast)
+=====================
+basic DNS lookup tool
+minimal output
+easy to read
+
+command :
+host google.com
+
+What it does:
+resolves hostname → IP address
+shows A / AAAA records
+
+
+note:
+dig       → advanced DNS analysis
+nslookup → basic DNS testing
+host     → quick hostname resolution
+

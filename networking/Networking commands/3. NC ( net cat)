@@ -1,0 +1,19 @@
+ NC ( net cat):
+ =============
+	nc is the tool which used to test the service status in remote machine
+
+	telnet and nc are for same purpose
+
+	for telnet which alternative? NC
+
+    which tool is recommended telnet or NC?
+		NC
+
+	nc -vz 192.168.145.100 22
+	nc -vz remotemachineip  portnumber
+				-v verbose
+				-z zero packates
+	tcp
+	udp
+
+using nc we can test both tcp and udp protocol service status
