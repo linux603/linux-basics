@@ -1,2 +1,2 @@
-# linux-basics
+# linux
 basic topics 
