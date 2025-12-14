@@ -1,0 +1,71 @@
+
+
+ 1️⃣ Services (OS / Application Level)
+
+Service = a software process running on the OS that provides some functionality to users or other systems.
+
+In Linux, services usually:
+
+ Run in the background (daemon)
+ Listen on a port
+ Are managed by systemd
+
+ 
+If a service is running, its port will be in LISTEN state
+
+
+
+ 2️⃣ Transporters (Transport Layer Protocols)
+
+Transporters = Transport Layer protocols that carry data between systems.
+
+They work below services and above the network (IP) layer
+
+ Main Transport Protocols
+
+ 🔹 TCP (Transmission Control Protocol)
+
+ Connection-oriented
+ Reliable (acknowledgement, retransmission)
+ Ordered delivery
+
+
+ 🔹 UDP (User Datagram Protocol)
+
+ Connectionless
+ Faster but no guarantee
+ No retransmission
+
+
+
+
+ 3️⃣ Relationship: Service vs Transporter
+
+
+Application (Service) → Transport (TCP/UDP) → Network (IP)
+
+
+ Example: SSH
+
+ Service: sshd
+ Transporter: TCP
+ Port: 22
+ Protocol Stack:
+
+
+SSH → TCP → IP → Ethernet
+
+
+
+
+ 4️⃣ Real-World Example
+
+When you open a website:
+
+ Browser talks to HTTP service
+ HTTP uses TCP
+ TCP uses IP
+ IP sends packets over the network
+
+
+

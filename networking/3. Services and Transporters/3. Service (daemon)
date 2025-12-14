@@ -1,0 +1,330 @@
+
+ Service at OS Level
+
+
+ 1️⃣ What is a Service?
+
+ Layman Meaning:
+  A service is like a worker in your house or office that performs a specific task whenever needed.
+
+ IT / OS Meaning:
+  A service (or daemon) is a program that runs in the background of an operating system and provides a specific function to other programs or users.
+
+   Runs without manual intervention
+   Can start at boot or on-demand
+
+
+ 2️⃣ Examples of Common Services in Linux
+
+| Service                 | Purpose                | Default Port |
+| ----------------------- | ---------------------- | ------------ |
+| SSH (`sshd`)            | Remote login to server | 22 TCP       |
+| HTTP (`httpd` / Nginx)  | Web server             | 80 TCP       |
+| HTTPS (`httpd` / Nginx) | Secure web server      | 443 TCP      |
+| FTP (`vsftpd`)          | File transfer          | 21 TCP       |
+| DNS (`named`)           | Name resolution        | 53 TCP/UDP   |
+| DHCP (`dhcpd`)          | Dynamic IP allocation  | 67/68 UDP    |
+| Samba (`smbd`)          | File sharing           | 445 TCP      |
+| NFS (`nfsd`)            | Network file system    | 2049 TCP/UDP |
+
+
+
+ 3️⃣ Service vs Application
+
+| Aspect                                | Service              | Application          |
+| ------------------------------------- | -------------------- | -------------------- |
+| Runs in background?                   | ✅ Yes                | ❌ Usually foreground |
+| Provides functionality to OS or users | ✅ Yes                | ✅ Yes                |
+| Needs manual start each time?         | ❌ Usually auto-start | ✅ Often manual       |
+| Example                               | `sshd`               | `firefox`            |
+
+
+
+ 4️⃣ Linux Admin Role with Services
+
+ ---> Start / Stop / Restart Services:
+
+systemctl start sshd
+systemctl stop httpd
+systemctl restart nginx
+
+
+----> Enable / Disable services at boot:
+
+systemctl enable sshd
+systemctl disable vsftpd
+
+
+----> Check service status:
+
+systemctl status sshd
+
+
+----> Monitor logs:
+
+journalctl -u sshd
+
+
+-----> Check which ports services use:
+
+ss -tuln
+netstat -tuln
+
+note:
+Service = Background worker program
+Each service does a specific job (SSH, Web, DNS, FTP)
+Linux admin manages, monitors, and troubleshoots services
+
+
+===============================
+
+ How a Service Functions in Linux OS
+
+
+ 1️⃣ Service Starts
+
+ Services in Linux are usually managed by `systemd` (or older: `init`).
+ When the OS boots:
+
+   `systemd` reads configuration files in `/etc/systemd/system/` or `/lib/systemd/system/`
+   Starts services marked enabled at boot
+
+Example:
+systemctl start sshd    Starts SSH service
+systemctl enable sshd   Auto-start at boot
+
+
+ 2️⃣ Service Runs as a Daemon
+
+ Once started, a service runs in the background as a daemon process.
+ It has its own Process ID (PID) and waits for requests.
+ Does not require a user to be logged in.
+
+Check running service:
+ps -ef | grep sshd
+systemctl status sshd
+
+
+ 3️⃣ Service Listens on Port / Endpoint
+
+ Many services interact via network ports.
+ Example: SSH service (`sshd`) listens on port 22 TCP for incoming connections.
+ Web server (`httpd` / Nginx) listens on port 80 / 443 TCP.
+
+Check ports:
+ss -tuln
+netstat -tuln
+
+ 4️⃣ Service Accepts Requests
+
+ When a client connects to the service (e.g., SSH client → SSH server):
+
+  1. OS network stack receives the packet on NIC
+  2. OS identifies destination port
+  3. OS forwards packet to corresponding service daemon
+
+Example:
+
+ Client: `ssh 192.168.1.10`
+ OS → `sshd` daemon → authenticates user → opens shell session
+
+
+ 5️⃣ Service Responds / Performs Task
+
+ Service performs its task (authentication, serving web page, file transfer).
+ Sends back a response to client via the OS network stack.
+
+---
+
+ 6️⃣ Service Runs Continuously / Handles Multiple Clients
+
+ Most Linux services run continuously and can handle multiple concurrent clients.
+ Uses forking, threading, or asynchronous I/O to manage multiple requests.
+
+
+ 7️⃣ Logging and Monitoring
+
+ Services generate logs (usually in `/var/log/`)
+ Admin can monitor using:
+
+journalctl -u sshd
+tail -f /var/log/nginx/access.log
+
+
+============
+
+
+`systemctl` – Linux Service Manager
+
+
+
+ 1️⃣ What is `systemctl`?
+
+ `systemctl` is a command-line tool used to control and manage services (daemons) and the system state on Linux systems using `systemd`.
+ Think of it as the remote control for all background workers on Linux.
+
+
+
+ 2️⃣ Layman Meaning
+
+ System = Linux OS
+ ctl = control
+ `systemctl` = “Control the workers (services) of my Linux system”
+
+Example:
+
+ Start the SSH service
+ Stop the web server
+ Check if a service is running
+
+
+
+ 3️⃣ What Can `systemctl` Do?
+
+| Command                               | Purpose                                       |
+| ------------------------------------- | --------------------------------------------- |
+| `systemctl start <service>`           | Start a service immediately                   |
+| `systemctl stop <service>`            | Stop a running service                        |
+| `systemctl restart <service>`         | Stop + Start service                          |
+| `systemctl reload <service>`          | Reload configuration without stopping service |
+| `systemctl enable <service>`          | Auto-start service at boot                    |
+| `systemctl disable <service>`         | Prevent service from starting at boot         |
+| `systemctl status <service>`          | Check service status and logs                 |
+| `systemctl list-units --type=service` | List all services and their status            |
+
+---
+
+ 4️⃣ Linux Admin Role
+
+ Ensure critical services (SSH, HTTP, DB) are running
+ Start/stop services for maintenance
+ Enable services to start at boot for production servers
+ Troubleshoot service failures using logs
+
+Example Commands:
+
+ Start SSH
+sudo systemctl start sshd
+
+ Enable web server at boot
+sudo systemctl enable nginx
+
+ Check status
+sudo systemctl status sshd
+
+ Restart service after config change
+sudo systemctl restart httpd
+
+
+---
+
+ 5️⃣ Behind the Scenes
+
+1. `systemctl` communicates with `systemd`, the init system.
+2. `systemd` manages service daemons, socket activation, timers, and dependencies.
+3. It ensures services run in correct order during boot.
+
+
+systemctl = Remote control for Linux services
+
+
+
+
+
+=====================
+
+
+
+Linux Admin – Services Responsibilities
+
+
+
+ 1️⃣ Remote Access & Management
+
+| Service                     | Port      | Purpose                                   |
+| --------------------------- | --------- | ----------------------------------------- |
+| SSH (`sshd`)            | 22 TCP    | Secure remote login and command execution |
+| Telnet (`telnetd`)      | 23 TCP    | Legacy remote login (rarely used today)   |
+| VNC / RDP (`vncserver`) | 5900+ TCP | Remote desktop access                     |
+
+
+
+ 2️⃣ Web & Application Services
+
+| Service                       | Port     | Purpose            |
+| ----------------------------- | -------- | ------------------ |
+| HTTP (`httpd` / Nginx)    | 80 TCP   | Web server         |
+| HTTPS (`httpd` / Nginx)   | 443 TCP  | Secure web server  |
+| Tomcat / JBoss / Weblogic | 8080 TCP | Application server |
+
+---
+
+ 3️⃣ File & Storage Services
+
+| Service                  | Port         | Purpose                           |
+| ------------------------ | ------------ | --------------------------------- |
+| Samba (`smbd`)       | 445 TCP      | File sharing with Windows systems |
+| NFS (`nfsd`)         | 2049 TCP/UDP | Network File System for Linux     |
+| FTP (`vsftpd`)       | 21 TCP       | File transfer                     |
+| SFTP / SCP (via SSH) | 22 TCP       | Secure file transfer              |
+
+---
+
+ 4️⃣ Mail & Communication Services
+
+| Service                           | Port    | Purpose          |
+| --------------------------------- | ------- | ---------------- |
+| SMTP (`postfix` / `sendmail`) | 25 TCP  | Sending emails   |
+| IMAP (`dovecot`)              | 143 TCP | Receiving emails |
+| POP3 (`dovecot`)              | 110 TCP | Receiving emails |
+
+---
+
+ 5️⃣ Database & Data Services
+
+| Service             | Port      | Purpose         |
+| ------------------- | --------- | --------------- |
+| MySQL / MariaDB | 3306 TCP  | Database server |
+| PostgreSQL      | 5432 TCP  | Database server |
+| MongoDB         | 27017 TCP | NoSQL database  |
+
+---
+
+ 6️⃣ Name Resolution & IP Services
+
+| Service                      | Port       | Purpose                      |
+| ---------------------------- | ---------- | ---------------------------- |
+| DNS (`bind`)             | 53 TCP/UDP | Name resolution              |
+| DHCP (`dhcpd`)           | 67/68 UDP  | Dynamic IP allocation        |
+| NTP (`ntpd` / `chronyd`) | 123 UDP    | Network time synchronization |
+
+---
+
+ 7️⃣ Monitoring & Logging Services
+
+| Service                             | Purpose                   |
+| ----------------------------------- | ------------------------- |
+| Syslog (`rsyslog`, `syslog-ng`) | Centralized logging       |
+| Audit (`auditd`)                | Tracks system events      |
+| Nagios / Zabbix agent           | Monitoring server metrics |
+
+---
+
+ 8️⃣ Security Services
+
+| Service                        | Purpose                                     |
+| ------------------------------ | ------------------------------------------- |
+| Firewalld / UFW / iptables | Network packet filtering and firewall rules |
+| SELinux / AppArmor         | Mandatory access control                    |
+| Fail2Ban                   | Protect from brute-force attacks            |
+
+---
+
+ Linux Admin Role :
+ Configure services (ports, permissions, configs)
+ Enable/disable services at boot (`systemctl enable/disable`)
+ Start/stop/restart services (`systemctl start/stop/restart`)
+ Monitor and troubleshoot running services
+ Ensure security and access control for each service
+ Maintain logs and backups for critical services
+
