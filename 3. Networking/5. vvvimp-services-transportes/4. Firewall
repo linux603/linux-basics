@@ -1,0 +1,287 @@
+
+ FIREWALL On-Prem, Cloud & OS Level)
+
+
+ 1. Why Do We Need a Firewall? 
+
+Every server is connected to a network.
+Every network has good traffic and bad traffic.
+
+A firewall acts like a security guard:
+
+ It checks who is coming 
+ It checks what they want 
+ It decides allow or block
+
+note :
+
+A firewall makes decisions based on three basic questions:
+
+
+ 1️⃣ Who is coming?
+
+👉 Who = IP Address
+
+ Every system on a network has an IP address
+ Firewall checks:
+   Source IP (where request is coming from)
+   Destination IP (which server is being accessed)
+
+Examples:
+ `192.168.1.10` → Internal server
+ `10.0.0.5` → Cloud VM
+ `0.0.0.0/0` → Anyone from internet
+
+👉 Firewall rule may say:
+ Allow only office IPs
+ Block unknown IP ranges
+
+
+
+ 2️⃣ What do they want?
+
+👉 What = Service / Port
+
+Every service listens on a port number.
+
+| Service | Port |
+------------------
+| SSH     | 22   |
+| HTTP    | 80   |
+| HTTPS   | 443  |
+| NFS     | 2049 |
+| MySQL   | 3306 |
+
+Firewall checks:
+ Which port is being requested
+ Which protocol (TCP or UDP)
+
+Example:
+ SSH → TCP 22
+ NFS → TCP/UDP 2049
+
+
+
+ 3️⃣ What action should be taken?
+
+👉 Decision = Allow or Block
+
+Based on firewall rules:
+ If rule matches → ALLOW
+ If no rule matches → BLOCK (default deny)
+
+This is why firewalls are safe:
+“Everything is blocked unless explicitly allowed.”
+
+
+===========
+
+When a request comes:
+
+1. Traffic Flow (Cloud – AWS Example)
+
+Request arrives (Internet / Another VPC / On-prem)
+        ↓
+NACL (Subnet Level)
+        ↓
+Security Group (VM Level)
+        ↓
+OS Firewall (firewalld)
+        ↓
+Application (SSH / HTTP / NFS)
+
+
+2. GCP Traffic Flow
+
+Request arrives
+   ↓
+GCP VPC Firewall Rules
+   ↓
+VM
+   ↓
+OS Firewall
+   ↓
+Application
+
+
+3. Azure Traffic Flow
+
+Request arrives
+   ↓
+Azure Firewall / NSG (Subnet or NIC)
+   ↓
+OS Firewall
+   ↓
+Application
+
+
+5. On-Prem (Traditional Data Center)
+
+Request arrives
+   ↓
+Physical Firewall
+   ↓
+Switch / Router
+   ↓
+Server
+   ↓
+OS Firewall
+   ↓
+Application
+
+
+================
+
+ Example 1: SSH Access
+
+Rule:
+
+ Allow SSH (22)
+ Only from `203.0.113.10`
+
+Result:
+
+ Request from `203.0.113.10:22` → ALLOWED
+ Request from `8.8.8.8:22` → BLOCKED
+
+
+
+ Example 2: Web Server
+
+Rule:
+
+ Allow HTTP (80)
+ From anywhere
+
+Result:
+
+ Any IP → Can access website
+ Other ports → Blocked
+
+
+
+ Example 3: NFS in Internal Network
+
+Rule:
+
+ Allow NFS (2049)
+ Only from internal subnet
+
+Result:
+
+ Internal server → Allowed
+ Internet → Blocked
+
+
+Without firewall:
+
+ Any system on the network can try to access any service
+ High risk of attack, misuse, and data loss
+
+
+
+
+ 2. Layers of Security (Very Important Concept)
+
+Security is not one device or one rule.
+
+It works in layers.
+
+
+User
+ ↓
+Network / Cloud Firewall
+ ↓
+OS Firewall
+ ↓
+Application Configuration
+ ↓
+Data
+
+
+If one layer fails, the next layer still protects the system.
+
+
+
+ 3. Types of Firewalls 
+
+ A. Physical / Network Firewall (On-Prem)
+
+ What is it?
+ A hardware or virtual device
+ Installed at network boundary
+
+ What does it protect?
+ Entire company network
+ All servers, desktops, databases
+
+ What can it do?
+ Block unwanted internet traffic
+ Allow only approved ports (80, 443, etc.)
+ Create DMZ, internal, external networks
+
+ Who manages it?
+ Network / Security team
+
+ Limitation
+ Cannot see what happens inside a server
+ Cannot stop server-to-server attacks inside the network
+
+
+
+ B. Cloud Firewall / NSG (Very Important)
+
+Cloud does not use physical firewalls.
+Instead, it provides software-based network firewalls.
+
+
+
+ Cloud Firewall Names
+
+| Cloud Provider | Name              |
+--------------------------------------
+| AWS            | Security Group    |
+| Azure          | NSG               |
+| GCP            | VPC Firewall Rule |
+
+
+
+ Where does Cloud Firewall sit?
+
+Internet
+   ↓
+Cloud Firewall (SG / NSG)
+   ↓
+Virtual Network
+   ↓
+VM
+
+
+If traffic is blocked here, it never reaches the VM.
+
+
+
+ C. OS-Level Firewall (Linux / Windows)
+
+ What is OS-Level Firewall?
+
+ Firewall running inside the OS
+ Protects only that server
+
+ 
+  firewalld --- in linux os 
+
+ Windows Defender Firewall --- in  Windows os 
+
+
+
+
+
+
+ note :
+
+NACL :: checks traffic for the entire subnet
+
+Security Group :: checks traffic for one VM
+
+OS Firewall :: protects inside the VM

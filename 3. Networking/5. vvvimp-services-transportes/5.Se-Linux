@@ -1,0 +1,312 @@
+SELinux
+
+
+Linux Security Components ;
+
+In a Linux system, security is mainly handled at two levels:
+
+ 1️⃣ OS Level Firewall (Network Access Control)
+
+ Controls who can enter the system
+ Example tools: `firewalld`, `iptables`
+ Works at network/port level
+
+ Think of it as: “Can this network user come inside the system or not?”
+
+
+
+ 2️⃣ SELinux (Access Control Inside the System)
+
+ SELinux = Security-Enhanced Linux
+ Works after someone has already accessed the system
+ Controls what that user/process can do
+ Protects data and system resources
+
+Think of SELinux as: “You are inside the system, but why are you trying to access this file/folder/service?”
+
+
+ What SELinux Does
+
+ Tracks users, processes, and applications
+ Applies mandatory access control (MAC)
+ Even if:
+
+   User is `root`
+   File permissions allow access
+    👉 SELinux can still block access
+
+ Purpose
+
+ Prevents unauthorized access to sensitive data
+ Limits damage if a service is compromised
+ Enforces least privilege
+
+
+
+ SELinux Modes ::::
+
+SELinux operates in three modes:
+
+ 1️⃣ Enforcing (Recommended)
+
+ SELinux policies are strictly enforced
+ Access is denied if not allowed
+ Used in production environments
+
+ 2️⃣ Permissive
+
+ Policies are loaded
+ No access is denied
+ Violations are logged only
+ Used for testing & troubleshooting
+
+ 3️⃣ Disabled
+
+ SELinux is completely off
+ No policies, no protection 
+ Not recommended
+
+
+
+ Which Mode Is Recommended in Organizations?
+
+ Enforcing
+
+
+There are two ways to configure SELinux policies:
+
+1. By changing the SELinux mode (enforcing, permissive, or disabled)
+
+a.Execute commands to Change SELinux Mode (Temporary)
+
+setenforce 0                     note:   (Permissive)
+setenforce 1                     note :   (Enforcing)
+
+what is Temporary :
+
+Reverts selinuc policies after reboot
+ 
+ 
+Check SELinux Status :
+
+sestatus
+
+Shows:
+ SELinux status
+ Current mode
+ Policy type
+
+
+
+b. Make changes to config file to set selinux policies Permanent
+
+/etc/selinux/config
+
+Example:
+
+SELINUX=enforcing
+SELINUXTYPE=targeted
+
+
+
+2. By tuning SELinux booleans to allow or restrict specific service actions.
+
+
+What are SELinux Booleans?
+
+SELinux booleans are on/off switches that allow or restrict specific actions of services and applications without disabling SELinux.
+
+They provide flexibility in SELinux enforcement.
+
+
+
+Why SELinux Booleans Are Used (Real-Time)
+
+Sometimes:
+
+Linux file permissions are correct
+
+Service is running
+
+SELinux is enforcing
+
+❌ Still access is denied
+
+👉 Instead of disabling SELinux, we enable the required boolean.
+
+
+setsebool – What is it?
+
+setsebool is a command used to enable or disable SELinux booleans.
+
+
+
+How to View SELinux Booleans :
+
+getsebool -a
+
+Check a specific one: 
+
+getsebool httpd_can_network_connect
+
+
+Enable / Disable SELinux Boolean (Enable temporary):
+
+setsebool httpd_can_network_connect on/off 
+
+Enable / Disable SELinux Boolean (permanent – recommended):
+
+setsebool -P httpd_can_network_connect on/odd 
+
+
+
+
+ 🔐 SELinux Modes vs SELinux Booleans
+
+| Feature          | SELinux Modes                          | SELinux Booleans                         |
+| ---------------- | -------------------------------------- | ------------------------------------ |
+| What it controls | Overall SELinux behavior               | Specific service actions             |
+| Scope            | System-wide                            | Service / feature-specific           |
+| Purpose          | Enable, monitor, or disable SELinux    | Fine-tune SELinux policies           |
+| Values           | enforcing / permissive / disabled      | on / off                             |
+| Impact           | Affects entire system                  | Affects only one feature/service     |    
+| Used for         | Security enforcement & troubleshooting | Allow required access safely         |
+| Command          | `setenforce`                           | `setsebool`                          |
+| Config file      | `/etc/selinux/config`                  | Stored in SELinux policy             |
+
+
+ SELinux Modes (Big Switch)
+
+SELinux modes decide how strictly SELinux works.
+
+ Modes:
+
+ Enforcing → Block + log
+ Permissive → Log only
+ Disabled → No SELinux
+
+Example:
+setenforce 0    permissive
+setenforce 1    enforcing
+
+
+
+ 🔹 SELinux Booleans (Fine Control)
+
+Booleans allow or deny specific actions of a service while SELinux remains enforcing.
+
+
+ Real-Time Interview Scenario
+
+Problem:
+Apache works in permissive mode but fails in enforcing mode.
+
+Wrong fix:
+setenforce 0
+
+Correct fix:
+setsebool -P httpd_can_network_connect on
+
+
+
+********vimp
+
+SELinux modes control how SELinux runs globally, while SELinux booleans fine-tune what individual services are allowed to do.
+
+If you want, I can also provide a 1-minute SELinux explanation for interviews or common boolean list per service.
+
+
+
+
+
+SELinux interview :
+
+ 1️⃣ What is SELinux and why is it used?
+
+Answer:
+SELinux (Security-Enhanced Linux) is a security feature that provides Mandatory Access Control (MAC). It restricts users and processes from accessing files, directories, and services even if Linux permissions allow it. SELinux is used to protect sensitive data and limit damage if a service is compromised.
+
+
+
+ 2️⃣ What are the different SELinux modes?
+
+Answer:
+SELinux has three modes:
+
+ Enforcing – Policies are strictly enforced and access is denied (recommended for production)
+ Permissive – Policies are active but violations are only logged, not blocked
+ Disabled – SELinux is completely turned off
+
+
+
+ 3️⃣ How do you troubleshoot an SELinux access denial?
+
+Answer:
+First, check SELinux status using:
+
+sestatus
+
+
+Then review logs:
+
+ausearch -m AVC
+
+journalctl | grep AVC
+
+
+
+
+3 real-time (practical) SELinux interview scenarios :
+
+
+ 1️⃣ Web server is running, but Apache cannot access `/var/www/html/index.html`
+
+Scenario:
+Apache service is running, file permissions are correct, but the page shows 403 Forbidden.
+
+Reason (SELinux):
+The file has the wrong SELinux context.
+
+Solution:
+
+ls -Z /var/www/html/index.html
+restorecon -Rv /var/www/html
+
+
+
+
+ 2️⃣ Application works in permissive mode but fails in enforcing mode
+
+Scenario:
+After switching SELinux from permissive to enforcing, the application stops working.
+
+Reason (SELinux):
+SELinux policy is blocking required access.
+
+Solution:
+ausearch -m AVC
+ or
+journalctl | grep AVC
+
+
+Then fix by:
+ Enabling required boolean (`setsebool -P`)
+ Correcting file context
+ Creating a custom SELinux policy if needed
+
+
+
+ 3️⃣ Samba share is accessible, but users cannot write to it
+
+Scenario:
+Linux permissions allow write access, but file creation fails.
+
+Reason (SELinux):
+Samba write access is blocked by SELinux.
+
+Solution:
+setsebool -P samba_export_all_rw on
+restorecon -Rv /samba_share
+
+
+

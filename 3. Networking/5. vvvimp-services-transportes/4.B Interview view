@@ -1,0 +1,104 @@
+
+What is a firewall?  **********imp
+
+A firewall is a security mechanism that controls incoming and outgoing network traffic based on predefined rules.
+
+
+ What are the types of firewalls used in organizations? **********imp
+
+1) Physical / Network Firewall
+
+Dedicated hardware or virtual appliance (Palo Alto, FortiGate, Cisco, etc.)
+
+Protects the entire organization network
+
+Controls traffic between networks (Internet ↔ Data Center ↔ DMZ)
+
+2) OS-level Firewall
+
+Runs on the individual server or machine
+
+Examples:
+
+Linux → firewalld, iptables, nftables
+
+Windows → Windows Defender Firewall
+
+Controls traffic to and from that specific machine only
+
+
+2) Which firewall comes under an OS administrator’s responsibility?
+
+OS-level firewall
+
+OS admins manage:
+
+Open/close ports
+
+Allow/block services
+
+Zone configuration
+
+note : Network teams usually manage physical firewalls
+
+3) Cloud Firewall / NSG (NEW)
+
+A virtual firewall provided by cloud platforms to control inbound and outbound traffic at:
+
+VM level
+
+Subnet level
+
+Network interface level
+
+| Cloud | Firewall Name                |
+| ----- | ---------------------------- |
+| AWS   | Security Groups / NACL       |
+| Azure | NSG (Network Security Group) |
+| GCP   | VPC Firewall Rules           |
+
+
+Who manages Cloud Firewall / NSG?
+
+Cloud / Infrastructure / DevOps team
+
+Not OS admins (generally)
+
+
+| Layer                | Scope              | Managed By     |
+| -------------------- | ------------------ | -------------- |
+| Physical Firewall    | Entire data center | Network team   |
+| Cloud Firewall / NSG | VPC / Subnet / VM  | Cloud / DevOps |
+| OS Firewall          | Single server      | OS Admin       |
+
+
+
+
+
+Is OS-level firewall disabled by default in organizations? **********imp
+
+This is a common misconception
+
+Reality (Production best practice):
+
+Many organizations KEEP OS-level firewall enabled
+
+Physical firewall ≠ replacement for OS firewall
+
+OS firewall provides:
+
+Defense in depth
+
+Protection from lateral movement
+
+Host-level security
+
+However:
+
+Some legacy or poorly managed environments disable it due to:
+
+Lack of automation
+
+Best practice is to use both physical and OS-level firewalls.”
+
+

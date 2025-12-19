@@ -1,0 +1,111 @@
+
+
+
+ firewalld --- in linux os 
+
+ Windows Defender Firewall --- in  Windows os 
+
+
+
+ Why OS Firewall is Required
+
+Even inside the same network:
+
+ One compromised server can attack another
+ OS firewall blocks lateral movement
+
+Cloud firewall cannot always protect:
+
+ VM-to-VM traffic inside same subnet form Local attacks
+
+
+
+ 4. Linux OS Firewall – firewalld 
+
+ What is firewalld?
+
+ firewalld is the default firewall management service in modern Linux systems
+(RHEL, CentOS, Rocky Linux, AlmaLinux, Fedora).
+
+
+note:
+ Zone-based firewall
+ Dynamic (no reboot needed)
+ Uses `firewall-cmd`
+
+What does “dynamic” mean?
+
+Firewall rules can be:
+
+Added
+
+Removed
+
+Modified
+
+Without restarting the firewall service
+
+No network interruption
+
+What does Zones mean:
+
+| Zone     | Meaning               |
+------------------------------------
+| public   | Untrusted network     |
+| internal | Internal network      |
+| trusted  | All traffic allowed   |
+| dmz      | Public-facing servers |
+
+Each network interface belongs to a zone
+
+
+what os-admin does at os firewall?
+
+how to enable port in firewall
+how to block the port in firewall
+how to enable servie in firewall
+how to block the servie in firewall
+
+
+ Difference Between Allowing a Service and Allowing a Port in firewalld
+
+| Aspect          | Allow Service                              | Allow Port                 |
+| --------------- | ------------------------------------------ | -------------------------- |
+| What it uses    | Service name                               | Port number                |
+| Example         | `ssh`, `http`, `nfs`                       | `22`, `80`, `2049`         |
+| Ports handled   | Automatically opens all required ports     | Only one specific port     |
+| Ease of use     | Easy                                       | Manual                     |
+| Risk of mistake | Low                                        | Higher                     |
+| Best for        | Standard services                          | Custom / non-standard apps |
+
+
+ Allow Service → firewalld knows which ports the service needs
+ Allow Port → admin must know and open the exact port
+
+
+commands to allow & block servie/port on FW:
+
+how to check which are the services are allowed through firewall?
+	firewall-cmd --list-services
+	firewall-cmd --list-ports
+
+
+allow 2049
+	firewall-cmd --zone=public --add-port=2049/tcp --permanent
+	firewall-cmd --zone=public --add-port=2049/udp --permanent
+	firewall-cmd --reload
+
+remove rule from firewall
+	firewall-cmd --zone=public --remove-port=2049/udp --permanent
+	firewall-cmd --zone=public --remove-port=2049/tcp --permanent
+	firewall-cmd --reload
+
+allow nfs service in firewall
+		firewall-cmd --zone=public --add-service=nfs --permanent 
+		firewall-cmd --reload
+	firewall-cmd --list-services
+
+remove nfs service in firewall
+		firewall-cmd --zone=public --remove-service=nfs --permanent 
+		firewall-cmd --reload
+	firewall-cmd --list-services
