@@ -1,0 +1,167 @@
+
+
+ 1. Linux admin (Core Responsibility)
+
+You own the OS layer across thousands of servers.
+
+ Responsibilities
+
+ Provision/build, configure, and maintain RHEL / CentOS / suse / Oracle Linux / ubuntu systems
+ OS hardening based on CIS / internal security baselines
+ User, group, sudo, PAM, SSH hardening
+ Kernel tuning, sysctl, ulimit, hugepages
+ Package lifecycle management (yum/dnf, repo management / patching)
+ System performance monitoring (CPU, memory, disk, IO, load)
+ Disk management (LVM, filesystems, mount lifecycle)
+ handling NTP, DNS, NFS, FTP 
+
+
+ 2. Configuration Management – Ansible Tower 
+
+You are responsible for desired state enforcement.
+
+ Responsibilities
+
+ Develop and maintain Ansible roles & playbooks
+ Use Ansible Tower for:
+   Job templates
+   Inventories (dynamic cloud inventories)
+   Credential management
+   RBAC and approval workflows
+ Enforce configuration drift remediation
+ Rolling updates with zero downtime
+ OS patching automation (monthly / emergency)
+
+ Example Work
+ Baseline OS role
+ Hardening role
+ Monitoring/logging agent deployment
+ App prerequisite roles
+ Compliance enforcement
+
+
+
+ 3. Cloud Infrastructure (AWS / Azure / GCP)
+
+You manage Linux in cloud, not just Linux itself.
+
+ Responsibilities
+
+ Understand cloud compute primitives:
+
+   EC2 / VM / Compute Engine
+   Images (AMI, Azure Image, GCP Image)
+
+ Cloud networking basics:
+
+   VPC / VNet
+   Subnets, routing, security groups / NSGs
+ Storage:
+
+   EBS / Managed Disks / Persistent Disks
+ Cloud-native monitoring & logging integrations
+ Instance metadata, IAM roles, managed identities
+
+You may not create infra manually, but you must operate it correctly.
+
+ 4. Infrastructure as Code – Terraform
+
+You treat infrastructure like software.
+
+ Responsibilities
+
+ Review and contribute to Terraform modules
+ Understand:
+   Providers (AWS, Azure, GCP)
+   State management (remote backend)
+   Variables, outputs, modules
+
+ Validate Linux-related infra changes:
+   Disk size changes
+   Instance types
+   OS image updates
+
+ Coordinate Terraform + Ansible workflows
+
+
+
+ 5. CI/CD & Automation – Harness + GitHub
+
+You work in GitOps / pipeline-driven operations.
+
+ Responsibilities
+
+ Maintain OS automation pipelines in Harness
+ Trigger Ansible/Terraform jobs via pipelines
+
+ Version control:
+   Ansible code
+   Terraform modules
+   Shell scripts
+
+ Participate in:
+   PR reviews
+   Branching strategies
+   Code quality checks
+
+ Support automated:
+   Image builds
+   Patch rollouts
+   Security fixes
+
+
+
+ 6. Security, Compliance & Hardening
+
+Security is built-in, not afterthought.
+
+ Responsibilities
+
+ OS hardening & security baseline enforcement
+ Vulnerability remediation (CVE patching)
+ Certificate management
+ Integration with security tools (scanners, agents)
+ SELinux configuration and troubleshooting
+ Audit readiness (SOX, SOC, ISO)
+
+
+
+ 7. Monitoring, Logging & Incident Support
+
+You ensure platform reliability.
+
+ Responsibilities
+
+ OS-level monitoring (CPU, disk, memory, inode)
+ Log forwarding and retention
+ On-call support for:
+
+   OS crashes
+   Disk full incidents
+   Performance degradation
+ Root cause analysis (RCA)
+ Preventive automation
+
+
+
+ 8. Collaboration & Enablement
+
+You act as a platform enabler.
+
+ Responsibilities
+
+ Support application teams with:
+
+   OS prerequisites
+   Performance tuning
+   Troubleshooting
+   
+ Create documentation & runbooks
+ Knowledge sharing & standardization
+ Work with:
+
+   Security teams
+   Cloud teams
+   DevOps teams
+
+

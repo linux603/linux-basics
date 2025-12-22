@@ -1,0 +1,105 @@
+
+
+ Site Reliability Engineer (SRE) – Roles & Responsibilities
+
+ 1. Reliability & Availability Engineering
+
+ Ensure high availability, reliability, and performance of production systems
+ Define and manage SLIs, SLOs, and SLAs
+ Design systems to tolerate failure and reduce downtime
+ Perform capacity planning and reliability forecasting
+
+
+
+ 2. Automation & Elimination of Toil
+ Automate repetitive operational tasks using:
+
+   Ansible
+   Shell/Python
+   CI/CD pipelines
+ Reduce manual intervention and operational overhead
+ Implement self-healing and auto-remediation mechanisms
+
+
+
+ 3. Production Operations & Incident Management
+
+ Own production stability and on-call rotations
+ Lead incident response during outages
+ Perform blameless postmortems
+ Identify systemic issues and prevent recurrence
+
+
+
+ 4. Monitoring, Observability & Alerting
+
+ Design and maintain observability stacks:
+
+   Metrics, logs, traces
+ Define meaningful alerts based on SLOs (not noise)
+ Improve signal-to-noise ratio in monitoring
+ Continuously refine dashboards and alerts
+
+
+
+ 5. Infrastructure & Platform Reliability
+
+ Collaborate with infrastructure teams on:
+
+   Resilient architecture
+   Scaling strategies
+   Failover mechanisms
+ Ensure infrastructure changes do not violate reliability targets
+ Validate disaster recovery and failover readiness
+
+
+
+ 6. CI/CD & Release Engineering
+
+ Improve deployment reliability and safety
+ Implement:
+
+   Progressive delivery
+   Rollbacks
+   Canary and blue-green deployments
+ Enforce release quality gates and automation
+
+
+
+ 7. Performance & Capacity Management
+
+ Analyze system performance under load
+ Identify bottlenecks and resource saturation
+ Plan capacity for growth and peak usage
+ Optimize cost without compromising reliability
+
+
+
+ 8. Security & Risk Management (Reliability View)
+
+ Partner with security teams to:
+
+   Patch vulnerabilities safely
+   Reduce blast radius
+ Implement safe defaults and least-risk configurations
+ Ensure secure systems remain highly available
+
+
+
+ 9. Platform Engineering & Enablement
+
+ Build internal platforms and tooling for developers
+ Define operational standards and best practices
+ Enable application teams to deploy and operate safely
+ Provide reliability guidance during system design
+
+
+
+ 10. Continuous Improvement & Engineering Culture
+
+ Track reliability trends and error budgets
+ Balance feature velocity with system stability
+ Advocate engineering excellence and resilience
+ Drive reliability-focused engineering decisions
+
+

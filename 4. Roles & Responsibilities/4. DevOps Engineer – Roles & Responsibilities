@@ -1,0 +1,118 @@
+
+
+ DevOps Engineer – Roles & Responsibilities
+
+ 1. CI/CD Pipeline Engineering
+
+ Design, build, and maintain CI/CD pipelines using Harness, GitHub
+ Automate build, test, scan, and deployment workflows
+ Implement pipeline-as-code and reusable templates
+ Enable fast, reliable, and repeatable deployments
+
+
+
+ 2. Infrastructure as Code & Automation
+
+ Develop and maintain infrastructure automation using:
+
+   Terraform
+   Ansible
+ Integrate IaC into CI/CD pipelines
+ Enforce consistency across environments (dev, test, prod)
+
+
+
+ 3. Cloud & Platform Enablement
+
+ Enable application teams to deploy workloads on AWS, Azure, and GCP
+ Provide standardized deployment patterns
+ Manage environment configurations and secrets
+ Support container and VM-based workloads
+
+
+
+ 4. Configuration & Release Management
+
+ Manage application configuration across environments
+ Implement versioning and rollback strategies
+ Support blue-green, canary, and rolling deployments
+ Coordinate releases with multiple teams
+
+
+
+ 5. Observability & Operational Support
+
+ Integrate monitoring, logging, and alerting into pipelines
+ Ensure deployments are observable and debuggable
+ Support production issues related to deployments and automation
+ Improve reliability of delivery pipelines
+
+
+
+ 6. Security & Compliance in the Pipeline
+
+ Embed security into CI/CD (DevSecOps):
+
+   Image scanning
+   Dependency scanning
+   Secrets detection
+ Enforce compliance checks and approvals
+ Automate security controls in pipelines
+
+
+
+ 7. Container & Artifact Management
+
+ Build, version, and publish application artifacts
+ Manage container images and registries
+ Maintain artifact repositories and promotion workflows
+ Support multi-architecture and multi-environment deployments
+
+
+
+ 8. Developer Experience & Enablement
+
+ Improve developer productivity through automation
+ Create self-service pipelines and templates
+ Maintain documentation and best practices
+ Act as a bridge between development and operations teams
+
+
+
+ 9. Platform Reliability & Optimization
+
+ Ensure CI/CD platform availability and performance
+ Optimize pipeline execution time and resource usage
+ Reduce deployment failures and manual interventions
+ Continuously improve tooling and workflows
+
+
+
+ 10. Collaboration & Continuous Improvement
+
+ Work closely with:
+
+   Developers
+   SRE
+   Infrastructure and Platform teams
+ Evaluate and adopt new DevOps tools and practices
+ Drive continuous improvement in delivery processes
+
+
+
+
+| Aspect           | Infrastructure Engineer   | Linux Admin / Platform | DevOps Engineer     | SRE                 |
+| ---------------- | ------------------------- | ---------------------- | ------------------- | ------------------- |
+| Main Question    | Is infra built correctly? | Is OS healthy?         | Can we deploy fast? | Is system reliable? |
+| Works On         | Cloud infra               | Linux OS               | CI/CD & pipelines   | Prod reliability    |
+| Creates VMs      | ✅ Yes                    | ❌ No                 | ❌ No              | ❌ No               |
+| Configures OS    | ❌ No                     | ✅ Yes                | ❌ No              | Sometimes           |
+| App Deployment   | ❌ No                     | ❌ No                 | ✅ Yes             | Reviews safety      |
+| Automation Goal  | Standard infra            | Consistent OS          | Fast delivery       | Less incidents      |
+| Terraform        | **Owns**                  | Reviews                | Uses                | Reviews             |
+| Ansible          | Minimal                   | **Heavy**              | Moderate            | For toil            |
+| Harness          | Infra pipelines           | OS pipelines           | **App pipelines**   | Release control     |
+| GitHub           | Terraform code            | Ansible code           | Pipeline code       | Reliability tools   |
+| Monitoring Focus | Infra health              | Host health            | Pipeline health     | **SLI/SLOs**        |
+| On-call For      | Infra outages             | OS issues              | Deploy failures     | **Major incidents** |
+| Success Metric   | Stable infra              | Secure OS              | Deployment speed    | Uptime & SLOs       |

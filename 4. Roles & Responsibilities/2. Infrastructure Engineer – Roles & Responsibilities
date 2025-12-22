@@ -1,0 +1,114 @@
+
+ 1. Cloud Infrastructure Design & Provisioning
+
+ Design and provision cloud infrastructure across AWS, Azure, and GCP
+ Create and manage:
+
+   VPC / VNet / VPC networks
+   Subnets, route tables, gateways
+   Load balancers and traffic routing
+ Select appropriate compute types, scaling strategies, and regions
+ Ensure high availability, fault tolerance, and disaster recovery
+
+
+
+ 2. Infrastructure as Code (Terraform)
+
+ Develop, maintain, and version Terraform modules
+ Manage Terraform state (remote backends, locking)
+ Implement reusable, standardized infrastructure patterns
+ Review and approve infrastructure changes via Git workflows
+ Handle infrastructure lifecycle: create, update, destroy
+
+
+
+ 3. CI/CD for Infrastructure (Harness / GitHub)
+
+ Build and manage infrastructure pipelines in Harness
+ Integrate Terraform with CI/CD workflows
+ Implement:
+
+   Plan → approval → apply stages
+   Environment-based deployments
+ Enforce code quality, security, and policy checks
+ Support GitOps practices
+
+
+
+ 4. Cloud Networking & Connectivity
+
+ Design and manage:
+
+   Network segmentation and isolation
+   Hybrid connectivity (VPN, Direct Connect, ExpressRoute)
+ Configure DNS, private endpoints, and routing policies
+ Troubleshoot network latency, connectivity, and routing issues
+ Implement ingress/egress controls
+
+
+
+ 5. Security & Identity Management (Cloud Layer)
+
+ Implement IAM, roles, policies, and managed identities
+ Enforce least-privilege access controls
+ Manage cloud security constructs:
+
+   Security Groups / NSGs
+   Firewall rules
+ Integrate with enterprise security and compliance tools
+ Support audits and compliance requirements
+
+
+
+ 6. Compute, Storage & Scalability
+
+ Provision and manage:
+
+   Virtual machines and instance groups
+   Auto-scaling configurations
+   Block and object storage services
+ Plan capacity and performance at infrastructure level
+ Optimize infrastructure cost and resource utilization
+
+
+
+ 7. Image & Platform Enablement
+
+ Maintain and publish base OS images (cloud images)
+ Coordinate image pipelines with OS/platform teams
+ Define bootstrapping mechanisms (cloud-init, metadata)
+ Enable standard tagging and resource governance
+
+
+
+ 8. Monitoring, Reliability & Incident Response
+
+ Implement cloud-level monitoring and alerting
+ Ensure infrastructure uptime and SLA adherence
+ Lead response to infrastructure outages
+ Perform root cause analysis (RCA) for infra incidents
+ Improve resilience through automation and design changes
+
+
+
+ 9. Governance, Standards & Documentation
+
+ Define infrastructure standards and best practices
+ Enforce naming conventions, tagging, and policies
+ Maintain architectural diagrams and documentation
+ Participate in design reviews and change approvals
+
+
+
+ 10. Cross-Team Collaboration
+
+ Work closely with:
+
+   Linux / Platform teams
+   Security teams
+   Application & DevOps teams
+ Support application onboarding to cloud platforms
+ Provide infrastructure expertise during planning and releases
+
+
+
