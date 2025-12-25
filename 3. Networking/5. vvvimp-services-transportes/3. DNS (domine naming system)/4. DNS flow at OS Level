@@ -1,0 +1,166 @@
+
+
+
+ OS-Level DNS Resolution Workflow (With Config Files)
+=======================================================
+
+Scenario: User types `www.google.com` in a browser.
+
+ Step 1: Browser asks OS :
+ ------------------------
+         Browser calls OS API (`getaddrinfo()` in Linux).
+         Browser does not know DNS.
+         OS now starts the lookup process.
+
+ Step 2: Check `/etc/nsswitch.conf`
+ ---------------------------------
+         What it is: The Name Service Switch configuration file. File path = /etc/nsswitch.conf,  OS-level file that tells Linux how to resolve names, including hostnames.
+
+         Why it exists :
+                        In this scenario:
+                                 You type www.google.com in the browser
+                                 Your OS needs to figure out the IP address
+                        Question: Where (in which dns configuration file/path) should the OS look first?
+                                 Option 1: Check local files like /etc/hosts
+                                 Option 2: Ask a DNS server (/etc/resolv.conf)
+                                 Option 3: Query other sources like LDAP or NIS
+         Without a central rule, the OS wouldn’t know which to try first. So, /etc/nsswitch.conf exists to define this order.
+
+         How it works (/etc/nsswitch.conf) :- the file contains a typical entry
+                                              hosts: files dns
+                                              or 
+                                              hosts: files dns ldap
+                                             Step-by-step meaning:
+                                             1. files → OS checks `/etc/hosts` first
+                                                No network call → very fast
+                                                Can override DNS for internal or testing purposes
+                                             2. dns → If the hostname is not in `/etc/hosts`, OS asks the DNS server listed in `/etc/resolv.conf`
+                                             3. Optional: You can add other sources like LDAP or NIS:
+
+          In this way OS will try each source in order until it finds a matching IP
+          Key point: The order matters! OS always follows this sequence.
+
+         Why it is important :
+         1. Control lookup order → OS knows exactly where to check first
+         2. Performance → Local `/etc/hosts` is much faster than querying DNS
+         3. Custom overrides → You can resolve internal or private hostnames without touching DNS
+         4. Flexibility → Supports multiple sources (DNS, LDAP, NIS) for hostname resolution
+
+
+As per the order :
+------------------
+                  Step 2a: Frist It check  at /etc/hosts
+                  --------------------------------------
+                  What it is /etc/hosts: it is a static local file mapping hostnames to IP addresses. I works before DNS.
+
+                  Purpose: Provides manual hostname resolution
+
+                  Useful for:
+
+                           Testing
+
+                           Internal/private network
+
+                           Blocking or redirecting domains
+
+                  Example:
+                  127.0.0.1   localhost
+                  10.10.10.5  app.techcorp.com
+
+                  Meaning:
+                  localhost → 127.0.0.1
+                  app.techcorp.com → 10.10.10.5
+
+                  Interview Point:
+                  Checked before DNS according to nsswitch.conf.
+
+
+                  Step 2b: Check OS DNS cache
+                  ----------------------------
+                  OS checks if it recently resolved this hostname.
+                  If cached → return IP to browser
+                  If not → go to next step
+
+                  Step 2c: Use `/etc/resolv.conf` to find DNS server
+                  ---------------------------------------------------
+                  What it is /etc/resolv.conf : The DNS resolver configuration file.
+                  Tells the OS which DNS server(s) to ask when it can’t resolve locally.
+
+                  Purpose:
+                  Lists nameserver IPs
+                  Optionally includes search domains and timeouts
+
+                  Example:
+                  nameserver 8.8.8.8
+                  nameserver 1.1.1.1
+                  search techcorp.local
+                  options timeout:2 attempts:3
+
+
+                  Meaning:
+                  Ask 8.8.8.8 first, then 1.1.1.1
+                  Use techcorp.local as default search domain
+
+                  Timeout = 2 seconds, retry 3 times
+
+                  Interview Point:
+                  OS uses this file to know where to send DNS queries.
+
+
+
+ Step 4: Receive response
+ ========================
+         Resolver replies:
+                  www.google.com → 142.250.190.14
+                  TTL: 300 seconds
+         OS stores this in cache for future queries.
+         OS passes IP back to browser.
+
+
+
+ Step 8: Browser connects
+==========================
+         Browser connects to: 142.250.190.14:443
+         Website loads
+
+
+NOTE : this importent fot interview point of view:
+---------------------------------------------------
+ DNS FLOW (OS + RESOLVER LEVEL) :
+
+                     Browser
+                        ↓
+                     Operating System
+                        ↓
+                     [Step 2: /etc/nsswitch.conf]
+                     → decides lookup order
+                        ↓
+                     [Step 3: /etc/hosts]
+                     → check static entries
+                        ↓
+                     [Step 4: OS DNS cache]
+                     → check recent resolutions
+                        ↓
+                     [Step 5: /etc/resolv.conf]
+                     → which DNS resolver to ask
+                        ↓
+                     DNS Resolver (e.g., 8.8.8.8)
+                        ↓
+                     ┌───────────────────────────────┐
+                     │  Resolver Internal Process    │
+                     │                               │
+                     │   Root Server (.)             │
+                     │        ↓                      │
+                     │   TLD Server (.com)           │
+                     │        ↓                      │
+                     │   Authoritative Server        │
+                     │   (google.com)                │
+                     └───────────────────────────────┘
+                        ↓
+                     Final IP Address
+                        ↓
+                     Response back to OS
+                        ↓
+                     OS returns IP to Browser
+
+

@@ -1,0 +1,118 @@
+DNS Components — With IT Company Example
+=========================================
+Let’s assume an IT company called TechCorp :
+                                                Domain:
+                                                techcorp.com
+                                                Website:
+                                                www.techcorp.com
+
+ 1. DNS Resolver :
+=================
+ What it is : A DNS Resolver is the server that employees’ systems contact first to resolve domain names.
+
+ Role :
+ Receives DNS queries from users
+ Finds the IP by querying other DNS servers
+ Returns the final answer
+
+ IT Company Example :
+                    At TechCorp:
+                    Employees’ laptops use: 10.10.0.10, This ip is the internal DNS resolver
+                    Employee types broweser: www.techcorp.com
+                    The laptop asks to 10.10.0.10 (resolver):
+                    “What is the IP of [www.techcorp.com?”](http://www.techcorp.com?”)
+                    The resolver now does the lookup work.
+
+
+ 2. Root DNS Server :
+ ==================
+ What it is: The top-most DNS servers in the global DNS system.
+
+ Role :
+ Knows where TLD servers are, but does NOT know website IPs
+
+ IT Company Example Resolver asks Root server:
+                                                “Who manages `.com`?”
+                                                 Root replies: “These servers manage `.com` domains”
+
+ Root is like the Internet entry point.
+
+
+ 3. TLD (Top-Level Domain) Server :
+ ===============================
+
+ What it is : DNS servers responsible for a specific TLD like:
+                                                                `.com`
+                                                                `.org`
+                                                                `.in`
+
+ Role :
+ Knows which authoritative DNS servers manage a domain, but this also does NOT store IP addresses
+
+ IT Company Example; Resolver asks `.com` TLD server:
+                                                     “Who manages techcorp.com?”
+                                                     TLD replies: “These are the authoritative DNS servers for techcorp.com”
+
+ TLD acts like a domain directory.
+
+---
+
+ 4. Authoritative DNS Server
+=============================
+ What it is : The DNS server that owns the DNS records for a domain.
+
+ Role :
+ Stores actual DNS records
+ Gives the final, trusted answer
+
+ IT Company Example : Authoritative DNS for `techcorp.com` stores:
+                                                                    www.techcorp.com → 203.0.113.25
+                                                                    mail.techcorp.com → 203.0.113.30
+                                                                    Resolver asks: “What is the IP of [www.techcorp.com?”](http://www.techcorp.com?”)
+                                                                    Authoritative replies:  “203.0.113.25”
+
+This server is controlled by TechCorp or its DNS provider.
+
+
+
+ FULL IT FLOW (TechCorp)
+========================
+
+Employee Laptop
+   ↓
+TechCorp DNS Resolver (10.10.0.10)
+   ↓
+Root Server (.)
+   ↓
+.com TLD Server
+   ↓
+Authoritative DNS (techcorp.com)
+   ↓
+IP Address
+
+
+
+| Component            | Simple Explanation        |
+| -------------------- | ------------------------- |
+| DNS Resolver         | Finds the answer          |
+| Root Server          | Knows TLD locations       |
+| TLD Server           | Knows domain owners       |
+| Authoritative Server | Stores actual DNS records |
+
+
+
+
+
+Question: Explain the DNS flow ? *******************VVVVVVIMP
+===============================
+Answer:
+When a user enters a domain name in the browser, the browser first checks its cache, then the OS cache. If not found, the request goes to a DNS resolver. 
+The resolver queries the root server to find the TLD server, then queries the TLD server to locate the authoritative DNS server. 
+The authoritative server returns the IP address, which is sent back to the resolver and then to the browser, allowing the browser to connect to the server.
+
+ ONE-LINE INTERVIEW ANSWERS *******************VVVVVVIMP
+===============================
+  what is DNS Resolver: Server that resolves DNS queries for clients.
+  what is Root Server: Top-level server that directs queries to TLD servers.
+  what is TLD Server: Server that points to authoritative DNS servers for domains.
+  what is Authoritative Server: Server that stores and returns actual DNS records.

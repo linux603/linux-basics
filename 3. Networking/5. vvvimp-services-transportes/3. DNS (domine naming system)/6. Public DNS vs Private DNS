@@ -1,0 +1,33 @@
+
+Public DNS (Internet-wide)
+=============================
+Examples:
+
+            www.google.com
+
+            www.facebook.com
+
+            www.amazon.com
+
+            www.aadhaar.gov.in
+
+👉 Managed globally
+👉 Domains are registered publicly
+👉 Governed by ICANN (not directly IANA in daily ops)
+
+🔹 ICANN manages domain names
+🔹 IANA manages IP ranges, root zone, protocol numbers
+
+Private DNS (Company internal)
+==============================
+Examples:
+
+        timesheet.ibm.com
+
+        hrqueries.ibm.com
+
+portal.ibm.com
+
+👉 Only accessible inside company network
+👉 Managed by Linux / Windows administrators
+👉 Stored on internal DNS servers

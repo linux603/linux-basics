@@ -1,0 +1,208 @@
+
+
+ Configure DNS Server
+====================
+
+ Step 1: Install bind and bind-utils packages
+ -------------------------------------------
+        yum install bind bind-utils -y
+
+        Why this step is required
+        bind → Provides the DNS server service (`named`)
+        bind-utils → Provides DNS testing and troubleshooting commands like:
+        `nslookup`
+        `dig`
+        `named-checkconf`
+        `named-checkzone`
+        Without these packages, the system cannot act as a DNS server.
+
+
+ Step 2: Configure the Forward Lookup Zone
+ ------------------------------------------
+        Lookup Zone Files : There are two types of lookup zones in DNS:
+
+        1. Forward Lookup Zone
+            Converts Name → IP
+            Example:
+            server1.b35.test → 192.168.219.100
+            Used by applications, SSH, browsers, automation tools.
+
+        2. Reverse Lookup Zone
+            Converts IP → Name
+            Example:
+            192.168.219.100 → server1.b35.test
+            Used by mail servers, security tools, Kerberos authentication.
+
+        how to Create Forward Lookup Zone File, Zone files must be stored in the DNS working directory: /var/named
+                                                                                                         Commands:
+                                                                                                                cd /var/named
+                                                                                                                vi fw.b35.test
+                                                                                                                OR
+                                                                                                                vi /var/named/fw.b35.test
+
+        This directory is controlled by SELinux, so DNS can securely read zone files.
+
+
+
+ Forward Lookup Zone File Content  ::
+====================================
+dns
+$TTL 86400
+@       IN SOA  server4.b35.test. root.b35.test. (
+                2025022401      ; serial
+                10m             ; refresh
+                15m             ; retry
+                1d              ; expire
+                1h              ; minimum
+)
+
+@       IN  NS  server4.b35.test.
+@       IN  A   192.168.219.134
+server4 IN  A   192.168.219.134
+server1 IN  A   192.168.219.100
+
+
+
+ Explanation of Each Section :
+ ===========================
+
+ `$TTL 86400`
+--------------
+ TTL = Time To Live
+ Cache duration = 24 hours
+ DNS clients cache records for performance.
+
+
+ `SOA (Start of Authority)`
+ -----------------------------
+dns
+@ IN SOA server4.b35.test. root.b35.test.
+
+Contains:
+1. Domain name
+2. Primary DNS server
+3. Admin email (`root@b35.test`)
+4. Replication details
+
+ Serial Number
+---------------
+dns
+2025022401
+
+Format: YYYYMMDDNN
+ Date: 2025-02-24
+ Change count: 01
+
+Secondary DNS uses this number to check updates.
+
+
+ Refresh / Retry / Expire
+ ---------------------------
+ Refresh → How often secondary checks master
+ Retry → Retry interval if master fails
+ Expire → When secondary stops answering
+ Minimum → Negative caching TTL
+
+
+ NS Record
+ ---------
+dns
+@ IN NS server4.b35.test.
+
+ Declares authoritative DNS server
+ Used for redundancy and delegation.
+
+ A Records
+-----------
+dns
+server4 IN A 192.168.219.134
+server1 IN A 192.168.219.100
+
+
+Maps:
+Name → IPv4 Address
+
+
+
+
+ Step 3: Configure the `named.conf` File
+==========================================
+
+vi /etc/named.conf
+
+conf
+options {
+    directory "/var/named";
+
+    dump-file "data/cache_dump.db";
+    statistics-file "data/named_stats.txt";
+    memstatistics-file "data/named_mem_stats.txt";
+
+    listen-on port 53 { 127.0.0.1; 192.168.219.134; };
+    allow-query { localhost; 192.168.219.0/24; 192.168.218.0/24; };
+};
+
+zone "b35.test" IN {
+    type master;
+    allow-query { any; };
+    file "fw.b35.test";
+};
+
+
+
+ Explanation
+
+ `directory` → Where zone files are stored
+ `listen-on` → DNS listens only on these IPs
+ `allow-query` → Which networks can query DNS
+ `type master` → Primary DNS server
+ `file` → Forward lookup zone file
+
+
+
+ Step 4: Verify Configuration Files Syntax
+===========================================
+named-checkzone b35.test /var/named/fw.b35.test
+named-checkconf /etc/named.conf
+
+ Why this step is critical
+ DNS is very strict
+ One syntax error = service will not start
+
+ Step 5: Start the DNS Service
+==============================
+systemctl start named
+systemctl enable named
+
+Firewall (lab purpose):
+systemctl stop firewalld
+systemctl disable firewalld
+
+ In production, open port 53 instead of stopping firewall.
+
+
+
+ Integrate Client with DNS Server
+===================================
+On client system:
+
+vi /etc/resolv.conf
+conf
+search b35.test
+nameserver 192.168.219.134
+
+
+Test:
+nslookup server1
+
+
+ In Newly Deployed Server – iN Post Build Activities, Integrate Client with DNS Server IS one of the take
+=========================================================================================================
+  DNS Integration
+  ----------------
+vi /etc/resolv.conf
+search b35.test
+nameserver 192.168.219.134
+
+
+ 

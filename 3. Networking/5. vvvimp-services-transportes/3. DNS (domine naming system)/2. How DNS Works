@@ -1,0 +1,227 @@
+
+
+ How DNS Works ?? 
+ ===================
+
+When user types in browser: www.google.com
+
+The browser cannot talk google using names like www.google.com, It needs an IP address.
+
+So the question becomes:
+
+ “Who knows the IP address of [www.google.com?”](http://www.google.com?”)
+
+see how browser gets IP for names:
+==================================
+
+ STEP 1: Browser Cache (FASTEST CHECK)
+========================================
+    What happens? Browser checks its own memory
+    It asks:  “Have I recently visited [www.google.com?”](http://www.google.com?”), if Browser visited, Cache contains ip details.
+
+    Example:
+            You opened Google 5 minutes ago
+            So, Browser already stored: www.google.com → 142.250.190.14
+            Browers gets ip form its wone Cache.
+            So, DNS lookup stops here
+            Website opens immediately
+
+    If NOT found  IP in browser Cache → go to Step 2
+
+ STEP 2: OS DNS Cache
+ ====================
+    What happens? Operating System (Linux/Windows/macOS) checks its DNS cache
+
+    Example:
+            If any Another application (curl, wget) resolved google.com earlier
+            So, OS already knows the IP
+            Browers gets ip form its DNS Cache.
+            So, DNS lookup stops here
+            Website opens immediately
+
+    If NOT found → go to Step 3
+
+
+ STEP 3: DNS Resolver (IMPORTANT)
+ ================================
+    What is a DNS Resolver?
+    -----------------------
+    A DNS Resolver is a server that finds the IP address for a domain name on behalf of a client by querying other DNS servers.
+    note:
+    The client never talks directly to Root, TLD, or Authoritative servers. Only the resolver does.
+
+
+    Without a DNS Resolver (Hypothetical Case)?
+    ------------------------------------------
+    If DNS resolvers did not exist: Every client device (laptop, phone, server) would have to:
+                                                                                            1. Know the full list of Root DNS servers
+                                                                                            2. Know how to ask:
+                                                                                                Root servers
+                                                                                                TLD servers
+                                                                                                Authoritative servers
+                                                                                            3. Handle:
+                                                                                                Timeouts
+                                                                                                Retries
+                                                                                                Failures
+                                                                                            4. Store and manage:
+                                                                                                DNS cache
+                                                                                                TTL expiration
+                                                                                            5. Implement DNS logic in:
+                                                                                                Browsers
+                                                                                                OS
+                                                                                                Applications
+                                                                                            Result:
+                                                                                            Each device becomes a mini DNS server
+                                                                                            Huge duplication of work
+                                                                                            More network traffic
+                                                                                            Slower browsing
+                                                                                            Complex client software
+
+    This is not scalable for billions of devices.
+
+
+
+   With a DNS Resolver (REAL-WORLD DESIGN) ?
+   --------------------------------------
+    DNS uses a resolver model.
+    What happens:
+                Client asks only ONE server
+                That server is the DNS Resolver
+
+    Example:
+    Client → DNS Resolver (8.8.8.8)
+    The client says: “I need the IP of [www.google.com”](http://www.google.com”)
+    And then stops.
+
+    form here “Resolver Does All the Hard Work” (The resolver takes full responsibility for) : 
+                                                                                            1. Knowing Where to Start
+                                                                                            Resolver already knows Root DNS servers
+                                                                                            Client does not need this knowledge
+
+                                                                                            2. Talking to Multiple DNS Levels
+                                                                                            Resolver:
+                                                                                            Contacts Root server
+                                                                                            Contacts TLD server
+                                                                                            Contacts Authoritative server
+                                                                                            Client talks to none of them directly.
+
+                                                                                            3. Handling Failures and Delays
+                                                                                            If:
+                                                                                            One root server is down
+                                                                                            One TLD server is slow
+                                                                                            One authoritative server fails
+                                                                                            Resolver:
+                                                                                            Tries alternate servers
+                                                                                            Retries automatically
+                                                                                            Client remains unaware.
+
+                                                                                            4. Caching Results
+                                                                                            Resolver stores:
+                                                                                            IP answers
+                                                                                            DNS hierarchy information
+                                                                                            So:
+                                                                                            First lookup is slower
+                                                                                            Next 1000 lookups are fast
+
+
+
+Who Uses a DNS Resolver?
+------------------------
+
+                            | Client       | Example              |
+                            | ------------ | -------------------- |
+                            | Browser      | Chrome, Firefox      |
+                            | OS           | Linux, Windows       |
+                            | Applications | curl, wget, yum, apt |
+                            | Servers      | Web, DB, App servers |
+
+They all send DNS queries to one resolver.
+
+
+
+Types of DNS Resolvers:
+----------------------
+
+ 1. ISP DNS Resolver
+    Provided by:
+    Airtel
+    Jio
+    BSNL
+    
+    Configured automatically via DHCP.
+
+ 2. Public DNS Resolver
+    Manually configured:
+                        | Provider   | IP             |
+                        | ---------- | -------------- |
+                        | Google     | 8.8.8.8        |
+                        | Cloudflare | 1.1.1.1        |
+                        | OpenDNS    | 208.67.222.222 |
+
+ 3. Enterprise / Corporate Resolver
+    Internal DNS servers
+    Used inside organizations
+    Handles:
+    Internal domains (`corp.local`)
+    External lookups
+
+
+ What Exactly Happens Inside a Resolver?
+ =======================================
+Let’s take: www.google.com
+---------------------------
+ Step 1: Resolver Receives Query
+    Client asks resolver: “Give me IP of [www.google.com”](http://www.google.com”)
+    Resolver checks its own cache first.
+
+ Step 2: Resolver Cache Check
+    If found:
+    Immediately returns IP
+    No external queries
+    Example:
+    Cache:
+    www.google.com → 142.250.190.14
+    TTL remaining: 120 sec
+
+ Step 3: Cache Miss (MOST IMPORTANT CASE)
+    Resolver does NOT know the answer.
+    Now it starts recursive resolution.
+    This is where REAL DNS starts
+
+ Recursive Resolution (REAL DNS)
+ -------------------------------
+    Resolver now acts like a DNS detective
+
+ Step 4: Ask Root Server
+    Resolver asks:
+    “Who handles `.com`?”
+    Root replies:
+    “These servers handle `.com`”
+    Root does NOT know google IP.
+
+ Step 5: Ask TLD Server (.com)
+    Resolver asks:
+    Who handles google.com?”
+    TLD replies:
+    “These servers are authoritative for google.com”
+    TLD does NOT know Google IP.
+
+ Step 6: Ask Authoritative Server
+    Resolver asks:
+    “What is IP of [www.google.com?”](http://www.google.com?”)
+    Authoritative replies:
+    A record: 142.250.190.14
+    TTL: 300
+
+ Step 7: Resolver Responds to Client
+    Resolver:
+    1. Sends IP to client
+    2. Stores answer in cache
+    3. Starts TTL countdown
+
+
+ 
+
+
+
+

@@ -1,0 +1,68 @@
+
+ DNS (Domain Name System) 
+ ========================
+
+
+ What is DNS?
+ ==============
+
+DNS (Domain Name System) is a naming system used on computer networks (including the Internet) that translates human-friendly domain names into IP addresses.
+
+Simple definition:  DNS converts domain names (likewww.google.com) into IP addresses (like142.250.190.14) so computers can communicate.
+
+Computers cannot understand domain names.
+They only understand numbers (IP addresses).
+
+Example:
+Instead of typing: 142.250.190.14
+We type: www.google.com
+
+DNS performs this translation automatically and invisibly.
+
+
+
+ Real-World Analogy : 
+
+ DNS = Phonebook / Contacts List
+
+| Human World  | Internet World |
+---------------------------------
+| Person Name  | Domain Name    |
+| Phone Number | IP Address     |
+| Phonebook    | DNS            |
+
+When you search a contact name, your phone finds the number.
+When you type a domain name, DNS finds the IP address.
+
+
+
+ What is a Domain Name?
+ =========================
+
+A domain name is a human-readable address for a server on the Internet.
+
+Example1: www.example.com
+
+Breakdown:
+www → Hostname
+example → Domain name
+.com → Top Level Domain (TLD)
+
+Example2: grohith@sap.com
+grohith → user name 
+sap → Domain name
+.com → Top Level Domain (TLD)
+
+
+What is an IP Address?
+===========================
+
+An IP address uniquely identifies a device on a network.
+
+Examples:
+
+ IPv4:192.168.1.10
+ IPv6:2001:db8::1
+
+DNS maps domain names → IP addresses.
+

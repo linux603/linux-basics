@@ -1,0 +1,178 @@
+
+ 1️⃣ Root DNS Servers
+=======================
+
+ What are Root DNS Servers?
+-----------------------------
+    Root DNS servers are the top most servers in the DNS hierarchy.
+
+    They are the starting point of DNS resolution.
+
+    When a DNS resolver does not know anything about a domain, it first contacts a Root DNS server.
+
+
+
+ How many Root DNS servers exist?
+---------------------------------
+    Logical vs Physical :
+    ====================
+    Logical Root Servers
+    There are 13 logical root DNS servers
+    Named from A to M
+    A-root, B-root, C-root … M-root
+  
+    Why only 13?
+    Because of early DNS protocol limitations (UDP packet size)
+    Each root server name had to fit in a small response
+
+   Physical Root Servers :
+   =====================
+    Each logical root server has many physical instances
+    Deployed worldwide using Anycast
+    Total physical instances = hundreds
+
+    👉 This gives:
+    High availability
+    Load balancing
+    Low latency
+    DDoS protection
+
+
+
+ What is Anycast ?
+ ===============
+    With Anycast:
+    Same IP address is announced from many locations
+    User is routed to the nearest instance
+
+    Example:
+    You query K-root
+    You are in India
+    You hit K-root instance in India, not Europe
+
+    Example: K-root in India
+    K-root is managed by RIPE NCC
+    Has instances in India
+    Improves DNS performance for Indian users
+
+What Root DNS Servers DO NOT do
+===============================
+    ❌ Root servers do not store website IP addresses
+    ❌ Root servers do not know [www.google.com](http://www.google.com) IP
+
+ What Root DNS Servers ACTUALLY do
+===================================
+    They only answer questions like:
+    > “Who manages `.com`?”
+    > “Who manages `.in`?”
+
+    Example response:
+    .com is handled by these TLD servers
+    .in is handled by these TLD servers
+
+    They return TLD name server information, not IPs of websites.
+
+
+
+
+ 2️⃣ Domain Types:-
+================
+
+
+ What is a Domain?
+ -----------------
+    A domain name is a human-readable identifier for an IP address.
+
+    Example:
+    amazon.com → 54.x.x.x
+    Domains are organized hierarchically.
+
+domain types:
+
+ gTLD (Generic Top-Level Domain)
+ ==============================
+    What is gTLD?
+    -------------
+    Domains not tied to a country
+    Used globally
+    Managed by ICANN-accredited registries
+
+    Examples of gTLD:
+    ------------------
+    | gTLD  | Purpose       |
+    -------------------------
+    | .com  | Commercial    |
+    | .org  | Organizations |
+    | .edu  | Education     |
+    | .gov  | Government    |
+    | .info | Information   |
+
+    Example:
+    google.com
+    amazon.org
+    harvard.edu
+    usa.gov
+
+ Why gTLD exists?
+ ----------------
+    To categorize websites by purpose
+    To allow global access without country restriction
+
+
+ccTLD (Country Code Top-Level Domain)
+=====================================
+
+    What is ccTLD?
+    -------------
+    Domain assigned to a specific country
+    Each country manages its own ccTLD
+
+    Examples:
+
+    | Country        | ccTLD |
+    --------------------------
+    | India          | .in   |
+    | United Kingdom | .uk   |
+    | United States  | .us   |
+    | Pakistan       | .pk   |
+
+    Example:
+    gov.in
+    bbc.co.uk
+    irs.gov.us
+
+
+
+ Who manages ccTLD?
+ -------------------
+ Managed by country-specific authorities
+ Example:
+   `.in` → NIXI (India)
+   `.uk` → Nominet
+   `.us` → Neustar
+
+
+ How Root Servers and TLDs work together
+---------------------------------------
+
+DNS Resolver
+   ↓
+Root Server → “Who manages .com?”
+   ↓
+TLD Server (.com) → “Who manages amazon.com?”
+   ↓
+Authoritative Server → “Here is the IP”
+
+
+
+
+ ONE-LINE INTERVIEW ANSWERS
+
+ Root DNS:
+
+> Root DNS servers are the top-level servers that direct DNS resolvers to the appropriate TLD servers and do not store website IP addresses.
+
+ gTLD vs ccTLD:
+
+> gTLDs are generic domains used globally, while ccTLDs are country-specific domains managed by individual countries.
+
