@@ -1,0 +1,29 @@
+
+ NFS Pre-Requisites
+
+1. nfs-utils package
+    Required on the NFS server (and client)
+    Provides NFS daemons and utilities
+
+2. NFS service availability
+    `nfs-server` service must be present
+    Manages `nfsd`, `mountd`, `lockd`, and `statd`
+
+3. Kernel support
+    Linux kernel with NFS support enabled
+    NFS kernel modules available
+
+4. Network connectivity
+    Client and server must have IP reachability
+
+5. Required port
+    TCP 2049 available for NFS traffic
+
+6. Firewall / Security rules
+    NFS allowed through system firewall
+    Allowed in cloud security groups / NSGs (if used)
+
+7. Storage readiness
+    Local filesystem (XFS / EXT4)
+    Directory prepared for export
+

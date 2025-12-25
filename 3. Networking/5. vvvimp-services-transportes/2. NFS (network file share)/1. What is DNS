@@ -1,0 +1,22 @@
+
+NFS (Network File System) 
+
+what is NFS ??? 
+=================
+NFS is a distributed file system protocol that allows a Linux server to share directories over a network, 
+so that other Linux machines can access those directories as if they were local filesystems.
+
+
+
+Technical Definition :
+=====================
+
+NFS is a client–server based file sharing service where:
+
+One system acts as an NFS server
+
+Other systems act as NFS clients
+
+Files are accessed over the network using TCP port 2049
+
+Remote directories are mounted locally on client machines

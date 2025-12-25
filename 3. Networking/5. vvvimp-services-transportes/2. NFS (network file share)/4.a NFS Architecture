@@ -1,0 +1,51 @@
+
+
+ NFS Architecture (High-Level)
+
+ 1. NFS Client
+ Initiates mount and file access requests
+ Uses NFS client utilities and kernel modules
+ Communicates with the NFS server over the network
+
+
+ 2. Network Layer
+ Uses TCP port 2049
+ Requires:
+   Open firewall on server
+   Allowed cloud security rules (NSG / SG)
+   Network reachability between client and server
+
+
+ 3. NFS Server
+ Provides shared directories (exports)
+ Controlled by the nfs-server service
+ Uses multiple internal daemons for different responsibilities
+
+
+ 4. NFS Server Components
+| Component  | Architectural Role                             |
+|--------------------------------------------------------------
+| nfsd   | Core data path; handles file read/write operations |
+| mountd | Validates and authorizes mount requests            |
+| lockd  | Ensures file locking consistency                   |
+| statd  | Handles crash recovery and lock re-establishment   |
+
+
+ 5. Storage Backend
+ Local filesystem (XFS, EXT4, etc.)
+ Permissions and ownership enforced at filesystem level
+ Shared to clients via NFS exports
+
+ 6. Access Control Flow (Logical)
+1. Client sends mount request
+2. `mountd` validates access rules
+3. Client performs I/O through `nfsd`
+4. `lockd` manages file locks
+5. `statd` handles recovery after crashes
+
+ 7. Package Layer
+ nfs-utils provides:
+   Server daemons
+   Client components
+   Supporting binaries
+

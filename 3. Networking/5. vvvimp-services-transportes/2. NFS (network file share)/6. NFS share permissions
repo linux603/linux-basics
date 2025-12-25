@@ -1,0 +1,168 @@
+
+
+ NFS Export Options :
+ ====================
+
+ 1. `rw` (Read / Write)
+
+Description: Allows NFS clients to read from and write to the shared directory.
+
+Behavior:
+ Clients can create, modify, and delete files.
+ File permissions still apply (UID/GID based).
+
+Use Case:
+ Application data directories
+ Shared project workspaces
+
+Risk:
+ Improper permissions can lead to accidental data modification.
+
+
+
+ 2. `ro` (Read Only)
+
+Description: Allows clients to only read data from the share.
+
+Behavior:
+ File creation, modification, and deletion are blocked.
+ Protects data from being changed by clients.
+
+Use Case:
+ Shared software repositories
+ Configuration or reference data
+
+Security Benefit:
+ Prevents accidental or malicious writes.
+
+
+
+ 3. `sync` (Synchronous Writes)
+
+Description: The NFS server writes data to disk first, then sends a success reply to the client.
+
+Behavior:
+ Guarantees data integrity.
+ Slower performance due to disk I/O wait.
+
+Use Case:
+ Databases
+ Financial and critical production systems
+
+Advantage:
+ Minimal risk of data loss during crashes.
+
+
+
+ 4. `async` (Asynchronous Writes)
+
+Description: The server replies immediately and writes data to disk later.
+
+Behavior:
+ Faster write performance.
+ Risk of data loss if the server crashes before writing.
+
+Use Case:
+ Temporary data
+ Non-critical workloads
+
+Risk:
+ Possible file corruption during power failure or crash.
+
+
+
+note :
+
+What is actually happening? in sync/async
+
+Imagine you save a file on your laptop.
+ You click Save
+ Your laptop writes the file to the hard disk
+ Only after that, it shows Saved successfully
+
+NFS works the same way.
+
+ In NFS, who is doing what?
+ Client → the machine writing the file
+ NFS server → the machine that owns the disk
+ Disk → where the file really lives
+
+
+ What does “writes data to disk first” mean 
+It means:
+> The NFS server really stores the data on its storage
+> (not just in memory / RAM).
+
+So the file is physically saved, not just temporarily held.
+
+
+ Step-by-step  With `sync`:
+ =========================
+1. Client says:
+   👉 “Please save this file”
+2. NFS server saves the file onto its disk
+3. Disk says:
+   👉 “File is stored”
+4. NFS server replies to client:
+   👉 “Done”
+
+So, File is safe.
+
+
+Step-by-step With `async`:
+==========================
+1. Client says:
+   👉 “Please save this file”
+2. NFS server replies immediately:
+   👉 “Done”
+3. Server plans to save file later
+
+If server crashes now → file may never be saved
+
+
+
+
+ 5. `root_squash` (Default – Security Feature)
+
+Description: Client-side root user (UID 0) is mapped to an unprivileged user (`nobody`).
+
+Behavior:
+ Root on client does not have root access on the NFS server.
+ Prevents privilege escalation.
+
+Use Case:
+ Almost all production environments
+
+Security Advantage:
+ Protects server files from remote root access.
+
+
+
+ 6. `no_root_squash` (Disable Root Mapping)
+
+Description: Client root user retains root privileges on the NFS share.
+
+Behavior:
+ Root on client can read/write any file on the share.
+ Bypasses server-side permission protection.
+
+Use Case:
+ Backup servers
+ Trusted admin systems
+
+Risk: High security risk if misused.
+
+
+
+ Comparison Summary
+
+| Option           | Focus                | Impact                   |
+----------------------------------------------------------------------
+| `rw` / `ro`      | Access control       | Data modification        |
+| `sync` / `async` | Data safety vs speed | Integrity vs performance |
+| `root_squash`    | Security             | Prevents remote root     |
+| `no_root_squash` | Privilege            | Full root access         |
+
+
+
+ 

@@ -1,0 +1,141 @@
+
+
+
+NFS Server Configuration (m1) — STEP BY STEP
+==============================================
+
+
+ STEP 1️⃣ Login & Root Access
+    ssh m1
+    sudo -i
+ STEP 2️⃣ Install NFS Package
+    yum install -y nfs-utils
+    Verify:
+    rpm -qa | grep nfs
+
+ STEP 3️⃣ Start NFS Service
+    systemctl enable --now nfs-server
+    systemctl status nfs-server
+
+    Expected:
+    Active: active (running)
+
+ STEP 4️⃣ Prepare Directory to Share
+    mkdir /appdata
+    Mount disk:
+    mount /dev/sdb/app-lv1 /appdata
+    Verify:
+    df -h | grep appdata
+
+ STEP 5️⃣ Export Configuration (`/etc/exports`)
+    This is the HEART of NFS
+    Format:
+    <directory> <client> (options)
+
+    Example 1️⃣: Single Client
+            /appdata 192.168.219.10(rw,sync)
+
+    Example 2️⃣: Multiple Clients
+            /appdata 192.168.219.10(rw,sync)
+            /appdata 192.168.219.11(rw,sync)
+
+    Example 3️⃣: Subnet Based (Most Common)
+            /appdata 192.168.219.0/24(rw,sync)
+
+note:
+====
+| Option           | Meaning                     |
+--------------------------------------------------
+| `rw`             | Read + Write                |
+| `ro`             | Read only                   |
+| `sync`           | Write to disk before reply  |
+| `async`          | Faster but risky            |
+| `no_root_squash` | Allow root full access      |
+| `root_squash`    | Map root → nobody (default) |
+
+    STEP 6️⃣ Apply Export Rules
+
+        exportfs -rav
+
+            Meaning:
+            `r` → re-export
+            `a` → all
+            `v` → verbose
+
+        Verify:
+
+        exportfs -v
+
+ STEP 7️⃣ Firewall Configuration
+
+        firewall-cmd --permanent --add-service=nfs
+        firewall-cmd --reload
+
+        Verify:
+        firewall-cmd --list-services
+
+
+
+
+ STEP 8️⃣ SELinux Configuration (MOST MISSED STEP)
+
+        getenforce
+
+        Allow NFS:
+        setsebool -P nfs_export_all_rw 1
+
+
+ STEP 9️⃣ Cloud / NSG Check
+
+✔ Allow 2049/TCP
+✔ Source = client subnet
+
+
+ NFS Client Configuration (m2/m3)
+================================
+
+
+ STEP 1️⃣ Install Client Tools
+
+    yum install -y nfs-utils
+    Client does NOT need `nfs-server` service
+
+
+ STEP 2️⃣ Verify Server Export
+
+    showmount -e 192.168.219.134
+
+    Output:
+    Export list for 192.168.219.134:
+    /appdata 192.168.219.0/24
+
+
+
+
+ STEP 3️⃣ Create Local Mount Point
+
+        mkdir /appdata
+
+ STEP 4️⃣ Mount NFS Share
+
+    mount -t nfs 192.168.219.134:/appdata /appdata
+
+     df -h | grep appdata
+
+
+ STEP 5️⃣ Test Read & Write
+
+        touch /appdata/testfile
+        ls -l /appdata
+
+
+ STEP 6️⃣ Persistent Mount (fstab)
+
+
+    vi /etc/fstab
+
+    Add:
+    192.168.219.134:/appdata /appdata nfs defaults,_netdev 0 0
+
+    Test:
+    mount -a
