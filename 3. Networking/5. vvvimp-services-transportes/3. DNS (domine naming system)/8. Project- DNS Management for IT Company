@@ -1,0 +1,241 @@
+ Project: DNS Management for IT Company (Enterprise Environment)
+==================================================================
+
+To design, implement, and maintain a centralized DNS system for an IT company to ensure:
+ Reliable name resolution (hostname → IP and IP → hostname)
+ Integration of all internal servers and services
+ Management of public and private DNS zones
+ Automated record creation and updates
+ High availability and disaster recovery
+
+
+ Scope:
+1. Internal DNS (Private Network)
+    Domain: `corp.example.com`
+    Hosts: 100+ servers (application, DB, web, email)
+    Services: LDAP, Mail, Web, API servers
+
+2. External DNS (Public Internet)
+    Domain: `example.com`
+    Public services: Website, Email, API endpoints
+
+3. DNS Features to Implement:
+    Forward and reverse lookup zones
+    Primary (master) and secondary (slave) DNS servers
+    DNS record types: A, AAAA, CNAME, MX, PTR, TXT, SRV, CAA
+    Zone transfers and replication
+    TTL management for dynamic updates
+
+
+
+ Project Deliverables:
+
+1. DNS Architecture Diagram
+    Master and slave DNS servers
+    Forward and reverse lookup zones
+    Integration with DHCP (if required)
+
+2. Zone File Configuration
+    Forward lookup zone file (`fw.corp.example.com`)
+    Reverse lookup zone file (`rev.10.168.192.in-addr.arpa`)
+
+3. Record Management
+    Internal servers: A, AAAA, CNAME, PTR
+    Email servers: MX, SPF (TXT)
+    Service records: SRV (LDAP, AD, SIP)
+    Certificate control: CAA
+
+4. DNS Client Integration
+    Configure `/etc/resolv.conf` for Linux servers
+    Configure Windows DNS clients via Group Policy
+
+5. Monitoring & Reporting
+    DNS query logs
+    Alerts for unavailable or failing DNS servers
+
+6. Backup & Disaster Recovery
+    Periodic zone file backup
+    Secondary DNS in different data center
+
+
+
+ Step-by-Step Tasks (Implementation Plan):
+
+ Phase 1: Plannin
+ Identify domains (internal and external)
+ List all hosts and services
+ Decide on primary and secondary DNS servers
+
+ Phase 2: DNS Server Setup
+ Install BIND on Linux (`yum install bind bind-utils`)
+ Configure `/etc/named.conf`
+ Configure forward (`fw.corp.example.com`) and reverse (`rev.10.168.192.in-addr.arpa`) zone files
+ Start and enable `named` service
+
+ Phase 3: Adding Records
+ Add A records for servers: `app01.corp.example.com → 192.168.10.10`
+ Add PTR for reverse lookup
+ Add CNAME for aliases: `web.corp.example.com → app01.corp.example.com`
+ Add MX for email servers
+ Add TXT for SPF/DKIM
+ Add SRV for LDAP/AD services
+ Add CAA to allow only authorized CAs
+
+ Phase 4: Client Integration
+ Linux: Update `/etc/resolv.conf` with nameserver IP and search domain
+ Windows: Use Group Policy to push DNS settings to all clients
+
+ Phase 5: Testing
+ Ping hostnames
+ `nslookup` and `dig` for forward and reverse lookups
+ Test mail flow using MX and SPF
+ Validate SRV records for services
+
+ Phase 6: Automation & Maintenance
+ Scripts to add/remove hosts dynamically
+ Monitor DNS logs for errors
+ Regularly update TTL for frequently changing services
+
+
+
+
+ Real-Time IT Scenario: Corporate Enterprise DNS Management
+ ========================================================
+
+    Company: ABC Tech Pvt Ltd
+
+    Network: Hybrid (Internal + Public services)
+    Internal Domain: `corp.abctech.com`
+    Public Domain: `abctech.com`
+
+---
+
+ Phase 1: Planning
+
+    Domains:
+    Internal: `corp.abctech.com`
+    External: `abctech.com`
+
+    Hosts and Services:
+    App servers: `app01, app02`
+    Web servers: `web01, web02`
+    Mail servers: `mail01, mail02`
+    LDAP/AD servers: `ldap01`
+
+    DNS Servers:
+    Primary: `dns1.corp.abctech.com` (192.168.50.2)
+    Secondary: `dns2.corp.abctech.com` (192.168.50.3)
+
+---
+
+    Phase 2: DNS Server Setup
+
+    Installed BIND on Linux RHEL servers:
+    yum install bind bind-utils -y
+    Configured named.conf to allow internal subnet and set working directory `/var/named`.
+
+    Created forward and reverse zone files:
+    Forward: `/var/named/fw.corp.abctech.com`
+    Reverse: `/var/named/rev.50.168.192.in-addr.arpa`
+
+    Started and enabled named service:
+    systemctl start named
+    systemctl enable named
+
+
+---
+
+ Phase 3: Adding Records
+
+ Forward Lookup (A, CNAME, MX, TXT, SRV, CAA):
+
+; A Records
+app01   IN A 192.168.50.10
+app02   IN A 192.168.50.11
+web01   IN A 192.168.50.20
+web02   IN A 192.168.50.21
+mail01  IN A 192.168.50.30
+mail02  IN A 192.168.50.31
+ldap01  IN A 192.168.50.40
+
+; CNAME
+portal  IN CNAME web01
+
+; MX Records
+@ IN MX 10 mail01.corp.abctech.com.
+@ IN MX 20 mail02.corp.abctech.com.
+
+; TXT for SPF
+@ IN TXT "v=spf1 ip4:192.168.50.0/24 -all"
+
+; SRV for LDAP
+_ldap._tcp.corp.abctech.com. IN SRV 0 5 389 ldap01.corp.abctech.com.
+
+; CAA
+@ IN CAA 0 issue "digicert.com"
+
+
+ Reverse Lookup (PTR records):
+
+10 IN PTR app01.corp.abctech.com.
+11 IN PTR app02.corp.abctech.com.
+20 IN PTR web01.corp.abctech.com.
+21 IN PTR web02.corp.abctech.com.
+30 IN PTR mail01.corp.abctech.com.
+31 IN PTR mail02.corp.abctech.com.
+40 IN PTR ldap01.corp.abctech.com.
+
+
+---
+
+ Phase 4: Client Integration
+
+ Linux Clients:
+
+  vi /etc/resolv.conf
+  search corp.abctech.com
+  nameserver 192.168.50.2
+  nameserver 192.168.50.3
+
+ Windows Clients:
+   Group Policy configured to push `192.168.50.2` and `192.168.50.3` as DNS servers.
+
+ Phase 5: Testing
+
+ Verified host resolution:
+
+ping app01.corp.abctech.com
+nslookup app01.corp.abctech.com
+dig app01.corp.abctech.com
+
+ Checked reverse lookup:
+
+nslookup 192.168.50.10
+ Validated mail routing with MX records and SPF TXT.
+ Tested LDAP service using SRV records to ensure clients can discover the server automatically.
+
+---
+
+ Phase 6: Automation & Maintenance
+
+ Scripted record additions for new servers using BIND zone file templates.
+ Set TTL for dynamic hosts to 1 hour for fast propagation:
+
+$TTL 3600
+ Monitored DNS queries using BIND logs (`/var/log/messages` or `journalctl -u named`).
+ Regular backups of zone files stored on a central repository.
+
+
+ Real-Life Problem Scenario
+
+1. Issue: App server `app03.corp.abctech.com` was unreachable by name.
+2. Investigation:
+    Ping failed: `No host found`
+    IP ping worked: `192.168.50.12`
+
+3. Resolution:
+    Added A and PTR records in DNS zone.
+    Updated client resolv.conf or waited for TTL propagation.
+    Server became reachable by hostname.
+
+
