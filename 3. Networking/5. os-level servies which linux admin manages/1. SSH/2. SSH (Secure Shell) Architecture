@@ -1,0 +1,91 @@
+
+
+ SSH (Secure Shell) Architecture 
+
+ 1. SSH Client
+ Installed on your local machine (laptop, workstation, or jump server)
+ Initiates connection to remote servers using: ssh user@server-ip
+ 
+ Example: A system administrator on their laptop connects to a production server in the data center.
+
+ 2. Network / Transport Layer
+ Uses TCP port 22 for communication
+ Provides secure, encrypted transport for all data between client and server
+
+ Example: The admin’s commands travel securely over the corporate network, even if the network is public.
+
+ 3. SSH Server (sshd)
+ Runs on remote servers (Linux/Unix machines)
+ Listens on port 22 for incoming connections
+ Starts a daemon:
+  systemctl status sshd
+ 
+ Example: The production web server runs `sshd`, allowing secure remote access for admins.
+
+ 4. Authentication Layer
+ Confirms user identity using:
+   Password authentication
+   Public/private key authentication (preferred for enterprise)
+ Configured via:
+  /etc/ssh/sshd_config
+ 
+ Example: Admin logs in using a private key stored on their laptop, ensuring no password is sent over the network.
+
+ 5. Encryption & Security Layer
+ Encrypts all traffic (commands, files, passwords) using AES, RSA, or ED25519
+ Prevents eavesdropping and man-in-the-middle attacks
+
+ Example: When the admin copies files using `scp`, the files are encrypted in transit.
+
+ 6. Session Layer
+ Creates a secure shell session after authentication
+ Supports:
+   Interactive shell access (`ssh`)
+   Remote command execution (`ssh user@host command`)
+   File transfer (`scp` / `sftp`)
+   Port forwarding / tunneling
+
+ Example: Admin executes:
+  ssh user@prod-server "systemctl restart nginx"
+  safely from their office without being physically at the server.
+
+
+ 7. System Resources
+ Commands execute under the authenticated user’s privileges
+ Follows filesystem permissions, SELinux policies, and PAM modules
+
+ Example: Admin cannot modify `/root` unless logged in as `root` or using `sudo`.
+
+
+
+ SSH Architecture Flow (Real-Time Example)
+==========================================
+
+Admin Laptop (SSH Client)
+        |
+        | TCP Port 22 (Encrypted)
+        |
+Remote Server (sshd)
+        |
+   Authentication (password / key)
+        |
+  Secure Shell Session
+        |
+Commands / File Transfer / Port Forwarding
+
+
+
+
+ Real-Time Enterprise Examples
+=============================
+1. Server Administration: Admin remotely updates production servers.
+2. Automated Backups: Cron jobs use `scp` to copy files securely to backup servers.
+3. DevOps Pipelines: Jenkins or Ansible connects via SSH to deploy code on multiple servers.
+4. Jump Server / Bastion Host: Central SSH server controls access to internal servers, logging all sessions for compliance.
+
+
+ One-Line Summary for Interviews
+
+> SSH provides a secure client–server architecture with encrypted sessions over TCP port 22, allowing authentication, command execution, and file transfer in enterprise environments.
+
+

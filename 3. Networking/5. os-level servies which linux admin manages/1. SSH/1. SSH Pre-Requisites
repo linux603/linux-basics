@@ -1,0 +1,44 @@
+
+SSH Pre-Requisites
+
+			1. install software package  name 
+			2. service : sshd 
+			3. daemon : sshd
+			4. port : 22 
+			5. configuration file : /etc/ssh/sshd_config 
+
+	
+
+1. Software Package
+    Server: `openssh-server` (provides `sshd`)
+    Client: `openssh-client` (provides `ssh`, `scp`, `sftp`)
+
+2. Service / Daemon
+    Daemon name: `sshd`
+    Must be installed, running, and enabled on the server
+
+3. Network / Port
+    TCP port 22 must be open
+    Accessible from the client machine
+
+4. Configuration File
+    `/etc/ssh/sshd_config` for server settings
+    `/etc/ssh/ssh_config` for client defaults
+
+5. Authentication
+    User account on the server
+    Password or public/private key pair (recommended)
+
+6. Firewall / Security Rules
+    Server firewall must allow port 22/TCP
+    Cloud Security Groups / NSGs must permit SSH
+
+7. System Requirements
+    Linux/Unix-based OS on the server
+    TCP/IP networking enabled
+
+ Optional / Best Practices
+ ========================
+ Use key-based authentication instead of passwords
+ Disable root login (`PermitRootLogin no`) for security
+ Enable logging and monitoring for auditing

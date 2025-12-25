@@ -1,0 +1,138 @@
+
+ Unique Feature of secure shell (ssh) :
+====================================
+
+ SSH provides security through data encryption.
+ Unlike FTP (which sends data in plain binary), SSH encrypts all data, so only the intended recipient can decrypt it using the correct private key.
+
+
+ Public / Private Keys :
+========================
+ Each user has a hidden `.ssh` directory in their home folder containing two keys:
+                                                                            1. Public Key → encrypts data
+                                                                            2. Private Key → decrypts data
+
+Example Paths:
+ Root user: `/root/.ssh`
+ Regular user `rk`: `/home/rk/.ssh`
+
+ Keys are used to authenticate and create a secure tunnel between machines.
+
+
+note : fails if your account don’t have a valid private keys 
+Generate a key pair using command : ssh-keygen
+
+
+ SSH, SCP, and SFTP :
+ ==================
+ When two machines communicate using SSH, SCP, or SFTP:
+  1. They perform a handshake to exchange keys.
+  2. A secure encrypted tunnel is created.
+  3. All data sent through this tunnel is encrypted and safe.
+
+Protocol Uses:
+==============
+ SSH → secure remote shell (administration)
+ SCP → secure copy (files/directories)
+ SFTP → secure file transfer protocol
+
+
+ Comparison: SSH vs FTP :
+=======================
+| Feature               | SSH / SCP / SFTP                | FTP                       |
+
+| File transfer         | Files & directories (encrypted) | Files only (binary/plain) |
+| Data security         | Encrypted                       | Not encrypted             |
+| Remote administration | Yes                             | No                        |
+| Protocol              | SSH                             | FTP (non-secure)          |
+
+Note:
+ HTTPS uses TLS/SSL (not SSH) for encryption.
+ HTTP / FTP do not encrypt data by default.
+
+
+
+ How to Connect to a Remote Machine Using SSH ?
+ ==============================================
+
+Connect as current user form client to server:
+                                                ssh remotemachineip
+Connect with specific user to server form clent:
+                                                ssh username@remotemachineip
+                                                ssh -l username remotemachineip
+Opens a secure shell session on the remote machine.
+
+note :
+There are three main ways to authenticate via SSH, depending on how the server and client are configured:
+
+ 1. Password-Based Authentication
+ =================================
+ Description: The user provides a username and password to log in.
+ How it works:
+  1. Client connects to the SSH server.
+  2. Server prompts for password.
+  3. If correct, a secure session is established.
+ Pros: Simple, no key management required.
+ Cons: Less secure; vulnerable to brute-force attacks.
+
+Example:
+        ssh username@192.168.1.10
+        username@192.168.1.10's password:
+
+ 2. Public/Private Key Authentication (Key-Based or Passwordless Authentication)
+ ================================================
+ Description: Uses a key pair: public key on the server, private key on the client.
+ How it works:
+  1. Client presents the private key.
+  2. Server checks if the corresponding public key exists in `~/.ssh/authorized_keys`.
+  3. If matched, login is granted.
+ Pros: More secure, can disable passwords, good for automation (scripts, CI/CD).
+ Cons: Key must be generated and managed properly.
+
+Example:
+ssh-keygen                          Generate key pair
+ssh-copy-id username@192.168.1.10   Copy public key to server
+ssh username@192.168.1.10           Login using key
+
+ 3. Host-Based Authentication
+ Description: The client machine itself is trusted; any user from the client host can log in without a password.
+ How it works:
+Server trusts the client’s host key and allows connections from it.
+ Pros: Useful in trusted internal networks.
+ Cons: Rarely used; less secure than key-based auth.
+
+
+
+| Authentication Method | How It Works                                | Security | Use Case                       |
+-------------------------------------------------------------------------------------------------------------------
+| Password-based        | Enter username & password                   | Low      | Small setups, temporary access |
+| Public/Private Key    | Private key on client, public key on server | High     | Production servers, automation |
+| Host-based            | Client host is trusted                      | Medium   | Internal trusted network       |
+
+
+
+
+ How to Copy Files / Directories Using SCP
+ =========================================
+
+ Copy a directory securely
+scp -r /local/dir rk@192.168.145.10:/home/rk/
+
+ Copy a single file
+scp /home/rk/file.txt rk@192.168.145.10:/home/rk/
+
+ `-r` → recursive copy for directories
+ Uses SSH encryption for security.
+
+
+
+ Root Privileges Requirement
+=============================
+ Only root or users with `sudo` can perform administrative tasks.
+ Examples:
+   `useradd` → create new user → requires root
+   `lvcreate` → create LVM volume → requires root
+
+Scenario:
+ 10 Linux admins need root credentials to manage all servers.
+ Normal users cannot perform administration tasks.

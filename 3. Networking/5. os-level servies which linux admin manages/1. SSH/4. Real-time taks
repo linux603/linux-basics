@@ -1,0 +1,77 @@
+
+vvvvvimp 
+-> how to deny root login through ssh service?
+
+	step 1 : change the ssh paramter that is "PermitRootLogin" to no
+		vi /etc/ssh/sshd_config
+	
+		PermitRootLogin no
+
+	Step 2 : restart the service
+		systemctl restart sshd
+
+note :
+> in IT sectore, We don’t let people log in as root directly because root has full control of the system. If someone guesses the root password, they can do anything. 
+  By logging in as a normal user and using sudo when needed, the system is safer, mistakes are less dangerous, and we know who did what.
+
+
+-> How to disable normal users?
+	
+	step 1 : specify users in ssh configuration file  under DenyUsers list
+			vi /etc/ssh/sshd_config
+				DenyUsers rk bindu pratap
+	Step 2 : restart the ssh service
+			systemctl restart sshd
+
+-> how to deny groups?
+		vi /etc/ssh/sshd_config
+			DenyGroups	group1 group2
+
+
+
+-> How to change the ssh service port number?
+	
+	what is the default port number of ssh? 22
+	going forward want use 2222 for ssh service?
+
+step 1 : update new port number in configuration file
+		vi /etc/ssh/sshd_config
+			Port 2222
+Step 2 : update se linux policy. because right now se linux knows 22 port is for ssh service but now we are chainging to 2222
+		semanage  port -a -t ssh_port_t  -p tcp 2222
+step 3 : Restart the service
+		systemctl restart sshd
+
+	systemctl restart sshd
+
+
+
+-> how to configuring password less authentication between 2 machines?
+
+Passwordless authentication (usually using SSH keys) is used to log in without typing a password.
+
+	machine 1 : 192.168.145.10
+	machine 2 : 192.168.145.186
+
+	186 machine want to connect with 10 as rk user without password
+
+	rk has to share public key with 10 machine prasad user then password less is allowed
+
+
+	step1 :  login to 186 machine as a rk user and generate keys
+		
+		then run command : ssh-keygen
+		
+							do enter
+							do enter
+							do enter
+
+	step 2 : share pub key with remote machine
+			
+			ssh-copy-id -i id_rsa.pub 192.168.145.10
+			or 
+			manuvally we can copy 
+
+	
+	now do ssh to 192.168.145.10, whithout asking password ssh will happens now.
+

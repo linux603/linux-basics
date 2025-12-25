@@ -1,0 +1,142 @@
+question : An EC2 instance is not accessible via SSH for user rk. How will you troubleshoot and fix it?
+
+Step 1: Check EC2 Instance State :
+=================================
+Goal: Ensure the instance is running.
+
+How to Check: 
+
+open AWS Console
+        1. Go to AWS Console → EC2 → Instances.
+        2. Check the “Instance State” column.
+
+    ✅ Running → proceed to check with next step
+    ❌ Stopped → click Start Instance, issue resolved here.
+
+
+ Step 2: Verify Public IP / DNS
+ =================================
+ Goal: Make sure the instance can be reached from your machine.
+
+ In AWS Console → EC2 → Public IPv4 / Public DNS
+
+   ✅ Public IP / DNS exists → proceed
+   ❌ No IP → assign Elastic IP
+
+ Step 3: Check Security Group
+ =============================
+Goal: Ensure SSH port 22 is open.
+In AWS Console → EC2 → Security Groups → Inbound Rules
+
+   ✅ Rule exists: TCP 22 from your IP → proceed
+   ❌ Not allowed → add inbound rule
+
+ Step 4: Check Network ACL (NACL)
+ =================================
+Goal: Ensure subnet allows traffic.
+                                    Check Inbound: TCP 22
+                                    Check Outbound: ephemeral ports (1024–65535)
+ ✅ Correct → proceed
+ ❌ Blocked → update NACL
+
+
+ Step 5: Check Route Table
+ =========================
+Goal: Instance must have a route to the internet.
+
+In VPC → Route Tables → Subnet Association
+
+   ✅ Route: `0.0.0.0/0 → Internet Gateway` → proceed
+   ❌ Missing → add IGW route
+
+
+ Step 6: Check SSH Connection (Client Side)
+ ==========================================
+ssh -i rk.pem rk@<public_ip_or_dns>
+
+ ✅ Connects → proceed
+ ❌ Permission denied → check username, key, and key permissions
+
+
+ Step 7: Check SSH Service on EC2
+ =================================
+Via EC2 console / SSM / Instance Connect:
+systemctl status sshd
+
+ ✅ Active (running) → proceed
+ ❌ Inactive → start it:
+
+systemctl start sshd
+systemctl enable sshd
+
+ Step 8: Check SSH Port Listening
+ ================================
+ss -tulnp | grep :22
+
+ ✅ Shows `sshd` listening → proceed
+ ❌ Not listening → check `/etc/ssh/sshd_config` and restart SSH
+
+
+ Step 9: Check OS Firewall
+===========================
+
+firewall-cmd --list-all
+
+ ✅ Port 22 allowed → proceed
+ ❌ Add rule:
+
+firewall-cmd --add-port=22/tcp --permanent
+firewall-cmd --reload
+
+
+ Step 10: Check User `rk`
+========================
+
+id rk
+
+ ✅ Exists → proceed
+ ❌ Create user:
+
+useradd rk
+
+ Step 11: Check SSH Keys
+ =======================
+cat /home/rk/.ssh/authorized_keys
+
+ Permissions:
+chmod 700 /home/rk/.ssh
+chmod 600 /home/rk/.ssh/authorized_keys
+chown -R rk:rk /home/rk/.ssh
+
+ ✅ Correct → proceed
+ ❌ Add key / fix permissions
+
+ Step 12: Check SSH Configuration
+
+vi /etc/ssh/sshd_config
+ Ensure:
+AllowUsers rk
+PasswordAuthentication no   if key-based login
+systemctl restart sshd
+
+
+ Step 13: Check SELinux (If Enabled)
+=====================================
+getenforce
+ If enforcing:
+setsebool -P ssh_sysadm_login on
+
+
+
+
+ Interview One-Liner
+
+> “I check EC2 state, public IP/DNS, security groups, NACLs, routes, SSH service, firewall, user existence, SSH keys, SSH config, and SELinux, fixing any issue before moving to the next step.”
+
+
+note :
+    When an EC2 instance is not accessible via SSH, we need to check multiple layers because connectivity depends on both network and server configuration.
+ First, we ensure the instance is running and has a valid public IP or DNS, because without it, the client cannot reach the server. Next, we verify the security group and network ACLs, 
+ as they control which traffic is allowed into the instance, and the route table to ensure the instance has a path to the internet. On the client-server level, we check the SSH service is running, 
+ the SSH port (22) is listening, and the OS firewall is not blocking access. We also confirm the user exists and has proper SSH keys with correct permissions, because SSH authentication relies on these keys. 
+ Finally, SSH configuration and SELinux settings can prevent login if misconfigured. By systematically checking all these layers—from network connectivity to server and user configuration—we can identify the root cause efficiently and ensure secure, reliable SSH access.
