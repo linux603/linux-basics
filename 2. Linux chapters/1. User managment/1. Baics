@@ -1,0 +1,134 @@
+
+
+ what is Linux User Management ?
+ ===============================
+
+Linux is designed as a multi-user operating system. From the beginning, Linux assumes that multiple users, services, and processes will exist on the same system at the same time. 
+To make this possible safely, Linux implements user management, which is the system of defining users, groups, identities, permissions, and privileges.
+User management ensures security, isolation, and accountability. Every action performed on a Linux system is associated with a user identity. There is no anonymous activity.
+
+
+
+Users in Linux :- A user in Linux is an identity assigned to a person or a process. Each user is uniquely identified by a User ID (UID). 
+                   Linux internally works with UIDs, not usernames.
+
+
+Major Categories of Users in Linux:
+==================================
+Linux classifies users based on purpose and privilege level. Each category exists to maintain security, isolation, and control within the operating system.
+
+There are flour major categories of users:
+                                            1.Root User
+                                            2.System Users
+                                            3.Application users 
+                                            3.Normal (Human) Users
+
+
+1. Root User :  User ID = 0
+============
+
+        The root user is the superuser of the Linux system.
+        It has a User ID (UID) of 0, which gives it unrestricted access to the entire operating system.
+
+        The root user can:
+        -----------------
+        Read, write, and execute any file
+        Modify system configuration
+        Start and stop services
+        Create, modify, or delete users
+        Bypass all permission checks
+        Root is not restricted by file permissions. Because of this power, logging in directly as root is discouraged. Instead, Linux administrators use normal users with temporary privilege elevation using sudo.
+        The root account exists for system control, not daily operations.
+
+ 
+
+2. System Users : User ID range = 1-99
+================
+        System users are created by the operating system to run core services and background processes.
+
+        These users:
+        -------------
+        Run system services like sshd, cron, dbus
+        Usually have low UID values (1-99)
+        Do not have login shells
+        Cannot log in interactively
+        Often do not have home directories
+        System users improve security by isolating services. If a service is compromised, the attacker gains access only to that limited system user, not the entire system.
+        System users exist for internal system functionality, not human interaction.
+
+
+3. Application Users: User ID range = 100-999
+====================
+        Application users are created specifically for applications installed by administrators.
+
+        Examples include:
+        nginx
+        mysql
+        postgres
+        oracle
+
+        These users:
+        ------------
+        Own application files and processes
+        Run application services
+        Have restricted permissions
+        Usually cannot log in interactively
+        Application users provide application-level isolation. Each application runs under its own user account, preventing one application from interfering with another or with the system.
+        This is a critical concept in enterprise Linux administration.
+
+
+4. Normal (Human) Users : User ID range = 1000-60K
+=========================
+        Normal users represent real people who log in and use the system.
+
+        These users:
+        ------------
+        Have UIDs typically starting from 1000
+        Have home directories under /home
+        Have login shells such as /bin/bash
+        Can log in via console or SSH
+
+        Normal users operate with limited privileges. When administrative access is required, they use sudo rather than logging in as root.
+        This separation ensures accountability and prevents accidental system damage.
+
+
+ User Database Files and Access Control in Linux :
+ ==================================================
+ Linux stores all user and group information in plain-text configuration files. These files act as the user database of the operating system. 
+ Understanding these files is essential for Linux administrators because authentication, authorization, and access control all depend on them.
+
+ ---> /etc/passwd — User Account Information File :
+ --------------------------------------------------
+The /etc/passwd file stores basic information about every user account on the system.
+It is readable by all users, but it does not store passwords, which is an important security design.
+
+Each line in /etc/passwd represents one user account and contains the following fields:
+Username – the login name of the user
+UID (User ID) – a unique numeric identifier used internally by Linux
+Primary GID (Group ID) – the user’s main group
+Home directory – the user’s default working directory
+Default shell – the program started when the user logs in
+Linux uses this file to map usernames to UIDs, because internally Linux recognizes users only by UID, not by name.
+
+---> /etc/shadow — Secure Password Information
+The /etc/shadow file stores encrypted (hashed) passwords and password aging policies.
+
+Key characteristics:
+Only readable by the root user
+Contains password hashes, not plaintext passwords
+Stores information such as password expiration and account lock status
+Separating password data from /etc/passwd significantly improves security by preventing unauthorized users from accessing password hashes.
+
+---> /etc/group — Group Information File
+-----------------------------------------
+The /etc/group file defines groups and group membership.
+
+Groups are used to:
+-------------------
+Assign permissions to multiple users at once
+Simplify administration
+Enforce role-based access control
+Each group has:
+A group name
+A Group ID (GID)
+A list of users who are members of that group

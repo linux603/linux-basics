@@ -1,0 +1,20 @@
+Authentication and Authorization
+
+Linux strictly separates authentication and authorization.
+
+Authentication
+
+Authentication is the process of verifying identity.
+In Linux, authentication can be performed using:
+
+Passwords
+
+SSH keys
+
+Smart cards or digital certificates (advanced environments)
+
+Authorization
+
+Authorization is the process of determining what an authenticated user is allowed to do.
+
+A user may successfully authenticate but still have very limited permissions. This separation is fundamental to Linux security.
