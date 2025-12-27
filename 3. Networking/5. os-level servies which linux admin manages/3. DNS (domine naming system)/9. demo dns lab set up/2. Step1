@@ -1,0 +1,30 @@
+
+
+step1: Install BIND software/package 
+
+a. Install BIND on CentOS 10
+
+yum install bind bind-utils -y
+
+note: bind and bind-utils are dns softwares/packages 
+
+verify is installed or not:
+==========================
+[root@dns-server ~]# rpm -qa | grep -i bind
+bind-license-9.18.33-13.el10.noarch
+bind-libs-9.18.33-13.el10.x86_64
+bind-utils-9.18.33-13.el10.x86_64
+bind-dnssec-utils-9.18.33-13.el10.x86_64
+bind-9.18.33-13.el10.x86_64
+[root@dns-server ~]# 
+
+b. Enable and start:
+
+systemctl enable --now named
+systemctl start named
+systemctl status named
+
+ex:
+root@dns-server ~]# systemctl enable --now named
+Created symlink '/etc/systemd/system/multi-user.target.wants/named.service' → '/usr/lib/systemd/system/named.service'.
+[root@dns-server ~]# systemctl start named

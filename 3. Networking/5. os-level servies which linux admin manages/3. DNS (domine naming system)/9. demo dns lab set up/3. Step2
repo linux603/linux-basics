@@ -1,0 +1,358 @@
+
+
+step2 : Configure BIND
+
+a. take backup of orginal configuration file 
+
+[root@dns-server ~]# cp -r /etc/named.conf /etc/named.con_older
+
+b. create new configuration file now with required bind configuration parameters
+
+vi /etc/named.conf
+
+options {
+    # Listen on localhost, internal IP, and optional public IP
+    listen-on port 53 { 127.0.0.1; 10.128.0.8; 34.66.22.100; };
+    listen-on-v6 port 53 { ::1; };
+
+    # Working directory for zone files
+    directory "/var/named";
+
+    # Logging and cache
+    dump-file "/var/named/data/cache_dump.db";
+    statistics-file "/var/named/data/named_stats.txt";
+    memstatistics-file "/var/named/data/named_mem_stats.txt";
+    secroots-file "/var/named/data/named.secroots";
+    recursing-file "/var/named/data/named.recursing";
+
+    # Query control
+    allow-query { any; };  # Anyone can query your server
+    allow-recursion { localhost; 10.128.0.0/9; };  # Only internal/trusted clients can resolve internet names
+    recursion yes;  # Enable recursion
+
+    dnssec-validation yes;
+    managed-keys-directory "/var/named/dynamic";
+
+    pid-file "/run/named/named.pid";
+    session-keyfile "/run/named/session.key";
+
+    include "/etc/crypto-policies/back-ends/bind.config";
+};
+
+logging {
+    channel default_debug {
+        file "data/named.run";
+        severity dynamic;
+    };
+};
+
+# Root hints (needed for recursion)
+zone "." IN {
+    type hint;
+    file "named.ca";
+};
+
+# Internal lab domain
+zone "linuxlab.internal" IN {
+    type master;
+    file "linuxlab.internal.db";
+    allow-update { none; };
+};
+
+include "/etc/named.rfc1912.zones";
+include "/etc/named.root.key";
+
+
+
+qw! (save & exit form vi editor)
+
+
+
+NOTE :::::::::::::::::::
+
+
+line by line of configuration of bind, so you understand what each part of your BIND configuration does:
+========================================================================================================
+
+
+1️⃣ options { … }
+
+This block sets the main behavior of your DNS server.
+
+-------
+listen-on port 53 { 127.0.0.1; 10.128.0.8; 34.66.22.100; };
+ DNS server will listen for queries on these IPv4 addresses:
+   `127.0.0.1` → localhost (the server itself)
+   `10.128.0.8` → your internal VM IP
+   `34.66.22.100` → your external/public IP
+ Port 53 is the standard DNS port.
+
+-------
+listen-on-v6 port 53 { ::1; };
+ DNS server listens on IPv6 localhost.
+ If you had a public IPv6, you could add it here.
+
+-----
+directory "/var/named";
+
+ Default folder where zone files and BIND data are stored.
+
+----=
+dump-file "/var/named/data/cache_dump.db";
+statistics-file "/var/named/data/named_stats.txt";
+memstatistics-file "/var/named/data/named_mem_stats.txt";
+secroots-file "/var/named/data/named.secroots";
+recursing-file "/var/named/data/named.recursing";
+ These files are used by BIND to store cache, statistics, and recursion info.
+ Mostly useful for debugging or monitoring.
+
+-----
+allow-query { any; };
+ This allows anyone to ask your server for DNS records (same as 0.0.0.0/0).
+ Warning: This can be dangerous on public IPs because your server can be used for attacks.
+
+-----
+allow-recursion { localhost; 10.128.0.0/9; };
+ Only trusted clients can perform recursive queries (resolve internet names via your server).
+ Here, only the server itself (`localhost`) and your lab subnet (`10.128.0.0/9`) can do recursion.
+
+-----
+recursion yes;
+ Enables recursion. Your server can look up external domains for clients (if allowed in `allow-recursion`).
+
+-----
+dnssec-validation yes;
+ Enables DNSSEC, which verifies the authenticity of DNS records.
+
+-----
+managed-keys-directory "/var/named/dynamic";
+ Folder where DNSSEC keys are stored automatically.
+
+----
+pid-file "/run/named/named.pid";
+session-keyfile "/run/named/session.key";
+ Files used to track running BIND process and secure sessions.
+
+----
+include "/etc/crypto-policies/back-ends/bind.config";
+ Includes system-wide crypto policy settings (encryption, DNSSEC).
+
+
+2️⃣ logging { … }
+
+---------
+logging {
+    channel default_debug {
+        file "data/named.run";
+        severity dynamic;
+    };
+};
+
+ BIND will write logs to `data/named.run`.
+ `severity dynamic` → logs only important messages (can adjust for debugging).
+
+3️⃣ Root hints zone
+-----
+zone "." IN {
+    type hint;
+    file "named.ca";
+};
+
+ This tells your server where to start resolving internet domains.
+ `named.ca` contains root DNS server addresses.
+
+
+4️⃣ Your internal domain
+----
+zone "linuxlab.internal" IN {
+    type master;
+    file "linuxlab.internal.db";
+    allow-update { none; };
+};
+
+ Defines your internal lab domain `linuxlab.internal`.
+ `type master` → your server is the main authority for this zone.
+ `allow-update { none; }` → no dynamic updates allowed (manual zone file editing only).
+
+5️⃣ Includes
+----
+include "/etc/named.rfc1912.zones";
+include "/etc/named.root.key";
+
+ These are default zone files provided by the system.
+ They define localhost zones, reverse zones, and root keys.
+
+
+
+
+note :
+
+
+DNS itself does NOT decide “internal” or “external”.
+
+YOU decide, using:
+-----------------
+1. IP addresses
+2. Firewall rules
+3. BIND options (`allow-query`, `allow-recursion`)
+4. Which zone names you serve
+
+
+1️⃣ What do “internal” and “external” actually mean?
+
+a.Internal DNS 
+==============
+                Clients that are:
+                Inside your private network
+                Example private IPs:
+                `10.x.x.x`
+                `172.16.x.x`
+                `192.168.x.x`
+                Example:
+                VM → 10.128.0.8 (DNS)
+
+b.External DNS
+================
+                Clients that are:
+                On the public internet
+                Example IP:
+                `34.66.22.100`
+                Example:
+                Laptop → Public IP → DNS
+
+
+2️⃣ What decides if a query is internal or external?
+
+ ✅ ONLY THE CLIENT IP
+
+DNS checks:
+> “Where is this request coming from?”
+ If source IP = `10.128.x.x` → internal
+ If source IP = `34.x.x.x` → external
+Nothing else.
+
+3️⃣ How BIND uses this information
+
+ `allow-query`
+ ===========
+
+```conf
+allow-query { any; };
+```
+
+➡ Who is allowed to ask anything here (internal + external), if you want we can allow only internal or external by specifying subnets 
+
+ `allow-recursion`
+ =================
+
+```conf
+allow-recursion { localhost; 10.128.0.0/9; };
+```
+ `localhost` → the DNS server itself can resolve internet names.
+ `10.128.0.0/9` → any VM in your lab subnet can resolve internet names.
+ Anyone outside this range cannot perform recursion, so they cannot use your server to resolve external domains like `google.com`.
+
+ Example table :
+| Client IP                         | Can resolve `linuxlab.internal`? | Can resolve internet names (e.g., google.com)? |
+| --------------------------------- | -------------------------------- | ---------------------------------------------- |
+| 127.0.0.1 (localhost)             | ✅ YES                            | ✅ YES                                          |
+| 10.128.0.5 (internal VM)          | ✅ YES                            | ✅ YES                                          |
+| 10.128.100.20 (internal VM)       | ✅ YES                            | ✅ YES                                          |
+| 34.66.22.100 (external/public IP) | ✅ YES                            | ❌ NO                                           |
+| 8.8.8.8 (random internet IP)      | ❌ NO                             | ❌ NO                                           |
+
+ All internal clients: Can query internal zones and resolve internet domains.
+ External clients: Can query zones only if `allow-query` allows them, but cannot resolve internet names.
+
+
+1. Recursion only for localhost (good for testing):
+
+```conf
+allow-recursion { localhost; };
+```
+
+| Client      | Internet names? |
+| ----------- | --------------- |
+| Localhost   | ✅ YES           |
+| Internal VM | ❌ NO            |
+
+2. Recursion for multiple subnets:
+
+```conf
+allow-recursion { 127.0.0.1; 10.128.0.0/9; 192.168.1.0/24; };
+```
+
+ Localhost + lab network + another private network can resolve internet names.
+
+3. Recursion for a single external IP (trusted external client):
+
+```conf
+allow-recursion { 127.0.0.1; 10.128.0.0/9; 203.0.113.50; };
+```
+ Only the specific external client `203.0.113.50` can resolve internet names.
+
+
+✅ Rule of thumb:
+ `allow-recursion` = controls who can ask your server to look up public domains.
+ `allow-query` = controls who can query your zones (internal or external).
+
+
+The “decision”
+============
+Internal DNS: You control with allow-query → restrict it to your private network.
+External DNS: You control with allow-recursion → restrict internet lookups to safe clients.
+So the distinction isn’t based on the IP of the zone, it’s based on who can perform recursion.
+
+4️⃣ What decides internal vs external DNS names?
+ ZONE NAME decides this
+```conf
+zone "linuxlab.internal"
+```
+ `.internal` → your private domain
+ Only your DNS knows it
+
+External DNS servers:
+ Have no idea what `linuxlab.internal` is
+
+
+## 5️⃣ Internet domains vs internal domains
+
+| Query                   | How DNS handles it               |
+| ----------------------- | -------------------------------- |
+| `vm1.linuxlab.internal` | Answer from your zone file       |
+| `google.com`            | Recursion → root → .com → Google |
+
+---
+
+6️⃣ Firewalls ALSO decide
+
+Even if BIND allows it:
+
+ GCP firewall
+
+ Allows or blocks port 53
+
+OS firewall (firewalld)
+
+ Allows or blocks DNS service
+
+Firewalls decide:
+
+> “Can the packet even reach DNS?”
+
+
+
+ 7️⃣ Simple mental picture 🧠
+
+Client IP → Firewall → BIND
+                  ↓
+            allow-query?
+                  ↓
+         Internal zone OR recursion?
+
+
+
+
+
+
+

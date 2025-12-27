@@ -1,0 +1,54 @@
+
+why we have both named.conf and zone file in server side configuration ?
+
+This is a very common point of confusion, but the difference is clear once you break it down: `/etc/named.conf` vs a zone file
+
+
+ 1. `/etc/named.conf` – The DNS Server Configuration
+
+ Think of `named.conf` as the “master control file” for the BIND DNS server.
+ It tells the DNS server how to behave:
+   Which zones it is authoritative for
+   Which files contain the DNS records for those zones
+   Logging options, access controls, and network interfaces
+
+Example snippet from `named.conf`:
+
+zone "linuxlab.internal" IN {
+    type master;
+    file "/var/named/linuxlab.internal.db";
+    allow-update { none; };
+};
+
+Explanation:
+ `zone "linuxlab.internal"` → This declares the zone your server is authoritative for.
+ `type master;` → This server is the primary source of truth for this zone.
+ `file "/var/named/linuxlab.internal.db";` → Path to the zone file that contains the actual DNS records.
+ `allow-update { none; };` → Prevents unauthorized updates to the zone.
+
+So basically: `named.conf` tells BIND “here’s a zone, here’s the file with the records, and here’s how to serve it.”
+
+
+
+ 2. Zone File (e.g., `/var/named/linuxlab.internal.db`)
+
+ The zone file is the actual data: it lists all the DNS records, like A, NS, CNAME, MX, etc.
+
+ Example:
+dns-server      IN  A   10.128.0.8
+ansible         IN  A   10.128.0.2
+
+ This is where the server looks when it needs to answer queries.
+ Zone files are sensitive: any typo or formatting error can break DNS resolution.
+
+
+
+ 3. The Key Difference
+
+| Feature              | `/etc/named.conf`               | Zone file (`.db`)                           |
+--------------------------------------------------------------------------------------------------------
+| Purpose              | Server configuration            | DNS record data for a zone                  |
+| Contains             | Zones, logging, access controls | Records (A, NS, MX, etc.)                   |
+| Frequency of changes | Rare (mostly static)            | Can change whenever hosts are added/removed |
+| Syntax               | BIND configuration syntax       | Zone file syntax (SOA, NS, A, etc.)         |
+

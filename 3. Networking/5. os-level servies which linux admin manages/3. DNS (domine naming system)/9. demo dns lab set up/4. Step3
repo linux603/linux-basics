@@ -1,0 +1,196 @@
+
+
+ Step 3: Create the zone file
+
+ step3a: 
+
+1. As per the named.config Default path is  (`/var/named/`) so
+
+vi /var/named/linuxlab.internal.db
+
+
+2. Content of the zone file:
+
+$TTL 86400
+@   IN  SOA dns-server.linuxlab.internal. admin.linuxlab.internal. (
+            2025122701 ; Serial
+            3600       ; Refresh
+            1800       ; Retry
+            604800     ; Expire
+            86400 )    ; Minimum TTL
+
+    IN  NS  dns-server.linuxlab.internal.
+
+; DNS server
+dns-server      IN  A   10.128.0.8      ; internal IP
+dns-server-ext  IN  A   34.66.22.100   ; optional external IP
+
+; Other VMs internal
+ansible         IN  A   10.128.0.2
+demovm          IN  A   10.128.0.3
+nfs-server      IN  A   10.128.0.6
+vm1             IN  A   10.128.0.7
+
+; Other VMs external
+ansible-ext     IN  A   136.115.26.76
+demovm-ext      IN  A   136.111.20.13
+nfs-server-ext  IN  A   34.66.22.100
+vm1-ext         IN  A   35.239.115.207
+
+
+
+qw! 
+
+
+ (Optional: `/etc/named/`)
+
+If you prefer default as in named.conf file  `/etc/named/`:
+
+sudo mkdir -p /etc/named
+sudo cp /var/named/linuxlab.internal.db /etc/named/
+sudo chown root:named /etc/named/linuxlab.internal.db
+sudo chmod 640 /etc/named/linuxlab.internal.db
+
+Update `named.conf`:
+
+zone "linuxlab.internal" IN {
+    type master;
+    file "/etc/named/linuxlab.internal.db";
+    allow-update { none; };
+};
+
+
+ Step 3b: Check file permissions
+
+BIND runs as user `named`. Make sure it can read the zone file:
+
+sudo chown root:named /var/named/linuxlab.internal.db
+sudo chmod 640 /var/named/linuxlab.internal.db
+
+
+Step 3c : Test the zone file syntax (it is very sencitive file we should verify and confirom )
+
+The command you ran is:   named-checkzone linuxlab.internal /var/named/linuxlab.internal.db
+
+componets of command:
+-
+named-checkzone : This is a BIND utility used to verify the syntax and correctness of a DNS zone file. Zone files are very sensitive; even a small typo can break DNS resolution.
+linuxlab.internal :This is the DNS zone name you are testing. A zone represents a portion of the DNS namespace that your server is authoritative for.
+/var/named/linuxlab.internal.db : This is the path to the zone file that contains all the DNS records for the zone (A, CNAME, MX, etc.).
+
+ex:
+
+[root@dns-server etc]  named-checkzone linuxlab.internal /var/named/linuxlab.internal.db
+zone linuxlab.internal/IN: loaded serial 2025122701
+OK
+[root@dns-server etc]
+
+Output explanation :
+
+zone linuxlab.internal/IN: → Confirms which zone was checked. IN stands for the Internet class.
+loaded serial 2025122701 → Shows the serial number from the zone file. This number is important for replication; it tells other DNS servers whether the zone has been updated.
+OK → The zone file syntax is correct, and BIND can load it without errors.
+
+
+
+
+ Step 3d: Restart and enable BIND
+
+sudo systemctl restart named
+sudo systemctl enable named
+
+
+ Restart to apply changes
+ Enable so BIND starts on boot
+
+Check status:
+sudo systemctl status named
+
+
+
+
+
+
+
+
+
+Note:
+====
+
+line by line and explain  DNS zone file. This is the core file that tells your DNS server how to resolve names for your lab network.
+
+
+
+ 1. TTL (Time To Live)
+==========================
+$TTL 86400
+
+ $TTL sets the default Time To Live for all DNS records in this file.
+ `86400` seconds = 24 hours.
+ It tells other DNS servers or clients how long to cache these records before asking your DNS server again.
+
+
+
+ 2. SOA (Start of Authority) Record
+====================================
+
+@   IN  SOA dns-server.linuxlab.internal. admin.linuxlab.internal. (
+            2025122701 ; Serial
+            3600       ; Refresh
+            1800       ; Retry
+            604800     ; Expire
+            86400 )    ; Minimum TTL
+
+
+ `@` → Refers to the current zone, here `linuxlab.internal`.
+ `IN` → Internet class (most common for DNS).
+ `SOA` → Start of Authority record; it contains important info about the zone:
+
+  1. Primary DNS server → `dns-server.linuxlab.internal.`
+  2. Admin email → `admin.linuxlab.internal.` (dots replace the `@` in emails).
+  3. Serial → `2025122701` → Tracks updates; must increase whenever you change the zone.
+  4. Refresh → `3600` sec → How often secondary DNS servers check for updates.
+  5. Retry → `1800` sec → Retry interval if refresh fails.
+  6. Expire → `604800` sec → How long a secondary server keeps old data if it can’t reach the primary.
+  7. Minimum TTL → `86400` sec → Minimum caching time for negative responses (non-existent records).
+
+
+
+ 3. NS (Name Server) Record
+
+    IN  NS  dns-server.linuxlab.internal.
+
+
+ Tells clients that `dns-server.linuxlab.internal` is authoritative for the `linuxlab.internal` zone.
+
+
+
+ 4. A Records (Host to IP mappings)
+
+ DNS server itself
+
+dns-server      IN  A   10.128.0.8      ; internal IP
+dns-server-ext  IN  A   34.66.22.100   ; optional external IP
+
+
+ Maps hostnames to IPv4 addresses.
+ `dns-server` → internal IP for LAN.
+ `dns-server-ext` → optional public/external IP.
+
+ Other VMs internal
+ansible         IN  A   10.128.0.2
+demovm          IN  A   10.128.0.3
+nfs-server      IN  A   10.128.0.6
+vm1             IN  A   10.128.0.7
+
+
+ Internal network mapping: every VM has an internal IP.
+
+ Other VMs external
+ansible-ext     IN  A   136.115.26.76
+demovm-ext      IN  A   136.111.20.13
+nfs-server-ext  IN  A   34.66.22.100
+vm1-ext         IN  A   35.239.115.207
+
+
+

@@ -1,0 +1,62 @@
+A simple, realistic lab setup using a GCP VM as a DNS server and then point your other VMs to it.
+
+
+
+ High-level plan:
+ ===============
+
+1. Create one VM → DNS server
+    OS: CentOS Stream 10
+    Internal IP: `10.128.0.8`
+    Optional public IP: `34.66.22.100`
+
+2. Install BIND package
+  yum install bind bind-utils -y
+   
+
+3. Configure BIND (`named`)
+    Edit `/etc/named.conf` 
+    Configure listen-on (IPv4 internal + external), listen-on-v6 (localhost IPv6)
+    Set allow-query (`any`)
+    Set allow-recursion (`localhost + 10.128.0.0/9`)
+    Create zone file `/var/named/linuxlab.internal.db`
+
+4. Start & enable BIND service
+   sudo systemctl start named
+   sudo systemctl enable named
+   
+
+5. Open firewall for DNS (UDP/TCP 53)
+   sudo firewall-cmd --add-service=dns --permanent
+   sudo firewall-cmd --reload
+   
+
+6. Configure client VMs to use this DNS server
+    Set DNS server IP to `10.128.0.8` in client VMs
+    Ensure clients are in `10.128.0.0/9` subnet
+
+7. Test the setup
+   dig @10.128.0.8 vm1.linuxlab.internal    Internal zone query
+   dig @10.128.0.8 google.com                Internet recursion test
+   
+
+
+
+ Lab Overview
+ ============
+
+| Component         | Details                                                             |
+-------------------------------------------------------------------------------------------
+| DNS server VM     | CentOS Stream 10                                                    |
+| DNS software      | BIND (`named`)                                                      |
+| Domain            | `linuxlab.internal`                                                 |
+| DNS Server IP     | Internal: `10.128.0.8`<br>Optional public: `34.66.22.100`           |
+| Internal subnet   | `10.128.0.0/9`                                                      |
+| Client VMs        | Use DNS server `10.128.0.8`                                         |
+| Recursion allowed | `localhost` + `10.128.0.0/9` (trusted clients can resolve internet) |
+| Firewall          | Open UDP/TCP port 53                                                |
+
+
+
+note: 
+Provide the next steps, step by step, to set up and provision a lab DNS server.

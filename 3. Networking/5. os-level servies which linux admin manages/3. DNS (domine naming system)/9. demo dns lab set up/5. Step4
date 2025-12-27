@@ -1,0 +1,97 @@
+``
+
+ Step 4: Open firewall for DNS
+
+sudo firewall-cmd --add-service=dns --permanent
+sudo firewall-cmd --reload
+
+
+ Explanation
+ ==========
+
+1. `firewall-cmd --add-service=dns --permanent`
+    Adds the DNS service to the firewall permanently.
+    DNS uses port 53 (both TCP and UDP).
+    UDP is for normal queries, TCP is for zone transfers and large responses.
+
+2. `firewall-cmd --reload`
+    Applies the firewall changes immediately.
+
+IT reason:
+ Without this, your clients cannot query your DNS server.
+ In a cloud network, security groups or network ACLs may also need to allow port 53 TCP/UDP.
+
+
+
+ SELinux considerations :
+
+SELinux enforces security policies on Linux and can block BIND if not configured properly.
+
+ 1️⃣ On the DNS server Check SELinux status: like it is Enforcing / Permissive / Disabled ?
+
+if the status is getenforce
+
+ BIND-specific SELinux booleans:
+
+ Allow named to read/write in its default directories
+sudo setsebool -P named_write_master_zones on
+
+ Allow DNS to listen on network interfaces
+sudo setsebool -P named_tcp_bind_http_port on   
+
+
+ IT reason:
+   SELinux might block zone file reading, logging, or network queries.
+   Proper booleans ensure DNS works without disabling SELinux entirely.
+
+
+
+ 2️⃣ On client VMs
+ Normally, clients do not need special SELinux configuration.
+ Just make sure SELinux is not restricting outbound UDP/TCP 53 (rare default).
+
+
+ 3️⃣ In a cloud network
+ Even if os firewall and SELinux are correct, cloud providers often have network-level firewalls (security groups, NSGs, or ACLs).
+ Make sure your DNS server port 53 (TCP/UDP) is open for the subnet containing client VMs.
+
+
+
+| Component      | Action / Consideration                                  |
+-----------------------------------------------------------------------------
+| Firewall       | Open port 53 TCP/UDP for DNS queries and zone transfers |
+| SELinux server | Allow named to read/write zones and bind ports          |
+| SELinux client | Usually no change needed                                |
+| Cloud network  | Open port 53 TCP/UDP in security groups or ACLs         |
+
+
+
+
+ex :  i did enable dns on os-firewall & selinux in server side 
+======================================================================
+
+[root@dns-server etc]# firewall-cmd --add-service=dns --permanent
+success
+
+[root@dns-server etc]# firewall-cmd --reload
+success
+
+[root@dns-server etc]# getenforce
+Enforcing
+
+[root@dns-server etc]# setsebool -P named_write_master_zones on
+libsepol.context_from_record: type l2tpd_var_run_t is not defined
+libsepol.context_from_record: could not create context structure
+libsepol.context_from_string: could not create context structure
+libsepol.sepol_context_to_sid: could not convert system_u:object_r:l2tpd_var_run_t:s0 to sid
+invalid context system_u:object_r:l2tpd_var_run_t:s0
+Failed to commit changes to booleans: Success
+
+[root@dns-server etc]# setsebool -P named_tcp_bind_http_port on
+libsepol.context_from_record: type l2tpd_var_run_t is not defined
+libsepol.context_from_record: could not create context structure
+libsepol.context_from_string: could not create context structure
+libsepol.sepol_context_to_sid: could not convert system_u:object_r:l2tpd_var_run_t:s0 to sid
+invalid context system_u:object_r:l2tpd_var_run_t:s0
+Failed to commit changes to booleans: Success
+[root@dns-server etc]#
